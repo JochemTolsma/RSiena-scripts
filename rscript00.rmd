@@ -1,0 +1,356 @@
+---
+title: "RSiena-scripts"
+author: '[Jochem Tolsma](https://www.jochemtolsma.nl) - Radboud University, the Netherlands'
+bibliography: references.bib
+date: "Last compiled on `r format(Sys.time(), '%B, %Y')`"
+output: 
+  html_document:
+    toc:  true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: yes
+---
+
+```{r, globalsettings, echo=FALSE, warning=FALSE}
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=100),tidy=TRUE, warning = FALSE, message = FALSE,comment = "#>", cache=TRUE, class.source=c("test"), class.output=c("test2"))
+options(width = 100)
+rgl::setupKnitr()
+
+
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, 
+      x)
+  } else x
+}
+
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(position = c('top', 'right'))
+#klippy::klippy(color = 'darkred')
+#klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done')
+```
+
+```{css, echo=FALSE}
+pre.test {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 0px;
+}
+
+pre.test2 {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 0px;
+  background-color: white
+}
+
+
+h1, .h1, h2, .h2, h3, .h3 {
+    margin-top: 24px;
+}
+
+
+```
+
+----
+
+This website converted the following original .R scripts into .rmd files. 
+
+- Rscript01DataFormat.R  
+- RScriptSNADescriptives.R  
+- Rscript02SienaVariableFormat.R  
+- Rscript03SienaRunModel.R  
+- Rscript04SienaBehaviour.R
+
+Please visit [GitHub](https://github.com/snlab-nl/rsiena/tree/main/inst/scripts) for the latest .R files. 
+
+> To download this .rmd file use the button in the upper right corner of your screen.  
+> To copy the R code in the code-chunks, use the copy-paste button in the upper right corner of the code-chunks. 
+
+----
+
+## Data
+All files (data, scripts, etc.) can also be found on [Github](https://github.com/JochemTolsma/Rsiena-scripts)
+
+----
+
+## Contact
+Specific questions with respect to the .rmd files can be addressed to: [Jochem Tolsma](mailto:j.tolsma@ru.nl).  
+
+For questions on RSiena please visit the designated [GitHub](https://github.com/snlab-nl/rsiena) page. 
+
+----  
+
+## Introduction 
+
+**RscriptSNADescriptives.R: a script for the introduction to RSiena**  
+
+- **Rscript01DataFormat.R** is followed by  
+- **RScriptSNADescriptives.R**, code for descriptive analysis of the data, and  
+- **Rscript02SienaVariableFormat.R**, which formats data and specifies the model, and  
+- **Rscript03SienaRunModel.R**, which runs the model and estimates parameters  
+- **Rscript04SienaBehaviour.R**, which illustrates an example of analysing the coevolution of networks and behaviour  
+- The entire model fitting is summarised at the end of **Rscript03SienaRunModel.R** (without comments). 
+
+This is an R script for getting started with RSiena, written by Robin Gauthier, Tom Snijders, Ruth Ripley, Johan Koskinen, and Paulina Preciado, with some examples borrowed from Christian Steglich.  
+Lines starting with # are not processed by R but treated as comments. The script has a lot of explanation of R possibilities that will be familiar for readers well acquainted with R, and can be skipped by them.  
+
+---  
+
+## Getting Started  
+
+For this script, you will need the data read and modified in the script Rscript01DataFormat.R. If you have already ran that script, you may load the required workspace: 
+
+```{r, eval=FALSE}
+load("WorkspaceRscript01.RData")
+```
+  
+  
+Alternatively, you may run the following code-chunk: 
+
+```{r}
+library(RSiena) #to access the build-in data
+library(network) #to convert
+friend.data.w1 <- s501
+friend.data.w2 <- s502
+friend.data.w3 <- s503
+drink <- s50a
+smoke <- s50s
+
+net1 <- as.network(friend.data.w1)
+net2 <- as.network(friend.data.w2)
+net3 <- as.network(friend.data.w3)
+```
+---  
+
+
+## Visual inspection
+
+A visual inspection of the adjacency matrices can sometimes be useful. This will, for example, help in highlighting outliers with respect to outdegrees or indegrees, if there are any of such outliers.  
+
+**sociomatrix net1** 
+
+```{r}
+require(sna)
+plot.sociomatrix( net1, drawlab = F, diaglab = F, xlab = 'friendship t1' )
+```
+
+**sociomatrix net2**
+
+```{r}
+require(sna)
+plot.sociomatrix( net2,drawlab = F, diaglab = F, xlab = 'friendship t2' )
+```
+
+**sociomatrix net3**
+
+```{r}
+require(sna)
+plot.sociomatrix( net3,drawlab = F, diaglab = F, xlab = 'friendship t3' )
+
+```
+
+---  
+
+
+## Plotting network data
+
+The class *`r class(net1)`* with attributes *`r names(attributes( net1 ))`*, has special methods associated with it. While  `plot( friend.data.w1 )` only produces a rather dull plot of
+the first two columns, `plot( net1, xlab = 'friendship t1' )` produces a nice sociogram. 
+
+```{r}
+# The class,
+class( net1 )
+# with attributes
+attributes( net1 )
+# has special methods associated with it.
+# While  
+plot( friend.data.w1, main="plot( friend.data.w1)" ) 
+# only produces a rather dull plot of the first two columns,
+plot( net1, xlab = 'friendship t1', main="plot(net1)" )
+# produces a nice sociogram
+```
+  
+  
+
+### Tweaking network plot  
+
+- Add the attribute drink to the network object: `net1 %v% "drink" <- drink[ , 1 ]`  
+- Color the nodes by drink: `plot( net1, vertex.col = "drink", xlab = 'friendship t1' )`  
+- Scale the vertex by degree of nodes!
+  * First calculate degree: `deg <- rowSums( as.matrix( net1 ) )# NB:  rowSums() is defined for class matrix` 
+  * Have a look at the degree distribution: `table( deg, useNA = 'always' )` 
+
+Now do the desired plot: `plot( net1, vertex.col = "drink", vertex.cex = (deg + 1)/1.5 )` 
+
+```{r}
+# add the attribute drink to the network object
+
+net1 %v% "drink" <- drink[ , 1 ]
+
+# color the nodes by drink
+
+plot( net1, vertex.col = "drink", xlab = 'friendship t1' )
+
+
+# Now let's color the nodes by drink and scale the vertex by degree of nodes!
+#
+# First calculate degree:
+
+deg <- rowSums( as.matrix( net1 ) )# NB:  rowSums() is defined for class matrix
+
+# have a look at the degree distribution
+
+table( deg, useNA = 'always' )
+
+# Now do the desired plot:
+
+plot( net1, vertex.col = "drink", vertex.cex = (deg + 1)/1.5 )
+```
+
+---  
+
+## Plot the three waves of data 
+
+```{r}
+# Add drink to waves 2 and 3
+net2 %v% "drink" <- drink[ , 2 ]
+net3 %v% "drink" <- drink[ , 3 ]
+deg2 <- rowSums( as.matrix( net2 ) )
+deg3 <- rowSums( as.matrix( net3 ) )
+
+# Create a set of panels ( 1 row by 3 columns, or 3 columns by 1 row)
+par( mfrow = c( 1, 3 ) )
+
+# creating three plots after each other will place them in consecutive panels
+plot( net1, vertex.col = "drink", vertex.cex = (deg + 1)/1.5 )
+plot( net2, vertex.col = "drink", vertex.cex = (deg2 + 1)/1.5 )
+plot( net3, vertex.col = "drink", vertex.cex = (deg3 + 1)/1.5 )
+
+```
+
+Each time we make a plot the coordinates move - because always the starting values are random. We can also save coordinates and use them for later plotting:
+
+```{r}
+par( mfrow = c( 1, 3 ) )
+coordin <-  plot( net1, vertex.col = "drink", vertex.cex = (deg +1 )/1.5 )
+plot( net2, coord = coordin, vertex.col = "drink", vertex.cex = (deg2 + 1)/1.5 )
+plot( net3, coord = coordin, vertex.col = "drink", vertex.cex = (deg3 + 1) /1.5 )
+```
+
+To get coordinates based on all three waves: `coordin <-  plot( net1 + net2 + net3 )`.  
+For more plotting options, try the `gplot` function in the `sna` library. And try `?gplot` and `?gplot.layout`.
+
+---  
+
+## Basic network statistics {.tabset .tabset-fade}
+
+The package `sna` can be used for a variety of descriptions and analyses. The following are examples of some important graph level statistics
+
+### density
+
+```{r}
+gden( net1 ) # density
+```
+---  
+
+### symmetry and reciprocity
+
+```{r}
+grecip( net1 ) # proportion of dyads that are symmetric
+grecip( net1, measure = "dyadic.nonnull" ) # reciprocity, ignoring the null dyads
+```
+---  
+
+### transitivity
+```{r, warning="FALSE"}
+gtrans( net1 ) # transitivity
+```
+---  
+
+## Dyad and triad census {.tabset .tabset-fade}
+
+### Dyad census
+
+```{r}
+dyad.census( net1 )
+```
+---  
+
+
+### Triad census
+
+```{r}
+triad.census( net1 )
+```
+---  
+
+## (out)degree distribution 
+
+Of course for a symmetric network outdegree=indegree.
+
+```{r}
+outdegree <- degree( net1, cmode = "outdegree" )
+outdegree #outgoing ties of each note
+
+hist( outdegree )
+quantile( outdegree )
+```
+---  
+
+## distance and connectivity {.tabset .tabset-fade}
+
+### distance 
+
+```{r}
+dist <- geodist(net1, inf.replace = Inf, count.paths = TRUE)
+# calculate the geodesic distance (shortest path length) matrix
+head(dist$gd)
+# matrix of geodesic distances
+head(dist$counts)
+table(dist$counts)
+```
+---  
+
+### connectivity 
+
+Reachability matrix, see `?reachability`. 
+
+```{r}
+reach <- reachability( net1 )  # calculate the reachability matrix
+head(reach)
+```
+---  
+
+## Network autocorrelation  
+
+Moran's autocorrelation for outgoing ties:
+
+```{r}
+
+nacf(net1, drink[, 1], type="moran", neighborhood.type='out')[2]
+nacf(net2, drink[, 2], type="moran", neighborhood.type='out')[2]
+nacf(net3, drink[, 3], type="moran", neighborhood.type='out')[2]
+```
+
+Moran's autocorrelation for outgoing and incoming ties:
+```{r}
+
+nacf(net1, drink[, 1], type="moran", neighborhood.type='total')[2]
+nacf(net2, drink[, 2], type="moran", neighborhood.type='total')[2]
+nacf(net3, drink[, 3], type="moran", neighborhood.type='total')[2]
+```
+
+--- 
+
+[**Next: VariableFormat FOR PREPARING DATA FOR RSIENA**](/rscript01.html)
+
+---

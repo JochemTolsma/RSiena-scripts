@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jochem Tolsma - Radboud University, the Netherlands" />
+
+
+<title>RSiena-scripts</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RSiena-scripts</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ReadMe</a>
+</li>
+<li>
+  <a href="rscript00.html">Descriptives</a>
+</li>
+<li>
+  <a href="rscript01.html">DataFormat</a>
+</li>
+<li>
+  <a href="rscript02.html">VariableFormat</a>
+</li>
+<li>
+  <a href="rscript03.html">RunModel</a>
+</li>
+<li>
+  <a href="rscript04.html">Behaviour</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/JochemTolsma/RSiena-scripts">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">RSiena-scripts</h1>
+<h4 class="author"><a href="https://www.jochemtolsma.nl">Jochem Tolsma</a> - Radboud University, the Netherlands</h4>
+<h4 class="date">Last compiled on december, 2020</h4>
+
+</div>
+
+
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
+<style type="text/css">
+pre.test {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 0px;
+}
+
+pre.test2 {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 0px;
+  background-color: white
+}
+
+
+h1, .h1, h2, .h2, h3, .h3 {
+    margin-top: 24px;
+}
+
+
+</style>
+<hr />
+<p>This website converted the following original .R scripts into .rmd files.</p>
+<ul>
+<li>Rscript01DataFormat.R<br />
+</li>
+<li>RScriptSNADescriptives.R<br />
+</li>
+<li>Rscript02SienaVariableFormat.R<br />
+</li>
+<li>Rscript03SienaRunModel.R<br />
+</li>
+<li>Rscript04SienaBehaviour.R</li>
+</ul>
+<p>Please visit <a href="https://github.com/snlab-nl/rsiena/tree/main/inst/scripts">GitHub</a> for the latest .R files.</p>
+<blockquote>
+<p>To download this .rmd file use the button in the upper right corner of your screen.<br />
+To copy the R code in the code-chunks, use the copy-paste button in the upper right corner of the code-chunks.</p>
+</blockquote>
+<hr />
+<div id="data" class="section level2">
+<h2><span class="header-section-number">0.1</span> Data</h2>
+<p>All files (data, scripts, etc.) can also be found on <a href="https://github.com/JochemTolsma/Rsiena-scripts">Github</a></p>
+<hr />
+</div>
+<div id="contact" class="section level2">
+<h2><span class="header-section-number">0.2</span> Contact</h2>
+<p>Specific questions with respect to the .rmd files can be addressed to: <a href="mailto:j.tolsma@ru.nl">Jochem Tolsma</a>.</p>
+<p>For questions on RSiena please visit the designated <a href="https://github.com/snlab-nl/rsiena">GitHub</a> page.</p>
+<hr />
+</div>
+<div id="introduction" class="section level2">
+<h2><span class="header-section-number">0.3</span> Introduction</h2>
+<p><strong>RscriptSNADescriptives.R: a script for the introduction to RSiena</strong></p>
+<ul>
+<li><strong>Rscript01DataFormat.R</strong> is followed by<br />
+</li>
+<li><strong>RScriptSNADescriptives.R</strong>, code for descriptive analysis of the data, and<br />
+</li>
+<li><strong>Rscript02SienaVariableFormat.R</strong>, which formats data and specifies the model, and<br />
+</li>
+<li><strong>Rscript03SienaRunModel.R</strong>, which runs the model and estimates parameters<br />
+</li>
+<li><strong>Rscript04SienaBehaviour.R</strong>, which illustrates an example of analysing the coevolution of networks and behaviour<br />
+</li>
+<li>The entire model fitting is summarised at the end of <strong>Rscript03SienaRunModel.R</strong> (without comments).</li>
+</ul>
+<p>This is an R script for getting started with RSiena, written by Robin Gauthier, Tom Snijders, Ruth Ripley, Johan Koskinen, and Paulina Preciado, with some examples borrowed from Christian Steglich.<br />
+Lines starting with # are not processed by R but treated as comments. The script has a lot of explanation of R possibilities that will be familiar for readers well acquainted with R, and can be skipped by them.</p>
+<hr />
+</div>
+<div id="getting-started" class="section level2">
+<h2><span class="header-section-number">0.4</span> Getting Started</h2>
+<p>For this script, you will need the data read and modified in the script Rscript01DataFormat.R. If you have already ran that script, you may load the required workspace:</p>
+<pre class="r test"><code>load(&quot;WorkspaceRscript01.RData&quot;)</code></pre>
+<p>Alternatively, you may run the following code-chunk:</p>
+<pre class="r test"><code>library(RSiena)  #to access the build-in data
+library(network)  #to convert
+friend.data.w1 &lt;- s501
+friend.data.w2 &lt;- s502
+friend.data.w3 &lt;- s503
+drink &lt;- s50a
+smoke &lt;- s50s
+
+net1 &lt;- as.network(friend.data.w1)
+net2 &lt;- as.network(friend.data.w2)
+net3 &lt;- as.network(friend.data.w3)</code></pre>
+<hr />
+</div>
+<div id="visual-inspection" class="section level2">
+<h2><span class="header-section-number">0.5</span> Visual inspection</h2>
+<p>A visual inspection of the adjacency matrices can sometimes be useful. This will, for example, help in highlighting outliers with respect to outdegrees or indegrees, if there are any of such outliers.</p>
+<p><strong>sociomatrix net1</strong></p>
+<pre class="r test"><code>require(sna)
+plot.sociomatrix(net1, drawlab = F, diaglab = F, xlab = &quot;friendship t1&quot;)</code></pre>
+<p><img src="rscript00_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><strong>sociomatrix net2</strong></p>
+<pre class="r test"><code>require(sna)
+plot.sociomatrix(net2, drawlab = F, diaglab = F, xlab = &quot;friendship t2&quot;)</code></pre>
+<p><img src="rscript00_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><strong>sociomatrix net3</strong></p>
+<pre class="r test"><code>require(sna)
+plot.sociomatrix(net3, drawlab = F, diaglab = F, xlab = &quot;friendship t3&quot;)</code></pre>
+<p><img src="rscript00_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<hr />
+</div>
+<div id="plotting-network-data" class="section level2">
+<h2><span class="header-section-number">0.6</span> Plotting network data</h2>
+<p>The class <em>network</em> with attributes <em>names, class</em>, has special methods associated with it. While <code>plot( friend.data.w1 )</code> only produces a rather dull plot of the first two columns, <code>plot( net1, xlab = 'friendship t1' )</code> produces a nice sociogram.</p>
+<pre class="r test"><code># The class,
+class(net1)</code></pre>
+<pre class="test2"><code>#&gt; [1] &quot;network&quot;</code></pre>
+<pre class="r test"><code># with attributes
+attributes(net1)</code></pre>
+<pre class="test2"><code>#&gt; $names
+#&gt; [1] &quot;mel&quot; &quot;gal&quot; &quot;val&quot; &quot;iel&quot; &quot;oel&quot;
+#&gt; 
+#&gt; $class
+#&gt; [1] &quot;network&quot;</code></pre>
+<pre class="r test"><code># has special methods associated with it.  While
+plot(friend.data.w1, main = &quot;plot( friend.data.w1)&quot;)</code></pre>
+<p><img src="rscript00_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r test"><code># only produces a rather dull plot of the first two columns,
+plot(net1, xlab = &quot;friendship t1&quot;, main = &quot;plot(net1)&quot;)</code></pre>
+<p><img src="rscript00_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre class="r test"><code># produces a nice sociogram</code></pre>
+<div id="tweaking-network-plot" class="section level3">
+<h3><span class="header-section-number">0.6.1</span> Tweaking network plot</h3>
+<ul>
+<li>Add the attribute drink to the network object: <code>net1 %v% "drink" &lt;- drink[ , 1 ]</code><br />
+</li>
+<li>Color the nodes by drink: <code>plot( net1, vertex.col = "drink", xlab = 'friendship t1' )</code><br />
+</li>
+<li>Scale the vertex by degree of nodes!
+<ul>
+<li>First calculate degree: <code>deg &lt;- rowSums( as.matrix( net1 ) )# NB:  rowSums() is defined for class matrix</code></li>
+<li>Have a look at the degree distribution: <code>table( deg, useNA = 'always' )</code></li>
+</ul></li>
+</ul>
+<p>Now do the desired plot: <code>plot( net1, vertex.col = "drink", vertex.cex = (deg + 1)/1.5 )</code></p>
+<pre class="r test"><code># add the attribute drink to the network object
+
+net1 %v% &quot;drink&quot; &lt;- drink[, 1]
+
+# color the nodes by drink
+
+plot(net1, vertex.col = &quot;drink&quot;, xlab = &quot;friendship t1&quot;)</code></pre>
+<p><img src="rscript00_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r test"><code># Now let&#39;s color the nodes by drink and scale the vertex by degree of nodes!  First calculate
+# degree:
+
+deg &lt;- rowSums(as.matrix(net1))  # NB:  rowSums() is defined for class matrix
+
+# have a look at the degree distribution
+
+table(deg, useNA = &quot;always&quot;)</code></pre>
+<pre class="test2"><code>#&gt; deg
+#&gt;    0    1    2    3    4    5 &lt;NA&gt; 
+#&gt;    4    8   17   15    4    2    0</code></pre>
+<pre class="r test"><code># Now do the desired plot:
+
+plot(net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5)</code></pre>
+<p><img src="rscript00_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<hr />
+</div>
+</div>
+<div id="plot-the-three-waves-of-data" class="section level2">
+<h2><span class="header-section-number">0.7</span> Plot the three waves of data</h2>
+<pre class="r test"><code># Add drink to waves 2 and 3
+net2 %v% &quot;drink&quot; &lt;- drink[, 2]
+net3 %v% &quot;drink&quot; &lt;- drink[, 3]
+deg2 &lt;- rowSums(as.matrix(net2))
+deg3 &lt;- rowSums(as.matrix(net3))
+
+# Create a set of panels ( 1 row by 3 columns, or 3 columns by 1 row)
+par(mfrow = c(1, 3))
+
+# creating three plots after each other will place them in consecutive panels
+plot(net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5)
+plot(net2, vertex.col = &quot;drink&quot;, vertex.cex = (deg2 + 1)/1.5)
+plot(net3, vertex.col = &quot;drink&quot;, vertex.cex = (deg3 + 1)/1.5)</code></pre>
+<p><img src="rscript00_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Each time we make a plot the coordinates move - because always the starting values are random. We can also save coordinates and use them for later plotting:</p>
+<pre class="r test"><code>par(mfrow = c(1, 3))
+coordin &lt;- plot(net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5)
+plot(net2, coord = coordin, vertex.col = &quot;drink&quot;, vertex.cex = (deg2 + 1)/1.5)
+plot(net3, coord = coordin, vertex.col = &quot;drink&quot;, vertex.cex = (deg3 + 1)/1.5)</code></pre>
+<p><img src="rscript00_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>To get coordinates based on all three waves: <code>coordin &lt;-  plot( net1 + net2 + net3 )</code>.<br />
+For more plotting options, try the <code>gplot</code> function in the <code>sna</code> library. And try <code>?gplot</code> and <code>?gplot.layout</code>.</p>
+<hr />
+</div>
+<div id="basic-network-statistics" class="section level2 tabset tabset-fade">
+<h2><span class="header-section-number">0.8</span> Basic network statistics</h2>
+<p>The package <code>sna</code> can be used for a variety of descriptions and analyses. The following are examples of some important graph level statistics</p>
+<div id="density" class="section level3">
+<h3><span class="header-section-number">0.8.1</span> density</h3>
+<pre class="r test"><code>gden(net1)  # density</code></pre>
+<pre class="test2"><code>#&gt; [1] 0.04612245</code></pre>
+<hr />
+</div>
+<div id="symmetry-and-reciprocity" class="section level3">
+<h3><span class="header-section-number">0.8.2</span> symmetry and reciprocity</h3>
+<pre class="r test"><code>grecip(net1)  # proportion of dyads that are symmetric</code></pre>
+<pre class="test2"><code>#&gt;       Mut 
+#&gt; 0.9714286</code></pre>
+<pre class="r test"><code>grecip(net1, measure = &quot;dyadic.nonnull&quot;)  # reciprocity, ignoring the null dyads</code></pre>
+<pre class="test2"><code>#&gt;      Mut 
+#&gt; 0.527027</code></pre>
+<hr />
+</div>
+<div id="transitivity" class="section level3">
+<h3><span class="header-section-number">0.8.3</span> transitivity</h3>
+<pre class="r test"><code>gtrans(net1)  # transitivity</code></pre>
+<pre><code>#&gt; Warning in if (is.edgelist.sna(z)) {: the condition has length &gt; 1 and only the first element will
+#&gt; be used
+
+#&gt; Warning in if (is.edgelist.sna(z)) {: the condition has length &gt; 1 and only the first element will
+#&gt; be used
+
+#&gt; Warning in if (is.edgelist.sna(z)) {: the condition has length &gt; 1 and only the first element will
+#&gt; be used
+
+#&gt; Warning in if (is.edgelist.sna(z)) {: the condition has length &gt; 1 and only the first element will
+#&gt; be used
+
+#&gt; Warning in if (is.edgelist.sna(z)) {: the condition has length &gt; 1 and only the first element will
+#&gt; be used</code></pre>
+<pre class="test2"><code>#&gt; [1] 0.3873874</code></pre>
+<hr />
+</div>
+</div>
+<div id="dyad-and-triad-census" class="section level2 tabset tabset-fade">
+<h2><span class="header-section-number">0.9</span> Dyad and triad census</h2>
+<div id="dyad-census" class="section level3">
+<h3><span class="header-section-number">0.9.1</span> Dyad census</h3>
+<pre class="r test"><code>dyad.census(net1)</code></pre>
+<pre class="test2"><code>#&gt;      Mut Asym Null
+#&gt; [1,]  39   35 1151</code></pre>
+<hr />
+</div>
+<div id="triad-census" class="section level3">
+<h3><span class="header-section-number">0.9.2</span> Triad census</h3>
+<pre class="r test"><code>triad.census(net1)</code></pre>
+<pre class="test2"><code>#&gt;        003  012  102 021D 021U 021C 111D 111U 030T 030C 201 120D 120U 120C 210 300
+#&gt; [1,] 16243 1470 1724    5   18   21   42   30    5    0  15    6    5    2   9   5</code></pre>
+<hr />
+</div>
+</div>
+<div id="outdegree-distribution" class="section level2">
+<h2><span class="header-section-number">0.10</span> (out)degree distribution</h2>
+<p>Of course for a symmetric network outdegree=indegree.</p>
+<pre class="r test"><code>outdegree &lt;- degree(net1, cmode = &quot;outdegree&quot;)
+outdegree  #outgoing ties of each note</code></pre>
+<pre class="test2"><code>#&gt;  [1] 2 2 2 2 1 1 3 1 2 3 3 3 0 3 3 2 5 2 4 0 1 4 1 5 3 3 3 1 3 4 3 4 2 2 1 2 3 2 1 3 2 2 2 2 3 3 0 2
+#&gt; [49] 2 0</code></pre>
+<pre class="r test"><code>hist(outdegree)</code></pre>
+<p><img src="rscript00_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r test"><code>quantile(outdegree)</code></pre>
+<pre class="test2"><code>#&gt;   0%  25%  50%  75% 100% 
+#&gt;    0    2    2    3    5</code></pre>
+<hr />
+</div>
+<div id="distance-and-connectivity" class="section level2 tabset tabset-fade">
+<h2><span class="header-section-number">0.11</span> distance and connectivity</h2>
+<div id="distance" class="section level3">
+<h3><span class="header-section-number">0.11.1</span> distance</h3>
+<pre class="r test"><code>dist &lt;- geodist(net1, inf.replace = Inf, count.paths = TRUE)
+# calculate the geodesic distance (shortest path length) matrix
+head(dist$gd)</code></pre>
+<pre class="test2"><code>#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15] [,16] [,17]
+#&gt; [1,]    0    2  Inf  Inf  Inf  Inf    3  Inf  Inf     2     1   Inf   Inf     1     2     2   Inf
+#&gt; [2,]  Inf    0  Inf  Inf  Inf  Inf    1  Inf  Inf     3     1   Inf   Inf   Inf     2     2   Inf
+#&gt; [3,]  Inf  Inf    0    1  Inf  Inf  Inf  Inf    1   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf
+#&gt; [4,]  Inf  Inf    1    0  Inf  Inf  Inf  Inf    1   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf
+#&gt; [5,]  Inf    7  Inf  Inf    0  Inf    7  Inf  Inf     8     6   Inf   Inf   Inf     7     7     4
+#&gt; [6,]  Inf  Inf  Inf  Inf  Inf    0  Inf    1  Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf
+#&gt;      [,18] [,19] [,20] [,21] [,22] [,23] [,24] [,25] [,26] [,27] [,28] [,29] [,30] [,31] [,32]
+#&gt; [1,]   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf     5   Inf   Inf     5     4   Inf   Inf
+#&gt; [2,]   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf     6   Inf   Inf     6     5   Inf   Inf
+#&gt; [3,]   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf
+#&gt; [4,]   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf
+#&gt; [5,]     5     5   Inf     2     3     6     5     3     6   Inf   Inf     7     6     2     1
+#&gt; [6,]   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf
+#&gt;      [,33] [,34] [,35] [,36] [,37] [,38] [,39] [,40] [,41] [,42] [,43] [,44] [,45] [,46] [,47]
+#&gt; [1,]     3   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf     4   Inf     4   Inf   Inf   Inf
+#&gt; [2,]     4   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf     2   Inf     2   Inf   Inf   Inf
+#&gt; [3,]   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf
+#&gt; [4,]   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf
+#&gt; [5,]     7     3     6   Inf     2   Inf   Inf   Inf   Inf     8   Inf     7   Inf   Inf   Inf
+#&gt; [6,]   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf   Inf
+#&gt;      [,48] [,49] [,50]
+#&gt; [1,]   Inf   Inf   Inf
+#&gt; [2,]   Inf   Inf   Inf
+#&gt; [3,]   Inf   Inf   Inf
+#&gt; [4,]   Inf   Inf   Inf
+#&gt; [5,]   Inf   Inf   Inf
+#&gt; [6,]   Inf   Inf   Inf</code></pre>
+<pre class="r test"><code># matrix of geodesic distances
+head(dist$counts)</code></pre>
+<pre class="test2"><code>#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15] [,16] [,17]
+#&gt; [1,]    1    1    0    0    0    0    1    0    0     1     1     0     0     1     1     1     0
+#&gt; [2,]    0    1    0    0    0    0    1    0    0     1     1     0     0     0     1     1     0
+#&gt; [3,]    0    0    1    1    0    0    0    0    1     0     0     0     0     0     0     0     0
+#&gt; [4,]    0    0    1    1    0    0    0    0    1     0     0     0     0     0     0     0     0
+#&gt; [5,]    0    1    0    0    1    0    1    0    0     2     1     0     0     0     1     1     1
+#&gt; [6,]    0    0    0    0    0    1    0    1    0     0     0     0     0     0     0     0     0
+#&gt;      [,18] [,19] [,20] [,21] [,22] [,23] [,24] [,25] [,26] [,27] [,28] [,29] [,30] [,31] [,32]
+#&gt; [1,]     0     0     0     0     0     0     0     0     1     0     0     1     1     0     0
+#&gt; [2,]     0     0     0     0     0     0     0     0     1     0     0     1     1     0     0
+#&gt; [3,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt; [4,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt; [5,]     1     1     0     1     1     1     1     1     1     0     0     2     1     1     1
+#&gt; [6,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt;      [,33] [,34] [,35] [,36] [,37] [,38] [,39] [,40] [,41] [,42] [,43] [,44] [,45] [,46] [,47]
+#&gt; [1,]     1     0     0     0     0     0     0     0     0     1     0     1     0     0     0
+#&gt; [2,]     1     0     0     0     0     0     0     0     0     1     0     1     0     0     0
+#&gt; [3,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt; [4,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt; [5,]     1     1     1     0     1     0     0     0     0     2     0     1     0     0     0
+#&gt; [6,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt;      [,48] [,49] [,50]
+#&gt; [1,]     0     0     0
+#&gt; [2,]     0     0     0
+#&gt; [3,]     0     0     0
+#&gt; [4,]     0     0     0
+#&gt; [5,]     0     0     0
+#&gt; [6,]     0     0     0</code></pre>
+<pre class="r test"><code>table(dist$counts)</code></pre>
+<pre class="test2"><code>#&gt; 
+#&gt;    0    1    2    3    4    6 
+#&gt; 1811  558  100   20    8    3</code></pre>
+<hr />
+</div>
+<div id="connectivity" class="section level3">
+<h3><span class="header-section-number">0.11.2</span> connectivity</h3>
+<p>Reachability matrix, see <code>?reachability</code>.</p>
+<pre class="r test"><code>reach &lt;- reachability(net1)  # calculate the reachability matrix
+head(reach)</code></pre>
+<pre class="test2"><code>#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15] [,16] [,17]
+#&gt; [1,]    1    1    0    0    0    0    1    0    0     1     1     0     0     1     1     1     0
+#&gt; [2,]    0    1    0    0    0    0    1    0    0     1     1     0     0     0     1     1     0
+#&gt; [3,]    0    0    1    1    0    0    0    0    1     0     0     0     0     0     0     0     0
+#&gt; [4,]    0    0    1    1    0    0    0    0    1     0     0     0     0     0     0     0     0
+#&gt; [5,]    0    1    0    0    1    0    1    0    0     1     1     0     0     0     1     1     1
+#&gt; [6,]    0    0    0    0    0    1    0    1    0     0     0     0     0     0     0     0     0
+#&gt;      [,18] [,19] [,20] [,21] [,22] [,23] [,24] [,25] [,26] [,27] [,28] [,29] [,30] [,31] [,32]
+#&gt; [1,]     0     0     0     0     0     0     0     0     1     0     0     1     1     0     0
+#&gt; [2,]     0     0     0     0     0     0     0     0     1     0     0     1     1     0     0
+#&gt; [3,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt; [4,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt; [5,]     1     1     0     1     1     1     1     1     1     0     0     1     1     1     1
+#&gt; [6,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt;      [,33] [,34] [,35] [,36] [,37] [,38] [,39] [,40] [,41] [,42] [,43] [,44] [,45] [,46] [,47]
+#&gt; [1,]     1     0     0     0     0     0     0     0     0     1     0     1     0     0     0
+#&gt; [2,]     1     0     0     0     0     0     0     0     0     1     0     1     0     0     0
+#&gt; [3,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt; [4,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt; [5,]     1     1     1     0     1     0     0     0     0     1     0     1     0     0     0
+#&gt; [6,]     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0
+#&gt;      [,48] [,49] [,50]
+#&gt; [1,]     0     0     0
+#&gt; [2,]     0     0     0
+#&gt; [3,]     0     0     0
+#&gt; [4,]     0     0     0
+#&gt; [5,]     0     0     0
+#&gt; [6,]     0     0     0</code></pre>
+<hr />
+</div>
+</div>
+<div id="network-autocorrelation" class="section level2">
+<h2><span class="header-section-number">0.12</span> Network autocorrelation</h2>
+<p>Moran’s autocorrelation for outgoing ties:</p>
+<pre class="r test"><code>nacf(net1, drink[, 1], type = &quot;moran&quot;, neighborhood.type = &quot;out&quot;)[2]</code></pre>
+<pre class="test2"><code>#&gt;         1 
+#&gt; 0.4331431</code></pre>
+<pre class="r test"><code>nacf(net2, drink[, 2], type = &quot;moran&quot;, neighborhood.type = &quot;out&quot;)[2]</code></pre>
+<pre class="test2"><code>#&gt;         1 
+#&gt; 0.3977745</code></pre>
+<pre class="r test"><code>nacf(net3, drink[, 3], type = &quot;moran&quot;, neighborhood.type = &quot;out&quot;)[2]</code></pre>
+<pre class="test2"><code>#&gt;         1 
+#&gt; 0.4258017</code></pre>
+<p>Moran’s autocorrelation for outgoing and incoming ties:</p>
+<pre class="r test"><code>nacf(net1, drink[, 1], type = &quot;moran&quot;, neighborhood.type = &quot;total&quot;)[2]</code></pre>
+<pre class="test2"><code>#&gt;         1 
+#&gt; 0.3809011</code></pre>
+<pre class="r test"><code>nacf(net2, drink[, 2], type = &quot;moran&quot;, neighborhood.type = &quot;total&quot;)[2]</code></pre>
+<pre class="test2"><code>#&gt;         1 
+#&gt; 0.3914719</code></pre>
+<pre class="r test"><code>nacf(net3, drink[, 3], type = &quot;moran&quot;, neighborhood.type = &quot;total&quot;)[2]</code></pre>
+<pre class="test2"><code>#&gt;         1 
+#&gt; 0.4162185</code></pre>
+<hr />
+<p><a href="/rscript01.html"><strong>Next: VariableFormat FOR PREPARING DATA FOR RSIENA</strong></a></p>
+<hr />
+</div>
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlJTaWVuYS1zY3JpcHRzIg0KYXV0aG9yOiAnW0pvY2hlbSBUb2xzbWFdKGh0dHBzOi8vd3d3LmpvY2hlbXRvbHNtYS5ubCkgLSBSYWRib3VkIFVuaXZlcnNpdHksIHRoZSBOZXRoZXJsYW5kcycNCmJpYmxpb2dyYXBoeTogcmVmZXJlbmNlcy5iaWINCmRhdGU6ICJMYXN0IGNvbXBpbGVkIG9uIGByIGZvcm1hdChTeXMudGltZSgpLCAnJUIsICVZJylgIg0Kb3V0cHV0OiANCiAgaHRtbF9kb2N1bWVudDoNCiAgICB0b2M6ICB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlDQogICAgY29kZV9mb2xkaW5nOiBzaG93DQogICAgY29kZV9kb3dubG9hZDogeWVzDQotLS0NCg0KYGBge3IsIGdsb2JhbHNldHRpbmdzLCBlY2hvPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQ0KbGlicmFyeShrbml0cikNCm9wdHNfY2h1bmskc2V0KHRpZHkub3B0cz1saXN0KHdpZHRoLmN1dG9mZj0xMDApLHRpZHk9VFJVRSwgd2FybmluZyA9IEZBTFNFLCBtZXNzYWdlID0gRkFMU0UsY29tbWVudCA9ICIjPiIsIGNhY2hlPVRSVUUsIGNsYXNzLnNvdXJjZT1jKCJ0ZXN0IiksIGNsYXNzLm91dHB1dD1jKCJ0ZXN0MiIpKQ0Kb3B0aW9ucyh3aWR0aCA9IDEwMCkNCnJnbDo6c2V0dXBLbml0cigpDQoNCg0KY29sb3JpemUgPC0gZnVuY3Rpb24oeCwgY29sb3IpIHsNCiAgaWYgKGtuaXRyOjppc19sYXRleF9vdXRwdXQoKSkgew0KICAgIHNwcmludGYoIlxcdGV4dGNvbG9yeyVzfXslc30iLCBjb2xvciwgeCkNCiAgfSBlbHNlIGlmIChrbml0cjo6aXNfaHRtbF9vdXRwdXQoKSkgew0KICAgIHNwcmludGYoIjxzcGFuIHN0eWxlPSdjb2xvcjogJXM7Jz4lczwvc3Bhbj4iLCBjb2xvciwgDQogICAgICB4KQ0KICB9IGVsc2UgeA0KfQ0KDQpgYGANCg0KYGBge3Iga2xpcHB5LCBlY2hvPUZBTFNFLCBpbmNsdWRlPVRSVUV9DQprbGlwcHk6OmtsaXBweShwb3NpdGlvbiA9IGMoJ3RvcCcsICdyaWdodCcpKQ0KI2tsaXBweTo6a2xpcHB5KGNvbG9yID0gJ2RhcmtyZWQnKQ0KI2tsaXBweTo6a2xpcHB5KHRvb2x0aXBfbWVzc2FnZSA9ICdDbGljayB0byBjb3B5JywgdG9vbHRpcF9zdWNjZXNzID0gJ0RvbmUnKQ0KYGBgDQoNCmBgYHtjc3MsIGVjaG89RkFMU0V9DQpwcmUudGVzdCB7DQogIG1heC1oZWlnaHQ6IDMwMHB4Ow0KICBvdmVyZmxvdy15OiBhdXRvOw0KICBvdmVyZmxvdy14OiBhdXRvOw0KICBtYXJnaW46IDBweDsNCn0NCg0KcHJlLnRlc3QyIHsNCiAgbWF4LWhlaWdodDogMzAwcHg7DQogIG92ZXJmbG93LXk6IGF1dG87DQogIG92ZXJmbG93LXg6IGF1dG87DQogIG1hcmdpbjogMHB4Ow0KICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZQ0KfQ0KDQoNCmgxLCAuaDEsIGgyLCAuaDIsIGgzLCAuaDMgew0KICAgIG1hcmdpbi10b3A6IDI0cHg7DQp9DQoNCg0KYGBgDQoNCi0tLS0NCg0KVGhpcyB3ZWJzaXRlIGNvbnZlcnRlZCB0aGUgZm9sbG93aW5nIG9yaWdpbmFsIC5SIHNjcmlwdHMgaW50byAucm1kIGZpbGVzLiANCg0KLSBSc2NyaXB0MDFEYXRhRm9ybWF0LlIgIA0KLSBSU2NyaXB0U05BRGVzY3JpcHRpdmVzLlIgIA0KLSBSc2NyaXB0MDJTaWVuYVZhcmlhYmxlRm9ybWF0LlIgIA0KLSBSc2NyaXB0MDNTaWVuYVJ1bk1vZGVsLlIgIA0KLSBSc2NyaXB0MDRTaWVuYUJlaGF2aW91ci5SDQoNClBsZWFzZSB2aXNpdCBbR2l0SHViXShodHRwczovL2dpdGh1Yi5jb20vc25sYWItbmwvcnNpZW5hL3RyZWUvbWFpbi9pbnN0L3NjcmlwdHMpIGZvciB0aGUgbGF0ZXN0IC5SIGZpbGVzLiANCg0KPiBUbyBkb3dubG9hZCB0aGlzIC5ybWQgZmlsZSB1c2UgdGhlIGJ1dHRvbiBpbiB0aGUgdXBwZXIgcmlnaHQgY29ybmVyIG9mIHlvdXIgc2NyZWVuLiAgDQo+IFRvIGNvcHkgdGhlIFIgY29kZSBpbiB0aGUgY29kZS1jaHVua3MsIHVzZSB0aGUgY29weS1wYXN0ZSBidXR0b24gaW4gdGhlIHVwcGVyIHJpZ2h0IGNvcm5lciBvZiB0aGUgY29kZS1jaHVua3MuIA0KDQotLS0tDQoNCiMjIERhdGENCkFsbCBmaWxlcyAoZGF0YSwgc2NyaXB0cywgZXRjLikgY2FuIGFsc28gYmUgZm91bmQgb24gW0dpdGh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL0pvY2hlbVRvbHNtYS9Sc2llbmEtc2NyaXB0cykNCg0KLS0tLQ0KDQojIyBDb250YWN0DQpTcGVjaWZpYyBxdWVzdGlvbnMgd2l0aCByZXNwZWN0IHRvIHRoZSAucm1kIGZpbGVzIGNhbiBiZSBhZGRyZXNzZWQgdG86IFtKb2NoZW0gVG9sc21hXShtYWlsdG86ai50b2xzbWFAcnUubmwpLiAgDQoNCkZvciBxdWVzdGlvbnMgb24gUlNpZW5hIHBsZWFzZSB2aXNpdCB0aGUgZGVzaWduYXRlZCBbR2l0SHViXShodHRwczovL2dpdGh1Yi5jb20vc25sYWItbmwvcnNpZW5hKSBwYWdlLiANCg0KLS0tLSAgDQoNCiMjIEludHJvZHVjdGlvbiANCg0KKipSc2NyaXB0U05BRGVzY3JpcHRpdmVzLlI6IGEgc2NyaXB0IGZvciB0aGUgaW50cm9kdWN0aW9uIHRvIFJTaWVuYSoqICANCg0KLSAqKlJzY3JpcHQwMURhdGFGb3JtYXQuUioqIGlzIGZvbGxvd2VkIGJ5ICANCi0gKipSU2NyaXB0U05BRGVzY3JpcHRpdmVzLlIqKiwgY29kZSBmb3IgZGVzY3JpcHRpdmUgYW5hbHlzaXMgb2YgdGhlIGRhdGEsIGFuZCAgDQotICoqUnNjcmlwdDAyU2llbmFWYXJpYWJsZUZvcm1hdC5SKiosIHdoaWNoIGZvcm1hdHMgZGF0YSBhbmQgc3BlY2lmaWVzIHRoZSBtb2RlbCwgYW5kICANCi0gKipSc2NyaXB0MDNTaWVuYVJ1bk1vZGVsLlIqKiwgd2hpY2ggcnVucyB0aGUgbW9kZWwgYW5kIGVzdGltYXRlcyBwYXJhbWV0ZXJzICANCi0gKipSc2NyaXB0MDRTaWVuYUJlaGF2aW91ci5SKiosIHdoaWNoIGlsbHVzdHJhdGVzIGFuIGV4YW1wbGUgb2YgYW5hbHlzaW5nIHRoZSBjb2V2b2x1dGlvbiBvZiBuZXR3b3JrcyBhbmQgYmVoYXZpb3VyICANCi0gVGhlIGVudGlyZSBtb2RlbCBmaXR0aW5nIGlzIHN1bW1hcmlzZWQgYXQgdGhlIGVuZCBvZiAqKlJzY3JpcHQwM1NpZW5hUnVuTW9kZWwuUioqICh3aXRob3V0IGNvbW1lbnRzKS4gDQoNClRoaXMgaXMgYW4gUiBzY3JpcHQgZm9yIGdldHRpbmcgc3RhcnRlZCB3aXRoIFJTaWVuYSwgd3JpdHRlbiBieSBSb2JpbiBHYXV0aGllciwgVG9tIFNuaWpkZXJzLCBSdXRoIFJpcGxleSwgSm9oYW4gS29za2luZW4sIGFuZCBQYXVsaW5hIFByZWNpYWRvLCB3aXRoIHNvbWUgZXhhbXBsZXMgYm9ycm93ZWQgZnJvbSBDaHJpc3RpYW4gU3RlZ2xpY2guICANCkxpbmVzIHN0YXJ0aW5nIHdpdGggIyBhcmUgbm90IHByb2Nlc3NlZCBieSBSIGJ1dCB0cmVhdGVkIGFzIGNvbW1lbnRzLiBUaGUgc2NyaXB0IGhhcyBhIGxvdCBvZiBleHBsYW5hdGlvbiBvZiBSIHBvc3NpYmlsaXRpZXMgdGhhdCB3aWxsIGJlIGZhbWlsaWFyIGZvciByZWFkZXJzIHdlbGwgYWNxdWFpbnRlZCB3aXRoIFIsIGFuZCBjYW4gYmUgc2tpcHBlZCBieSB0aGVtLiAgDQoNCi0tLSAgDQoNCiMjIEdldHRpbmcgU3RhcnRlZCAgDQoNCkZvciB0aGlzIHNjcmlwdCwgeW91IHdpbGwgbmVlZCB0aGUgZGF0YSByZWFkIGFuZCBtb2RpZmllZCBpbiB0aGUgc2NyaXB0IFJzY3JpcHQwMURhdGFGb3JtYXQuUi4gSWYgeW91IGhhdmUgYWxyZWFkeSByYW4gdGhhdCBzY3JpcHQsIHlvdSBtYXkgbG9hZCB0aGUgcmVxdWlyZWQgd29ya3NwYWNlOiANCg0KYGBge3IsIGV2YWw9RkFMU0V9DQpsb2FkKCJXb3Jrc3BhY2VSc2NyaXB0MDEuUkRhdGEiKQ0KYGBgDQogIA0KICANCkFsdGVybmF0aXZlbHksIHlvdSBtYXkgcnVuIHRoZSBmb2xsb3dpbmcgY29kZS1jaHVuazogDQoNCmBgYHtyfQ0KbGlicmFyeShSU2llbmEpICN0byBhY2Nlc3MgdGhlIGJ1aWxkLWluIGRhdGENCmxpYnJhcnkobmV0d29yaykgI3RvIGNvbnZlcnQNCmZyaWVuZC5kYXRhLncxIDwtIHM1MDENCmZyaWVuZC5kYXRhLncyIDwtIHM1MDINCmZyaWVuZC5kYXRhLnczIDwtIHM1MDMNCmRyaW5rIDwtIHM1MGENCnNtb2tlIDwtIHM1MHMNCg0KbmV0MSA8LSBhcy5uZXR3b3JrKGZyaWVuZC5kYXRhLncxKQ0KbmV0MiA8LSBhcy5uZXR3b3JrKGZyaWVuZC5kYXRhLncyKQ0KbmV0MyA8LSBhcy5uZXR3b3JrKGZyaWVuZC5kYXRhLnczKQ0KYGBgDQotLS0gIA0KDQoNCiMjIFZpc3VhbCBpbnNwZWN0aW9uDQoNCkEgdmlzdWFsIGluc3BlY3Rpb24gb2YgdGhlIGFkamFjZW5jeSBtYXRyaWNlcyBjYW4gc29tZXRpbWVzIGJlIHVzZWZ1bC4gVGhpcyB3aWxsLCBmb3IgZXhhbXBsZSwgaGVscCBpbiBoaWdobGlnaHRpbmcgb3V0bGllcnMgd2l0aCByZXNwZWN0IHRvIG91dGRlZ3JlZXMgb3IgaW5kZWdyZWVzLCBpZiB0aGVyZSBhcmUgYW55IG9mIHN1Y2ggb3V0bGllcnMuICANCg0KKipzb2Npb21hdHJpeCBuZXQxKiogDQoNCmBgYHtyfQ0KcmVxdWlyZShzbmEpDQpwbG90LnNvY2lvbWF0cml4KCBuZXQxLCBkcmF3bGFiID0gRiwgZGlhZ2xhYiA9IEYsIHhsYWIgPSAnZnJpZW5kc2hpcCB0MScgKQ0KYGBgDQoNCioqc29jaW9tYXRyaXggbmV0MioqDQoNCmBgYHtyfQ0KcmVxdWlyZShzbmEpDQpwbG90LnNvY2lvbWF0cml4KCBuZXQyLGRyYXdsYWIgPSBGLCBkaWFnbGFiID0gRiwgeGxhYiA9ICdmcmllbmRzaGlwIHQyJyApDQpgYGANCg0KKipzb2Npb21hdHJpeCBuZXQzKioNCg0KYGBge3J9DQpyZXF1aXJlKHNuYSkNCnBsb3Quc29jaW9tYXRyaXgoIG5ldDMsZHJhd2xhYiA9IEYsIGRpYWdsYWIgPSBGLCB4bGFiID0gJ2ZyaWVuZHNoaXAgdDMnICkNCg0KYGBgDQoNCi0tLSAgDQoNCg0KIyMgUGxvdHRpbmcgbmV0d29yayBkYXRhDQoNClRoZSBjbGFzcyAqYHIgY2xhc3MobmV0MSlgKiB3aXRoIGF0dHJpYnV0ZXMgKmByIG5hbWVzKGF0dHJpYnV0ZXMoIG5ldDEgKSlgKiwgaGFzIHNwZWNpYWwgbWV0aG9kcyBhc3NvY2lhdGVkIHdpdGggaXQuIFdoaWxlICBgcGxvdCggZnJpZW5kLmRhdGEudzEgKWAgb25seSBwcm9kdWNlcyBhIHJhdGhlciBkdWxsIHBsb3Qgb2YNCnRoZSBmaXJzdCB0d28gY29sdW1ucywgYHBsb3QoIG5ldDEsIHhsYWIgPSAnZnJpZW5kc2hpcCB0MScgKWAgcHJvZHVjZXMgYSBuaWNlIHNvY2lvZ3JhbS4gDQoNCmBgYHtyfQ0KIyBUaGUgY2xhc3MsDQpjbGFzcyggbmV0MSApDQojIHdpdGggYXR0cmlidXRlcw0KYXR0cmlidXRlcyggbmV0MSApDQojIGhhcyBzcGVjaWFsIG1ldGhvZHMgYXNzb2NpYXRlZCB3aXRoIGl0Lg0KIyBXaGlsZSAgDQpwbG90KCBmcmllbmQuZGF0YS53MSwgbWFpbj0icGxvdCggZnJpZW5kLmRhdGEudzEpIiApIA0KIyBvbmx5IHByb2R1Y2VzIGEgcmF0aGVyIGR1bGwgcGxvdCBvZiB0aGUgZmlyc3QgdHdvIGNvbHVtbnMsDQpwbG90KCBuZXQxLCB4bGFiID0gJ2ZyaWVuZHNoaXAgdDEnLCBtYWluPSJwbG90KG5ldDEpIiApDQojIHByb2R1Y2VzIGEgbmljZSBzb2Npb2dyYW0NCmBgYA0KICANCiAgDQoNCiMjIyBUd2Vha2luZyBuZXR3b3JrIHBsb3QgIA0KDQotIEFkZCB0aGUgYXR0cmlidXRlIGRyaW5rIHRvIHRoZSBuZXR3b3JrIG9iamVjdDogYG5ldDEgJXYlICJkcmluayIgPC0gZHJpbmtbICwgMSBdYCAgDQotIENvbG9yIHRoZSBub2RlcyBieSBkcmluazogYHBsb3QoIG5ldDEsIHZlcnRleC5jb2wgPSAiZHJpbmsiLCB4bGFiID0gJ2ZyaWVuZHNoaXAgdDEnIClgICANCi0gU2NhbGUgdGhlIHZlcnRleCBieSBkZWdyZWUgb2Ygbm9kZXMhDQogICogRmlyc3QgY2FsY3VsYXRlIGRlZ3JlZTogYGRlZyA8LSByb3dTdW1zKCBhcy5tYXRyaXgoIG5ldDEgKSApIyBOQjogIHJvd1N1bXMoKSBpcyBkZWZpbmVkIGZvciBjbGFzcyBtYXRyaXhgIA0KICAqIEhhdmUgYSBsb29rIGF0IHRoZSBkZWdyZWUgZGlzdHJpYnV0aW9uOiBgdGFibGUoIGRlZywgdXNlTkEgPSAnYWx3YXlzJyApYCANCg0KTm93IGRvIHRoZSBkZXNpcmVkIHBsb3Q6IGBwbG90KCBuZXQxLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgdmVydGV4LmNleCA9IChkZWcgKyAxKS8xLjUgKWAgDQoNCmBgYHtyfQ0KIyBhZGQgdGhlIGF0dHJpYnV0ZSBkcmluayB0byB0aGUgbmV0d29yayBvYmplY3QNCg0KbmV0MSAldiUgImRyaW5rIiA8LSBkcmlua1sgLCAxIF0NCg0KIyBjb2xvciB0aGUgbm9kZXMgYnkgZHJpbmsNCg0KcGxvdCggbmV0MSwgdmVydGV4LmNvbCA9ICJkcmluayIsIHhsYWIgPSAnZnJpZW5kc2hpcCB0MScgKQ0KDQoNCiMgTm93IGxldCdzIGNvbG9yIHRoZSBub2RlcyBieSBkcmluayBhbmQgc2NhbGUgdGhlIHZlcnRleCBieSBkZWdyZWUgb2Ygbm9kZXMhDQojDQojIEZpcnN0IGNhbGN1bGF0ZSBkZWdyZWU6DQoNCmRlZyA8LSByb3dTdW1zKCBhcy5tYXRyaXgoIG5ldDEgKSApIyBOQjogIHJvd1N1bXMoKSBpcyBkZWZpbmVkIGZvciBjbGFzcyBtYXRyaXgNCg0KIyBoYXZlIGEgbG9vayBhdCB0aGUgZGVncmVlIGRpc3RyaWJ1dGlvbg0KDQp0YWJsZSggZGVnLCB1c2VOQSA9ICdhbHdheXMnICkNCg0KIyBOb3cgZG8gdGhlIGRlc2lyZWQgcGxvdDoNCg0KcGxvdCggbmV0MSwgdmVydGV4LmNvbCA9ICJkcmluayIsIHZlcnRleC5jZXggPSAoZGVnICsgMSkvMS41ICkNCmBgYA0KDQotLS0gIA0KDQojIyBQbG90IHRoZSB0aHJlZSB3YXZlcyBvZiBkYXRhIA0KDQpgYGB7cn0NCiMgQWRkIGRyaW5rIHRvIHdhdmVzIDIgYW5kIDMNCm5ldDIgJXYlICJkcmluayIgPC0gZHJpbmtbICwgMiBdDQpuZXQzICV2JSAiZHJpbmsiIDwtIGRyaW5rWyAsIDMgXQ0KZGVnMiA8LSByb3dTdW1zKCBhcy5tYXRyaXgoIG5ldDIgKSApDQpkZWczIDwtIHJvd1N1bXMoIGFzLm1hdHJpeCggbmV0MyApICkNCg0KIyBDcmVhdGUgYSBzZXQgb2YgcGFuZWxzICggMSByb3cgYnkgMyBjb2x1bW5zLCBvciAzIGNvbHVtbnMgYnkgMSByb3cpDQpwYXIoIG1mcm93ID0gYyggMSwgMyApICkNCg0KIyBjcmVhdGluZyB0aHJlZSBwbG90cyBhZnRlciBlYWNoIG90aGVyIHdpbGwgcGxhY2UgdGhlbSBpbiBjb25zZWN1dGl2ZSBwYW5lbHMNCnBsb3QoIG5ldDEsIHZlcnRleC5jb2wgPSAiZHJpbmsiLCB2ZXJ0ZXguY2V4ID0gKGRlZyArIDEpLzEuNSApDQpwbG90KCBuZXQyLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgdmVydGV4LmNleCA9IChkZWcyICsgMSkvMS41ICkNCnBsb3QoIG5ldDMsIHZlcnRleC5jb2wgPSAiZHJpbmsiLCB2ZXJ0ZXguY2V4ID0gKGRlZzMgKyAxKS8xLjUgKQ0KDQpgYGANCg0KRWFjaCB0aW1lIHdlIG1ha2UgYSBwbG90IHRoZSBjb29yZGluYXRlcyBtb3ZlIC0gYmVjYXVzZSBhbHdheXMgdGhlIHN0YXJ0aW5nIHZhbHVlcyBhcmUgcmFuZG9tLiBXZSBjYW4gYWxzbyBzYXZlIGNvb3JkaW5hdGVzIGFuZCB1c2UgdGhlbSBmb3IgbGF0ZXIgcGxvdHRpbmc6DQoNCmBgYHtyfQ0KcGFyKCBtZnJvdyA9IGMoIDEsIDMgKSApDQpjb29yZGluIDwtICBwbG90KCBuZXQxLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgdmVydGV4LmNleCA9IChkZWcgKzEgKS8xLjUgKQ0KcGxvdCggbmV0MiwgY29vcmQgPSBjb29yZGluLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgdmVydGV4LmNleCA9IChkZWcyICsgMSkvMS41ICkNCnBsb3QoIG5ldDMsIGNvb3JkID0gY29vcmRpbiwgdmVydGV4LmNvbCA9ICJkcmluayIsIHZlcnRleC5jZXggPSAoZGVnMyArIDEpIC8xLjUgKQ0KYGBgDQoNClRvIGdldCBjb29yZGluYXRlcyBiYXNlZCBvbiBhbGwgdGhyZWUgd2F2ZXM6IGBjb29yZGluIDwtICBwbG90KCBuZXQxICsgbmV0MiArIG5ldDMgKWAuICANCkZvciBtb3JlIHBsb3R0aW5nIG9wdGlvbnMsIHRyeSB0aGUgYGdwbG90YCBmdW5jdGlvbiBpbiB0aGUgYHNuYWAgbGlicmFyeS4gQW5kIHRyeSBgP2dwbG90YCBhbmQgYD9ncGxvdC5sYXlvdXRgLg0KDQotLS0gIA0KDQojIyBCYXNpYyBuZXR3b3JrIHN0YXRpc3RpY3Mgey50YWJzZXQgLnRhYnNldC1mYWRlfQ0KDQpUaGUgcGFja2FnZSBgc25hYCBjYW4gYmUgdXNlZCBmb3IgYSB2YXJpZXR5IG9mIGRlc2NyaXB0aW9ucyBhbmQgYW5hbHlzZXMuIFRoZSBmb2xsb3dpbmcgYXJlIGV4YW1wbGVzIG9mIHNvbWUgaW1wb3J0YW50IGdyYXBoIGxldmVsIHN0YXRpc3RpY3MNCg0KIyMjIGRlbnNpdHkNCg0KYGBge3J9DQpnZGVuKCBuZXQxICkgIyBkZW5zaXR5DQpgYGANCi0tLSAgDQoNCiMjIyBzeW1tZXRyeSBhbmQgcmVjaXByb2NpdHkNCg0KYGBge3J9DQpncmVjaXAoIG5ldDEgKSAjIHByb3BvcnRpb24gb2YgZHlhZHMgdGhhdCBhcmUgc3ltbWV0cmljDQpncmVjaXAoIG5ldDEsIG1lYXN1cmUgPSAiZHlhZGljLm5vbm51bGwiICkgIyByZWNpcHJvY2l0eSwgaWdub3JpbmcgdGhlIG51bGwgZHlhZHMNCmBgYA0KLS0tICANCg0KIyMjIHRyYW5zaXRpdml0eQ0KYGBge3IsIHdhcm5pbmc9IkZBTFNFIn0NCmd0cmFucyggbmV0MSApICMgdHJhbnNpdGl2aXR5DQpgYGANCi0tLSAgDQoNCiMjIER5YWQgYW5kIHRyaWFkIGNlbnN1cyB7LnRhYnNldCAudGFic2V0LWZhZGV9DQoNCiMjIyBEeWFkIGNlbnN1cw0KDQpgYGB7cn0NCmR5YWQuY2Vuc3VzKCBuZXQxICkNCmBgYA0KLS0tICANCg0KDQojIyMgVHJpYWQgY2Vuc3VzDQoNCmBgYHtyfQ0KdHJpYWQuY2Vuc3VzKCBuZXQxICkNCmBgYA0KLS0tICANCg0KIyMgKG91dClkZWdyZWUgZGlzdHJpYnV0aW9uIA0KDQpPZiBjb3Vyc2UgZm9yIGEgc3ltbWV0cmljIG5ldHdvcmsgb3V0ZGVncmVlPWluZGVncmVlLg0KDQpgYGB7cn0NCm91dGRlZ3JlZSA8LSBkZWdyZWUoIG5ldDEsIGNtb2RlID0gIm91dGRlZ3JlZSIgKQ0Kb3V0ZGVncmVlICNvdXRnb2luZyB0aWVzIG9mIGVhY2ggbm90ZQ0KDQpoaXN0KCBvdXRkZWdyZWUgKQ0KcXVhbnRpbGUoIG91dGRlZ3JlZSApDQpgYGANCi0tLSAgDQoNCiMjIGRpc3RhbmNlIGFuZCBjb25uZWN0aXZpdHkgey50YWJzZXQgLnRhYnNldC1mYWRlfQ0KDQojIyMgZGlzdGFuY2UgDQoNCmBgYHtyfQ0KZGlzdCA8LSBnZW9kaXN0KG5ldDEsIGluZi5yZXBsYWNlID0gSW5mLCBjb3VudC5wYXRocyA9IFRSVUUpDQojIGNhbGN1bGF0ZSB0aGUgZ2VvZGVzaWMgZGlzdGFuY2UgKHNob3J0ZXN0IHBhdGggbGVuZ3RoKSBtYXRyaXgNCmhlYWQoZGlzdCRnZCkNCiMgbWF0cml4IG9mIGdlb2Rlc2ljIGRpc3RhbmNlcw0KaGVhZChkaXN0JGNvdW50cykNCnRhYmxlKGRpc3QkY291bnRzKQ0KYGBgDQotLS0gIA0KDQojIyMgY29ubmVjdGl2aXR5IA0KDQpSZWFjaGFiaWxpdHkgbWF0cml4LCBzZWUgYD9yZWFjaGFiaWxpdHlgLiANCg0KYGBge3J9DQpyZWFjaCA8LSByZWFjaGFiaWxpdHkoIG5ldDEgKSAgIyBjYWxjdWxhdGUgdGhlIHJlYWNoYWJpbGl0eSBtYXRyaXgNCmhlYWQocmVhY2gpDQpgYGANCi0tLSAgDQoNCiMjIE5ldHdvcmsgYXV0b2NvcnJlbGF0aW9uICANCg0KTW9yYW4ncyBhdXRvY29ycmVsYXRpb24gZm9yIG91dGdvaW5nIHRpZXM6DQoNCmBgYHtyfQ0KDQpuYWNmKG5ldDEsIGRyaW5rWywgMV0sIHR5cGU9Im1vcmFuIiwgbmVpZ2hib3Job29kLnR5cGU9J291dCcpWzJdDQpuYWNmKG5ldDIsIGRyaW5rWywgMl0sIHR5cGU9Im1vcmFuIiwgbmVpZ2hib3Job29kLnR5cGU9J291dCcpWzJdDQpuYWNmKG5ldDMsIGRyaW5rWywgM10sIHR5cGU9Im1vcmFuIiwgbmVpZ2hib3Job29kLnR5cGU9J291dCcpWzJdDQpgYGANCg0KTW9yYW4ncyBhdXRvY29ycmVsYXRpb24gZm9yIG91dGdvaW5nIGFuZCBpbmNvbWluZyB0aWVzOg0KYGBge3J9DQoNCm5hY2YobmV0MSwgZHJpbmtbLCAxXSwgdHlwZT0ibW9yYW4iLCBuZWlnaGJvcmhvb2QudHlwZT0ndG90YWwnKVsyXQ0KbmFjZihuZXQyLCBkcmlua1ssIDJdLCB0eXBlPSJtb3JhbiIsIG5laWdoYm9yaG9vZC50eXBlPSd0b3RhbCcpWzJdDQpuYWNmKG5ldDMsIGRyaW5rWywgM10sIHR5cGU9Im1vcmFuIiwgbmVpZ2hib3Job29kLnR5cGU9J3RvdGFsJylbMl0NCmBgYA0KDQotLS0gDQoNClsqKk5leHQ6IFZhcmlhYmxlRm9ybWF0IEZPUiBQUkVQQVJJTkcgREFUQSBGT1IgUlNJRU5BKipdKC9yc2NyaXB0MDEuaHRtbCkNCg0KLS0tDQo=</div>
+<p>Copyright &copy; 2020 Jochem Tolsma</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("rscript00.rmd");
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

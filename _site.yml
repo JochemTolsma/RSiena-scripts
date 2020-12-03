@@ -1,0 +1,31 @@
+name: "RSiena-scripts"
+output_dir: "docs"
+navbar:
+  title: "RSiena-scripts"
+  left:
+    - text: "ReadMe"
+      href: index.html
+    - text: "Descriptives"
+      href: rscript00.html
+    - text: "DataFormat"
+      href: rscript01.html
+    - text: "VariableFormat"
+      href: rscript02.html
+    - text: "RunModel"
+      href: rscript03.html
+    - text: "Behaviour"
+      href: rscript04.html
+  right:
+    - icon: fa-github
+      href: https://github.com/JochemTolsma/RSiena-scripts
+output:
+  html_document:
+    toc:  true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: yes
+    theme: flatly
+    highlight: default
+    include:
+      after_body: footer.html
