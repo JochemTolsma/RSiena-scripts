@@ -5,10 +5,10 @@ navbar:
   left:
     - text: "ReadMe"
       href: index.html
-    - text: "Descriptives"
-      href: rscript00.html
     - text: "DataFormat"
       href: rscript01.html
+    - text: "Descriptives"
+      href: rscript00.html
     - text: "VariableFormat"
       href: rscript02.html
     - text: "RunModel"
