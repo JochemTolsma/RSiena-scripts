@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jochem Tolsma - Radboud University, the Netherlands" />
+
+
+<title>RunModel</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RSiena-scripts</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ReadMe</a>
+</li>
+<li>
+  <a href="rscript00.html">Descriptives</a>
+</li>
+<li>
+  <a href="rscript01.html">DataFormat</a>
+</li>
+<li>
+  <a href="rscript02.html">VariableFormat</a>
+</li>
+<li>
+  <a href="rscript03.html">RunModel</a>
+</li>
+<li>
+  <a href="rscript04.html">Behaviour</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/JochemTolsma/RSiena-scripts">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">RunModel</h1>
+<h4 class="author"><a href="https://www.jochemtolsma.nl">Jochem
+Tolsma</a> - Radboud University, the Netherlands</h4>
+<h4 class="date">Last compiled on September, 2022</h4>
+
+</div>
+
+
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
+<style type="text/css">
+pre.test {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 10px;
+}
+
+pre.test2 {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 10px;
+  background-color: white
+}
+
+
+h1, .h1, h2, .h2, h3, .h3 {
+    margin-top: 24px;
+}
+
+
+</style>
+<hr />
+<p>This website converted the following original .R scripts into .rmd
+files.</p>
+<ul>
+<li>RScriptSNADescriptives.R<br />
+</li>
+<li>Rscript01DataFormat.R<br />
+</li>
+<li>Rscript02SienaVariableFormat.R<br />
+</li>
+<li>Rscript03SienaRunModel.R<br />
+</li>
+<li>Rscript04SienaBehaviour.R</li>
+</ul>
+<p>Please visit <a
+href="https://github.com/snlab-nl/rsiena/tree/main/inst/scripts">GitHub</a>
+for the latest .R files.</p>
+<hr />
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>All files (data, scripts, etc.) can also be found on <a
+href="https://github.com/JochemTolsma/Rsiena-scripts">Github</a></p>
+<hr />
+</div>
+<div id="contact" class="section level2">
+<h2>Contact</h2>
+<p>Specific questions with respect to the .rmd files can be addressed
+to: <a href="mailto:j.tolsma@ru.nl">Jochem Tolsma</a>.</p>
+<p>For questions on RSiena please visit the designated <a
+href="https://github.com/snlab-nl/rsiena">GitHub</a> page.</p>
+<hr />
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>A quick version of the model fitting without comments is given at the
+end of this script.</p>
+<p>Let us start by loading the data</p>
+<pre class="r test"><code>library(RSiena)
+friend.data.w1 &lt;- s501
+friend.data.w2 &lt;- s502
+friend.data.w3 &lt;- s503
+drink &lt;- s50a
+smoke &lt;- s50s
+friendship &lt;- sienaDependent(array(c(friend.data.w1, friend.data.w2, friend.data.w3), dim = c(50, 50,
+    3)))
+smoke1 &lt;- coCovar(smoke[, 1])
+alcohol &lt;- varCovar(drink)
+mydata &lt;- sienaDataCreate(friendship, smoke1, alcohol)
+# and request
+mydata
+# to see what you have produced.</code></pre>
+<pre class="test2"><code>#&gt; Dependent variables:  friendship 
+#&gt; Number of observations: 3 
+#&gt; 
+#&gt; Nodeset                  Actors 
+#&gt; Number of nodes              50 
+#&gt; 
+#&gt; Dependent variable friendship      
+#&gt; Type               oneMode         
+#&gt; Observations       3               
+#&gt; Nodeset            Actors          
+#&gt; Densities          0.046 0.047 0.05
+#&gt; 
+#&gt; Constant covariates:  smoke1 
+#&gt; Changing covariates:  alcohol</code></pre>
+<p>Parameters of the model are estimated by the function
+<code>siena07()</code>. This requires the data specification; the
+effects specification; and a number of parameters, or settings, for the
+estimation algorithm.</p>
+<p>The latter are contained in an object created by the function
+<code>sienaAlgorithmCreate()</code>. You can look at the help provided
+by <code>?sienaAlgorithmCreate</code> to find out about options that you
+may use here; for beginning users, only the two options mentioned below
+are relevant.</p>
+<p>Output will be written to a file with name
+<strong>projname.txt</strong>, where projname is whatever name is given;
+the default (used if no name is given) is Siena. This file will be
+written to your current directory. New estimation runs will append to
+it. A new call to print01Report will overwrite it!</p>
+</div>
+<div id="define-algorithm" class="section level2">
+<h2>Define algorithm</h2>
+<pre class="r test"><code>myalgorithm &lt;- sienaAlgorithmCreate(projname = &quot;s50_3&quot;)</code></pre>
+<pre class="test2"><code>#&gt; If you use this algorithm object, siena07 will create/use an output file s50_3.txt .</code></pre>
+<p>Let us first redefine the model, to obtain a simpler specification
+that will serve as an illustration here.</p>
+<pre class="r test"><code>myeff &lt;- getEffects(mydata)
+myeff &lt;- includeEffects(myeff, transTrip, cycle3)
+myeff &lt;- includeEffects(myeff, egoX, altX, egoXaltX, interaction1 = &quot;alcohol&quot;)
+myeff &lt;- includeEffects(myeff, simX, interaction1 = &quot;smoke1&quot;)
+myeff</code></pre>
+<pre class="test2"><code>#&gt;   effectName          include fix   test  initialValue parm
+#&gt; 1 transitive triplets TRUE    FALSE FALSE          0   0   
+#&gt; 2 3-cycles            TRUE    FALSE FALSE          0   0   
+#&gt;   effectName                  include fix   test  initialValue parm
+#&gt; 1 alcohol alter               TRUE    FALSE FALSE          0   0   
+#&gt; 2 alcohol ego                 TRUE    FALSE FALSE          0   0   
+#&gt; 3 alcohol ego x alcohol alter TRUE    FALSE FALSE          0   0   
+#&gt;   effectName        include fix   test  initialValue parm
+#&gt; 1 smoke1 similarity TRUE    FALSE FALSE          0   0   
+#&gt;    effectName                          include fix   test  initialValue parm
+#&gt; 1  constant friendship rate (period 1) TRUE    FALSE FALSE    4.69604   0   
+#&gt; 2  constant friendship rate (period 2) TRUE    FALSE FALSE    4.32885   0   
+#&gt; 3  outdegree (density)                 TRUE    FALSE FALSE   -1.46770   0   
+#&gt; 4  reciprocity                         TRUE    FALSE FALSE    0.00000   0   
+#&gt; 5  transitive triplets                 TRUE    FALSE FALSE    0.00000   0   
+#&gt; 6  3-cycles                            TRUE    FALSE FALSE    0.00000   0   
+#&gt; 7  smoke1 similarity                   TRUE    FALSE FALSE    0.00000   0   
+#&gt; 8  alcohol alter                       TRUE    FALSE FALSE    0.00000   0   
+#&gt; 9  alcohol ego                         TRUE    FALSE FALSE    0.00000   0   
+#&gt; 10 alcohol ego x alcohol alter         TRUE    FALSE FALSE    0.00000   0</code></pre>
+</div>
+<div id="estimate-model" class="section level2">
+<h2>Estimate model</h2>
+<p>The function <code>siena07()</code> actually fits the specified model
+to the data. If you wish the pretty picture of Siena on the screen as
+information about the progress of the algorithm, type:</p>
+<pre class="r test"><code>ans &lt;- siena07(myalgorithm, data = mydata, effects = myeff)</code></pre>
+<p>(ans for “answer”).</p>
+<p>If however you do not want the pretty picture, or if this leads to
+difficulties (which may happen e.g. on a Mac), then type
+<code>ans &lt;- siena07(myalgorithm, data=mydata, effects=myeff, batch=TRUE)</code>
+and intermediate information will be written to the console.</p>
+<p>Function <code>siena07()</code> produces a so-called sienaFit object,
+here called <code>ans</code>; and it fills in a few things in the
+sienaEffects object <code>myeff</code>, if this is the first use of
+<code>myeff</code> in a siena07 call. By using various different effects
+objects, i.e., with different names, you can switch between
+specifications.</p>
+<p>The <code>batch = FALSE</code> parameters will give a graphical user
+interface being opened which reports on the progress of the estimation
+algorithm; <code>verbose = TRUE</code> leads to extensive diagnostic
+information being sent to the console during the estimation, and results
+after the estimation (these results are also copied to the output file
+projname.txt, see above); while <code>batch=TRUE</code> gives only a
+limited amount of printout sent to the console during the estimation
+(which is seen when clicking in the console, or more immediately if the
+Buffered Output is deselected in the Misc menu) which monitors the
+progress of the estimation algorithm in a different way.</p>
+<p>The call of siena07 leads to output in the file
+<strong>s50_3.txt</strong> (or more generally projname.txt, where
+projname is the name given in <code>sienaAlgorithmCreate()</code>) and
+to the creation of the object which here is called ans (for
+“answer”).</p>
+<p>To use multiple processors, e.g., if you wish to use 2 processes,
+request:</p>
+<p><code>ans &lt;- siena07( myalgorithm, data = mydata, effects = myeff, nbrNodes = 2, useCluster = TRUE)</code>.</p>
+<p>Adjust the nbrNodes to the number that you wish to use. If you wish
+to work on with other programs while running siena07, it is advisable to
+use one node less than the number of available processors. If you wish
+to use other machines as well, see the more detailed instructions below.
+You will then need to use the clusterString argument as well.</p>
+<p>For more advanced use, it can be helpful to have access to the
+networks simulated in the so-called third phase of the estimation
+algorithm. These networks can be used, e.g., for checking goodness of
+fit. This can be achieved by using the parameter
+<code>returnDeps=TRUE</code>. The fitted object <code>ans</code> will
+then have a component named “sims” which contains a list (each
+iteration) of lists (each data object) of lists (each dependent network
+or behavior variable) of edgelists for networks or vectors for behavior
+variables. See the manual for further explanation.</p>
+</div>
+<div id="looking-at-the-results" class="section level2">
+<h2>Looking at the results</h2>
+<p>The file “s50_3.txt” will contain the results of the estimation. It
+is contained in the current directory (<code>getwd()</code>). This file
+can be read by any text editor. A summary of the results is obtained on
+the screen by:</p>
+<pre class="r test"><code>ans</code></pre>
+<p>and a larger summary by…</p>
+<pre class="r test"><code>summary(ans)</code></pre>
+<p>Depending on the random seed and the model specification, the results
+could be something like the following.</p>
+<pre class="test2"><code>#&gt; Estimates, standard errors and convergence t-ratios
+#&gt; 
+#&gt;                                        Estimate   Standard   Convergence 
+#&gt;                                                     Error      t-ratio   
+#&gt; 
+#&gt; Rate parameters: 
+#&gt;   0.1      Rate parameter period 1      6.6750  ( 1.1897   )             
+#&gt;   0.2      Rate parameter period 2      5.1921  ( 0.8558   )             
+#&gt; 
+#&gt; Other parameters: 
+#&gt;   1.  eval outdegree (density)         -2.7333  ( 0.1305   )   -0.0212   
+#&gt;   2.  eval reciprocity                  2.4437  ( 0.2310   )   -0.0208   
+#&gt;   3.  eval transitive triplets          0.6614  ( 0.1495   )    0.0253   
+#&gt;   4.  eval 3-cycles                    -0.1110  ( 0.3053   )    0.0208   
+#&gt;   5.  eval smoke1 similarity            0.2667  ( 0.1960   )    0.0301   
+#&gt;   6.  eval alcohol alter               -0.0277  ( 0.0661   )    0.0325   
+#&gt;   7.  eval alcohol ego                  0.0425  ( 0.0790   )    0.0586   
+#&gt;   8.  eval alcohol ego x alcohol alter  0.1276  ( 0.0533   )   -0.0078   
+#&gt; 
+#&gt; Overall maximum convergence ratio:    0.1326 
+#&gt; 
+#&gt; 
+#&gt; Total of 2315 iteration steps.
+#&gt; 
+#&gt; Covariance matrix of estimates (correlations below diagonal)
+#&gt; 
+#&gt;        0.017       -0.020       -0.010        0.014       -0.003        0.000        0.000        0.000
+#&gt;       -0.680        0.053        0.014       -0.035        0.000        0.000        0.000       -0.002
+#&gt;       -0.491        0.418        0.022       -0.041       -0.001        0.000       -0.002       -0.001
+#&gt;        0.343       -0.497       -0.890        0.093        0.001       -0.001        0.004        0.002
+#&gt;       -0.119        0.010       -0.020        0.014        0.038        0.003        0.004        0.000
+#&gt;       -0.002       -0.025        0.003       -0.047        0.209        0.004       -0.002        0.000
+#&gt;        0.026       -0.001       -0.209        0.181        0.249       -0.408        0.006        0.000
+#&gt;       -0.056       -0.142       -0.128        0.109       -0.001        0.015       -0.069        0.003
+#&gt; 
+#&gt; Derivative matrix of expected statistics X by parameters:
+#&gt; 
+#&gt;      278.700      220.775      469.028      146.529       24.579       17.119       27.944      149.380
+#&gt;      127.185      138.885      253.605       84.518       10.893       11.617       11.939       76.299
+#&gt;      343.766      312.470     1183.846      376.491       27.263       77.978       84.579      208.177
+#&gt;      154.974      154.885      547.270      184.084       13.968       28.358       26.380       83.932
+#&gt;       21.931       17.690       35.523       10.906       37.163      -50.547      -47.707        2.093
+#&gt;       27.465       30.505       91.528       31.205      -51.280      380.434      253.012       73.797
+#&gt;       23.851       15.869       70.514       20.088      -47.004      237.976      322.445       85.576
+#&gt;      144.467      134.532      303.711       98.943        2.944       53.536       54.717      555.211
+#&gt; 
+#&gt; Covariance matrix of X (correlations below diagonal):
+#&gt; 
+#&gt;      430.012      373.066      994.309      316.886       43.209       30.585       52.125      238.885
+#&gt;        0.919      383.249      990.555      323.503       37.674       38.611       48.612      224.967
+#&gt;        0.776        0.819     3818.162     1234.370      108.715      122.533      146.554      582.517
+#&gt;        0.758        0.820        0.991      406.130       34.492       41.391       47.090      188.821
+#&gt;        0.313        0.289        0.264        0.257       44.338      -72.785      -67.939        3.045
+#&gt;        0.067        0.090        0.091        0.094       -0.500      478.026      383.878      128.769
+#&gt;        0.119        0.117        0.112        0.110       -0.481        0.828      449.216      131.681
+#&gt;        0.417        0.416        0.341        0.339        0.017        0.213        0.225      764.715</code></pre>
+<p>The results can also be viewed externally in the output file
+<strong>s50_3.txt</strong>. It is advisable that you have a look at all
+three reports and understand how information is organized in each of
+them.</p>
+<p>To understand the table above, note that the “convergence t-ratio” is
+the t-ratio for convergence checking, not the t statistic for testing
+the significance of this effect! See Section 6.2 of the manual to
+understand this better.<br />
+In the external output file, these are called “t-ratios for deviations
+from targets”. The rule of thumb is that all t-ratios for convergence
+should ideally be less than 0.1 in absolute value, and the “Overall
+maximum convergence ratio” should be less than 0.25; this signifies good
+convergence of the algorithm.</p>
+<p>In the example here, this is the case. If this would not be the case,
+the best thing to do would be to continue the estimation, using the
+estimates produced here, and contained in ans, as the new initial
+values. This is explained below. Because the estimation algorithm is
+based on random simulations of the network evolution, there always will
+be small differences between different runs of the algorithm. To obtain
+“publication grade” estimates, where this variability is minimized,
+choose the value of parameter n3 in <code>sienaAlgorithmCreate()</code>
+(“Number of iterations in phase 3”) larger than the default value of
+1000; e.g., <code>n3=5000</code>.</p>
+<p>With function siena07 we made ans as the object containing all the
+results of the estimation. For example,</p>
+<pre class="r test"><code>ans$theta
+
+# contains the vector of parameter estimates,
+
+ans$se
+
+# contains the standard errors, while
+
+ans$covtheta
+
+# contains the covariance matrix of the estimates.</code></pre>
+<pre class="test2"><code>#&gt; [1] -2.73331050  2.44373875  0.66140102 -0.11102284  0.26670485 -0.02769309  0.04250091  0.12758722
+#&gt; [1] 0.13052299 0.23100999 0.14952777 0.30525026 0.19597244 0.06611808 0.07897151 0.05327322
+#&gt;               [,1]          [,2]          [,3]          [,4]          [,5]          [,6]
+#&gt; [1,]  1.703625e-02 -0.0204940690 -9.574301e-03  0.0136709178 -3.042977e-03 -1.796669e-05
+#&gt; [2,] -2.049407e-02  0.0533656163  1.444350e-02 -0.0350621662  4.607441e-04 -3.800081e-04
+#&gt; [3,] -9.574301e-03  0.0144434970  2.235855e-02 -0.0406209377 -5.872923e-04  2.825742e-05
+#&gt; [4,]  1.367092e-02 -0.0350621662 -4.062094e-02  0.0931777227  8.507029e-04 -9.507407e-04
+#&gt; [5,] -3.042977e-03  0.0004607441 -5.872923e-04  0.0008507029  3.840520e-02  2.713486e-03
+#&gt; [6,] -1.796669e-05 -0.0003800081  2.825742e-05 -0.0009507407  2.713486e-03  4.371601e-03
+#&gt; [7,]  2.699005e-04 -0.0000165309 -2.465539e-03  0.0043661173  3.856261e-03 -2.131715e-03
+#&gt; [8,] -3.910310e-04 -0.0017461387 -1.016507e-03  0.0017727855 -1.556483e-05  5.442013e-05
+#&gt;               [,7]          [,8]
+#&gt; [1,]  0.0002699005 -3.910310e-04
+#&gt; [2,] -0.0000165309 -1.746139e-03
+#&gt; [3,] -0.0024655394 -1.016507e-03
+#&gt; [4,]  0.0043661173  1.772786e-03
+#&gt; [5,]  0.0038562612 -1.556483e-05
+#&gt; [6,] -0.0021317154  5.442013e-05
+#&gt; [7,]  0.0062364995 -2.899014e-04
+#&gt; [8,] -0.0002899014  2.838036e-03</code></pre>
+<p>There are several “methods” available for viewing the object
+containing the results of the estimation. Above we already mentioned the
+commands <code>ans</code> and <code>summary(ans)</code> The command
+<code>siena.table( ans )</code> will produce in your working directory a
+table formatted for inclusion in a LaTeX document. The command
+<code>siena.table(ans, type="html" )</code> produces a table formatted
+in html, which can be included, e.g., in a Word document. See
+<code>?print.sienaFit</code> for further information, e.g., about the
+use of the xtable package for RSiena; if you use xtable, see the set of
+vignettes for <a
+href="http://cran.r-project.org/web/packages/xtable">xtable</a>, which
+gives more options.</p>
+</div>
+<div id="initializing-parameters-for-estimation" class="section level2">
+<h2>Initializing parameters for estimation</h2>
+<p>If the estimation algorithm has not produced good estimates (it ‘has
+not converged well’), as will be indicated by some of the t-ratios for
+convergence being larger than 0.1 or the overall maximum convergence
+ratio being more than 0.25, (the precise values of these thresholds may
+be taken with a gain of salt) the best thing to do is continuing the
+estimation, using the estimates produced here, and contained in
+<code>ans</code>, as the new initial values.</p>
+<p>This is done by the option <code>prevAns</code> (‘previous ans’) as
+in:</p>
+<pre class="r test"><code>ans &lt;- siena07(myalgorithm, data = mydata, effects = myeff, prevAns = ans)</code></pre>
+<p>the parameter estimates in <code>ans</code> then are extracted and
+used in the new estimation; moreover, Phase 1 will be omitted from the
+algorithm, as derivatives and covariance matrix are used from the
+previous run. This should be used only if the model specification in
+<code>myeff</code> has not changed, and if the provisional parameter
+estimates obtained in <code>ans</code> are reasonable; if they are not
+reasonable, make a fresh estimation without the <code>prevAns</code>
+parameter.</p>
+<p>In Section 6.3.1 of the manual you can read more about the initial
+values used for the estimation algorithm; but this rarely is of any
+concern. Sections 6.3-6.5 of the manual give further help.</p>
+</div>
+<div id="testing-effects" class="section level2">
+<h2>Testing effects</h2>
+<p>Three types of tests are available in SIENA:</p>
+<ol style="list-style-type: decimal">
+<li>t-type tests of single parameters can be carried out by dividing the
+parameter estimate by its standard error. Under the null hypothesis that
+the parameter is 0, these tests have approximately a standard normal
+distribution.<br />
+</li>
+<li>Score-type tests of single and multiple parameters are described in
+the manual.<br />
+</li>
+<li>Wald tests of single and multiple parameters can be obtained by
+means of the functions `Wald.RSiena() and Multipar.RSiena(); see the
+help pages for these functions and also see the manual.</li>
+</ol>
+<p>Parameters can be restricted by putting TRUE in the include, fix and
+test columns of the effects object. For example, to request a score test
+for the indegree popularity effect, the commands can be as follows.</p>
+<pre class="r test"><code>myeff &lt;- setEffect(myeff, inPopSqrt, fix = TRUE, test = TRUE, initialValue = 0)</code></pre>
+<pre class="test2"><code>#&gt;   effectName                   include fix  test initialValue parm
+#&gt; 1 indegree - popularity (sqrt) TRUE    TRUE TRUE          0   0</code></pre>
+<pre class="r test"><code>ans &lt;- siena07(myalgorithm, data = mydata, effects = myeff)
+summary(ans)</code></pre>
+<pre class="test2"><code>#&gt; Estimates, standard errors and convergence t-ratios
+#&gt; 
+#&gt;                                         Estimate   Standard   Convergence 
+#&gt;                                                      Error      t-ratio   
+#&gt; 
+#&gt; Rate parameters: 
+#&gt;   0.1      Rate parameter period 1       6.5682  ( 1.1425   )             
+#&gt;   0.2      Rate parameter period 2       5.2280  ( 0.8588   )             
+#&gt; 
+#&gt; Other parameters: 
+#&gt;   1.  eval outdegree (density)          -2.7254  ( 0.1239   )   -0.0128   
+#&gt;   2.  eval reciprocity                   2.4363  ( 0.2241   )    0.0064   
+#&gt;   3.  eval transitive triplets           0.6558  ( 0.1423   )   -0.0083   
+#&gt;   4.  eval 3-cycles                     -0.1089  ( 0.2859   )   -0.0132   
+#&gt;   5.  eval indegree - popularity (sqrt)  0.0000  (     NA   )    0.3320   
+#&gt;   6.  eval smoke1 similarity             0.2650  ( 0.1980   )    0.0216   
+#&gt;   7.  eval alcohol alter                -0.0188  ( 0.0718   )   -0.0141   
+#&gt;   8.  eval alcohol ego                   0.0341  ( 0.0766   )   -0.0476   
+#&gt;   9.  eval alcohol ego x alcohol alter   0.1276  ( 0.0509   )    0.0360   
+#&gt; 
+#&gt; Overall maximum convergence ratio:    0.1121 
+#&gt; 
+#&gt; 
+#&gt; Score test for 1 parameter:
+#&gt; chi-squared = 5.66, p = 0.0174.
+#&gt; 
+#&gt; Total of 2341 iteration steps.
+#&gt; 
+#&gt; Generalised score test &lt;c&gt;
+#&gt; 
+#&gt; Testing the goodness-of-fit of the model restricted by
+#&gt;  (1)   eval:  indegree - popularity (sqrt)                =   0.0000
+#&gt; _________________________________________________
+#&gt;                    
+#&gt;    c =   5.6596   d.f. = 1   p-value =   0.0174
+#&gt; 
+#&gt;    one-sided (normal variate):  -2.3790    
+#&gt; _________________________________________________
+#&gt; 
+#&gt; One-step estimates: 
+#&gt; 
+#&gt; eval:  outdegree (density)                         -1.9253
+#&gt; eval:  reciprocity                                  2.3598
+#&gt; eval:  transitive triplets                          0.7850
+#&gt; eval:  3-cycles                                    -0.2235
+#&gt; eval:  indegree - popularity (sqrt)                -0.4590
+#&gt; eval:  smoke1 similarity                            0.2676
+#&gt; eval:  alcohol alter                               -0.0066
+#&gt; eval:  alcohol ego                                  0.0218
+#&gt; eval:  alcohol ego x alcohol alter                  0.1225
+#&gt; 
+#&gt; Covariance matrix of estimates (correlations below diagonal)
+#&gt; 
+#&gt;        0.015       -0.018       -0.008        0.009           NA       -0.003        0.001        0.000       -0.001
+#&gt;       -0.650        0.050        0.010       -0.028           NA       -0.001       -0.001        0.000       -0.001
+#&gt;       -0.442        0.328        0.020       -0.035           NA       -0.002        0.000       -0.002       -0.001
+#&gt;        0.254       -0.436       -0.849        0.082           NA        0.002       -0.001        0.003        0.001
+#&gt;           NA           NA           NA           NA           NA           NA           NA           NA           NA
+#&gt;       -0.140       -0.016       -0.057        0.041           NA        0.039        0.003        0.004       -0.001
+#&gt;        0.073       -0.079       -0.038       -0.045           NA        0.210        0.005       -0.002        0.000
+#&gt;       -0.016        0.018       -0.155        0.137           NA        0.256       -0.353        0.006       -0.001
+#&gt;       -0.097       -0.082       -0.077        0.054           NA       -0.091       -0.004       -0.157        0.003
+#&gt; 
+#&gt; Derivative matrix of expected statistics X by parameters:
+#&gt; 
+#&gt;      308.287      245.678      535.529      168.619      758.406       31.880       37.571       40.067      180.994
+#&gt;      129.076      140.464      255.122       85.458      317.616       11.938       21.377       18.486       83.135
+#&gt;      350.674      314.345     1121.101      357.889      947.033       30.636       86.337       87.203      245.639
+#&gt;      162.046      156.448      521.617      176.549      433.303       14.995       34.620       30.291      103.693
+#&gt;      571.923      453.525     1073.185      335.210     1464.019       58.808       78.619       77.552      339.152
+#&gt;       29.999       24.686       49.483       15.301       74.697       37.291      -48.460      -44.162        9.917
+#&gt;       42.619       51.639      183.669       62.044      127.648      -40.720      350.526      228.950       70.379
+#&gt;       37.310       29.644      113.443       36.555       92.340      -41.736      237.670      327.621      114.653
+#&gt;      171.421      154.463      375.706      119.281      425.719       18.385       86.059       90.319      619.460
+#&gt; 
+#&gt; Covariance matrix of X (correlations below diagonal):
+#&gt; 
+#&gt;      445.873      373.055     1028.959      331.413     1146.850       41.412       78.900       83.962      286.136
+#&gt;        0.918      370.563      962.361      316.789      969.445       33.707       77.868       74.830      259.958
+#&gt;        0.806        0.827     3658.525     1190.377     2865.116       90.922      255.883      244.901      759.228
+#&gt;        0.791        0.829        0.992      393.899      921.486       29.367       84.462       80.276      242.537
+#&gt;        0.983        0.911        0.857        0.840     3053.639      107.859      212.413      210.935      735.093
+#&gt;        0.299        0.267        0.229        0.226        0.298       42.904      -69.485      -64.332       13.142
+#&gt;        0.165        0.179        0.187        0.188        0.170       -0.468      513.410      414.441      165.087
+#&gt;        0.182        0.178        0.185        0.185        0.175       -0.449        0.836      478.279      178.849
+#&gt;        0.464        0.462        0.429        0.418        0.455        0.069        0.249        0.280      854.148</code></pre>
+<p>To see the results, including those for the score test. You can also
+simply request:</p>
+<pre class="r test"><code>score.Test(ans)</code></pre>
+<pre class="test2"><code>#&gt; Tested effects:
+#&gt;  indegree - popularity (sqrt) 
+#&gt; chi-squared = 5.66, d.f. = 1; one-sided Z = -2.38; two-sided p = 0.017.</code></pre>
+<p>see <code>?score.Test</code> for further explanation.</p>
+</div>
+<div id="time-test" class="section level2">
+<h2>Time test</h2>
+<p>An application of the score test is given for the special case of
+parameter heterogeneity by Lospinoso et al. (2010) and implemented in
+RSiena. To apply the test to the results obtained above, request,
+e.g.,</p>
+<pre class="r test"><code>tt2 &lt;- sienaTimeTest(ans)
+tt2</code></pre>
+<pre class="test2"><code>#&gt; Joint significance test of time heterogeneity:
+#&gt; chi-squared =   6.55, d.f. = 8, p= 0.5857, 
+#&gt; where H0: The following parameters are zero:
+#&gt;  (1) (*)Dummy2:outdegree (density)
+#&gt;  (2) (*)Dummy2:reciprocity
+#&gt;  (3) (*)Dummy2:transitive triplets
+#&gt;  (4) (*)Dummy2:3-cycles
+#&gt;  (5) (*)Dummy2:smoke1 similarity
+#&gt;  (6) (*)Dummy2:alcohol alter
+#&gt;  (7) (*)Dummy2:alcohol ego
+#&gt;  (8) (*)Dummy2:alcohol ego x alcohol alter</code></pre>
+<p>If you wish more information, see <code>summary(tt2)</code>.</p>
+<hr />
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<pre class="r test"><code>### Step 1: define data
+friend.data.w1 &lt;- s501
+friend.data.w2 &lt;- s502
+friend.data.w3 &lt;- s503
+drink &lt;- s50a
+smoke &lt;- s50s
+# define RSiena data structures
+friendship &lt;- sienaDependent(array(c(friend.data.w1, friend.data.w2, friend.data.w3), dim = c(50, 50,
+    3)))
+smoke1 &lt;- coCovar(smoke[, 1])
+alcohol &lt;- varCovar(drink)
+mydata &lt;- sienaDataCreate(friendship, smoke1, alcohol)
+
+### Step 2: create effects structure
+myeff &lt;- getEffects(mydata)
+
+### Step 3: get initial description
+print01Report(mydata, modelname = &quot;s50_3_init&quot;)
+
+### Step4: specify model
+myeff &lt;- includeEffects(myeff, transTrip, cycle3)
+myeff &lt;- includeEffects(myeff, egoX, altX, egoXaltX, interaction1 = &quot;alcohol&quot;)
+myeff &lt;- includeEffects(myeff, simX, interaction1 = &quot;smoke1&quot;)
+
+### Step5 estimate
+myAlgorithm &lt;- sienaAlgorithmCreate(projname = &quot;s50_3&quot;)
+(ans &lt;- siena07(myAlgorithm, data = mydata, effects = myeff))
+# (the outer parentheses lead to printing the obtained result on the screen) if necessary, estimate
+# further
+(ans &lt;- siena07(myAlgorithm, data = mydata, effects = myeff, prevAns = ans))</code></pre>
+<hr />
+<p><a href="/rscript04.html"><strong>Next: SienaBehaviour FOR MODELING
+NETWORKS AND BEHAVIOUR BY RSIENA</strong></a></p>
+<hr />
+</div>
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlJ1bk1vZGVsIg0KYXV0aG9yOiAnW0pvY2hlbSBUb2xzbWFdKGh0dHBzOi8vd3d3LmpvY2hlbXRvbHNtYS5ubCkgLSBSYWRib3VkIFVuaXZlcnNpdHksIHRoZSBOZXRoZXJsYW5kcycNCmJpYmxpb2dyYXBoeTogcmVmZXJlbmNlcy5iaWINCmRhdGU6ICJMYXN0IGNvbXBpbGVkIG9uIGByIGZvcm1hdChTeXMudGltZSgpLCAnJUIsICVZJylgIg0Kb3V0cHV0OiANCiAgaHRtbF9kb2N1bWVudDoNCiAgICB0b2M6ICB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiBmYWxzZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KICAgIGNvZGVfZG93bmxvYWQ6IHllcw0KLS0tDQoNCmBgYHtyLCBnbG9iYWxzZXR0aW5ncywgZWNobz1GQUxTRSwgd2FybmluZz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgcmVzdWx0cz0naGlkZSd9DQpsaWJyYXJ5KGtuaXRyKQ0Kb3B0c19jaHVuayRzZXQodGlkeS5vcHRzPWxpc3Qod2lkdGguY3V0b2ZmPTEwMCksdGlkeT1UUlVFLCB3YXJuaW5nID0gRkFMU0UsIG1lc3NhZ2UgPSBGQUxTRSxjb21tZW50ID0gIiM+IiwgY2FjaGU9VFJVRSwgY2xhc3Muc291cmNlPWMoInRlc3QiKSwgY2xhc3Mub3V0cHV0PWMoInRlc3QyIikpDQpvcHRpb25zKHdpZHRoID0gMTAwKQ0KcmdsOjpzZXR1cEtuaXRyKCkNCg0KDQpjb2xvcml6ZSA8LSBmdW5jdGlvbih4LCBjb2xvcikgew0KICBpZiAoa25pdHI6OmlzX2xhdGV4X291dHB1dCgpKSB7DQogICAgc3ByaW50ZigiXFx0ZXh0Y29sb3J7JXN9eyVzfSIsIGNvbG9yLCB4KQ0KICB9IGVsc2UgaWYgKGtuaXRyOjppc19odG1sX291dHB1dCgpKSB7DQogICAgc3ByaW50ZigiPHNwYW4gc3R5bGU9J2NvbG9yOiAlczsnPiVzPC9zcGFuPiIsIGNvbG9yLCANCiAgICAgIHgpDQogIH0gZWxzZSB4DQp9DQoNCmBgYA0KDQpgYGB7ciBrbGlwcHksIGVjaG89RkFMU0UsIGluY2x1ZGU9VFJVRX0NCmtsaXBweTo6a2xpcHB5KHBvc2l0aW9uID0gYygndG9wJywgJ3JpZ2h0JykpDQoja2xpcHB5OjprbGlwcHkoY29sb3IgPSAnZGFya3JlZCcpDQoja2xpcHB5OjprbGlwcHkodG9vbHRpcF9tZXNzYWdlID0gJ0NsaWNrIHRvIGNvcHknLCB0b29sdGlwX3N1Y2Nlc3MgPSAnRG9uZScpDQpgYGANCg0KYGBge2NzcywgZWNobz1GQUxTRX0NCnByZS50ZXN0IHsNCiAgbWF4LWhlaWdodDogMzAwcHg7DQogIG92ZXJmbG93LXk6IGF1dG87DQogIG92ZXJmbG93LXg6IGF1dG87DQogIG1hcmdpbjogMTBweDsNCn0NCg0KcHJlLnRlc3QyIHsNCiAgbWF4LWhlaWdodDogMzAwcHg7DQogIG92ZXJmbG93LXk6IGF1dG87DQogIG92ZXJmbG93LXg6IGF1dG87DQogIG1hcmdpbjogMTBweDsNCiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGUNCn0NCg0KDQpoMSwgLmgxLCBoMiwgLmgyLCBoMywgLmgzIHsNCiAgICBtYXJnaW4tdG9wOiAyNHB4Ow0KfQ0KDQoNCmBgYA0KDQotLS0tDQoNClRoaXMgd2Vic2l0ZSBjb252ZXJ0ZWQgdGhlIGZvbGxvd2luZyBvcmlnaW5hbCAuUiBzY3JpcHRzIGludG8gLnJtZCBmaWxlcy4gDQoNCi0gUlNjcmlwdFNOQURlc2NyaXB0aXZlcy5SICANCi0gUnNjcmlwdDAxRGF0YUZvcm1hdC5SICANCi0gUnNjcmlwdDAyU2llbmFWYXJpYWJsZUZvcm1hdC5SICANCi0gUnNjcmlwdDAzU2llbmFSdW5Nb2RlbC5SICANCi0gUnNjcmlwdDA0U2llbmFCZWhhdmlvdXIuUg0KDQpQbGVhc2UgdmlzaXQgW0dpdEh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL3NubGFiLW5sL3JzaWVuYS90cmVlL21haW4vaW5zdC9zY3JpcHRzKSBmb3IgdGhlIGxhdGVzdCAuUiBmaWxlcy4gDQoNCi0tLS0NCg0KIyMgRGF0YQ0KQWxsIGZpbGVzIChkYXRhLCBzY3JpcHRzLCBldGMuKSBjYW4gYWxzbyBiZSBmb3VuZCBvbiBbR2l0aHViXShodHRwczovL2dpdGh1Yi5jb20vSm9jaGVtVG9sc21hL1JzaWVuYS1zY3JpcHRzKQ0KDQotLS0tDQoNCiMjIENvbnRhY3QNClNwZWNpZmljIHF1ZXN0aW9ucyB3aXRoIHJlc3BlY3QgdG8gdGhlIC5ybWQgZmlsZXMgY2FuIGJlIGFkZHJlc3NlZCB0bzogW0pvY2hlbSBUb2xzbWFdKG1haWx0bzpqLnRvbHNtYUBydS5ubCkuICANCg0KRm9yIHF1ZXN0aW9ucyBvbiBSU2llbmEgcGxlYXNlIHZpc2l0IHRoZSBkZXNpZ25hdGVkIFtHaXRIdWJdKGh0dHBzOi8vZ2l0aHViLmNvbS9zbmxhYi1ubC9yc2llbmEpIHBhZ2UuIA0KDQotLS0tICANCg0KIyMgSW50cm9kdWN0aW9uICANCg0KQSBxdWljayB2ZXJzaW9uIG9mIHRoZSBtb2RlbCBmaXR0aW5nIHdpdGhvdXQgY29tbWVudHMgaXMgZ2l2ZW4gYXQgdGhlIGVuZCBvZiB0aGlzIHNjcmlwdC4gDQoNCkxldCB1cyBzdGFydCBieSBsb2FkaW5nIHRoZSBkYXRhIA0KDQoNCmBgYHtyLCByZXN1bHRzPSdob2xkJ30NCmxpYnJhcnkoUlNpZW5hKQ0KZnJpZW5kLmRhdGEudzEgPC0gczUwMQ0KZnJpZW5kLmRhdGEudzIgPC0gczUwMg0KZnJpZW5kLmRhdGEudzMgPC0gczUwMw0KZHJpbmsgPC0gczUwYQ0Kc21va2UgPC0gczUwcw0KZnJpZW5kc2hpcCA8LSBzaWVuYURlcGVuZGVudCgNCiAgYXJyYXkoIGMoIGZyaWVuZC5kYXRhLncxLCBmcmllbmQuZGF0YS53MiwgZnJpZW5kLmRhdGEudzMgKSwNCiAgICAgICAgIGRpbSA9IGMoIDUwLCA1MCwgMyApICkgKQ0Kc21va2UxIDwtIGNvQ292YXIoIHNtb2tlWyAsIDEgXSApDQphbGNvaG9sIDwtIHZhckNvdmFyKCBkcmluayApDQpteWRhdGEgPC0gc2llbmFEYXRhQ3JlYXRlKCBmcmllbmRzaGlwLCBzbW9rZTEsIGFsY29ob2wgKQ0KIyBhbmQgcmVxdWVzdA0KbXlkYXRhDQojIHRvIHNlZSB3aGF0IHlvdSBoYXZlIHByb2R1Y2VkLg0KYGBgDQoNCg0KUGFyYW1ldGVycyBvZiB0aGUgbW9kZWwgYXJlIGVzdGltYXRlZCBieSB0aGUgZnVuY3Rpb24gYHNpZW5hMDcoKWAuIFRoaXMgcmVxdWlyZXMgdGhlIGRhdGEgc3BlY2lmaWNhdGlvbjsgdGhlIGVmZmVjdHMgc3BlY2lmaWNhdGlvbjsgYW5kIGEgbnVtYmVyIG9mIHBhcmFtZXRlcnMsIG9yIHNldHRpbmdzLCBmb3IgdGhlIGVzdGltYXRpb24gYWxnb3JpdGhtLg0KDQpUaGUgbGF0dGVyIGFyZSBjb250YWluZWQgaW4gYW4gb2JqZWN0IGNyZWF0ZWQgYnkgdGhlIGZ1bmN0aW9uIGBzaWVuYUFsZ29yaXRobUNyZWF0ZSgpYC4gWW91IGNhbiBsb29rIGF0IHRoZSBoZWxwIHByb3ZpZGVkIGJ5DQpgP3NpZW5hQWxnb3JpdGhtQ3JlYXRlYCB0byBmaW5kIG91dCBhYm91dCBvcHRpb25zIHRoYXQgeW91IG1heSB1c2UgaGVyZTsgZm9yIGJlZ2lubmluZyB1c2Vycywgb25seSB0aGUgdHdvIG9wdGlvbnMgbWVudGlvbmVkIGJlbG93IGFyZSByZWxldmFudC4gDQoNCk91dHB1dCB3aWxsIGJlIHdyaXR0ZW4gdG8gYSBmaWxlIHdpdGggbmFtZSAqKnByb2puYW1lLnR4dCoqLCB3aGVyZSBwcm9qbmFtZSBpcyB3aGF0ZXZlciBuYW1lIGlzIGdpdmVuOyB0aGUgZGVmYXVsdCAodXNlZCBpZiBubyBuYW1lIGlzIGdpdmVuKSBpcyBTaWVuYS4gVGhpcyBmaWxlIHdpbGwgYmUgd3JpdHRlbiB0byB5b3VyIGN1cnJlbnQgZGlyZWN0b3J5LiBOZXcgZXN0aW1hdGlvbiBydW5zIHdpbGwgYXBwZW5kIHRvIGl0LiBBIG5ldyBjYWxsIHRvIHByaW50MDFSZXBvcnQgd2lsbCBvdmVyd3JpdGUgaXQhDQoNCiMjIERlZmluZSBhbGdvcml0aG0gIA0KDQpgYGB7cn0NCm15YWxnb3JpdGhtIDwtIHNpZW5hQWxnb3JpdGhtQ3JlYXRlKHByb2puYW1lID0gJ3M1MF8zJykNCmBgYA0KDQoNCkxldCB1cyBmaXJzdCByZWRlZmluZSB0aGUgbW9kZWwsIHRvIG9idGFpbiBhIHNpbXBsZXIgc3BlY2lmaWNhdGlvbiB0aGF0IHdpbGwgc2VydmUgYXMgYW4gaWxsdXN0cmF0aW9uIGhlcmUuDQoNCmBgYHtyLCByZXN1bHRzPSdob2xkJ30NCm15ZWZmIDwtIGdldEVmZmVjdHMoIG15ZGF0YSApDQpteWVmZiA8LSBpbmNsdWRlRWZmZWN0cyggbXllZmYsIHRyYW5zVHJpcCwgY3ljbGUzICkNCm15ZWZmIDwtIGluY2x1ZGVFZmZlY3RzKCBteWVmZiwgZWdvWCwgYWx0WCwgZWdvWGFsdFgsDQogICAgICAgICAgICAgICAgICAgICAgICAgaW50ZXJhY3Rpb24xID0gImFsY29ob2wiICkNCm15ZWZmIDwtIGluY2x1ZGVFZmZlY3RzKCBteWVmZiwgc2ltWCwgaW50ZXJhY3Rpb24xID0gInNtb2tlMSIgKQ0KbXllZmYNCmBgYA0KDQojIyBFc3RpbWF0ZSBtb2RlbCAgDQoNClRoZSBmdW5jdGlvbiBgc2llbmEwNygpYCBhY3R1YWxseSBmaXRzIHRoZSBzcGVjaWZpZWQgbW9kZWwgdG8gdGhlIGRhdGEuIElmIHlvdSB3aXNoIHRoZSBwcmV0dHkgcGljdHVyZSBvZiBTaWVuYSBvbiB0aGUgc2NyZWVuIGFzIGluZm9ybWF0aW9uIGFib3V0IHRoZSBwcm9ncmVzcyBvZiB0aGUgYWxnb3JpdGhtLCB0eXBlOiANCg0KYGBge3J9DQphbnMgPC0gc2llbmEwNyggbXlhbGdvcml0aG0sIGRhdGEgPSBteWRhdGEsIGVmZmVjdHMgPSBteWVmZikNCmBgYA0KDQooYW5zIGZvciAiYW5zd2VyIikuICANCg0KSWYgaG93ZXZlciB5b3UgZG8gbm90IHdhbnQgdGhlIHByZXR0eSBwaWN0dXJlLCBvciBpZiB0aGlzIGxlYWRzIHRvIGRpZmZpY3VsdGllcyAod2hpY2ggbWF5IGhhcHBlbiBlLmcuIG9uIGEgTWFjKSwgdGhlbiB0eXBlIGBhbnMgPC0gc2llbmEwNyhteWFsZ29yaXRobSwgZGF0YT1teWRhdGEsIGVmZmVjdHM9bXllZmYsIGJhdGNoPVRSVUUpYCBhbmQgaW50ZXJtZWRpYXRlIGluZm9ybWF0aW9uIHdpbGwgYmUgd3JpdHRlbiB0byB0aGUgY29uc29sZS4gIA0KDQpGdW5jdGlvbiBgc2llbmEwNygpYCBwcm9kdWNlcyBhIHNvLWNhbGxlZCBzaWVuYUZpdCBvYmplY3QsIGhlcmUgY2FsbGVkIGBhbnNgOyBhbmQgaXQgZmlsbHMgaW4gYSBmZXcgdGhpbmdzIGluIHRoZSBzaWVuYUVmZmVjdHMgb2JqZWN0IGBteWVmZmAsIGlmIHRoaXMgaXMgdGhlIGZpcnN0IHVzZSBvZiBgbXllZmZgIGluIGEgc2llbmEwNyBjYWxsLiBCeSB1c2luZyB2YXJpb3VzIGRpZmZlcmVudCBlZmZlY3RzIG9iamVjdHMsIGkuZS4sIHdpdGggZGlmZmVyZW50IG5hbWVzLCB5b3UgY2FuIHN3aXRjaCBiZXR3ZWVuIHNwZWNpZmljYXRpb25zLiAgDQoNClRoZSBgYmF0Y2ggPSBGQUxTRWAgcGFyYW1ldGVycyB3aWxsIGdpdmUgYSBncmFwaGljYWwgdXNlciBpbnRlcmZhY2UgYmVpbmcgb3BlbmVkIHdoaWNoIHJlcG9ydHMgb24gdGhlIHByb2dyZXNzIG9mIHRoZSBlc3RpbWF0aW9uIGFsZ29yaXRobTsgYHZlcmJvc2UgPSBUUlVFYCBsZWFkcyB0byBleHRlbnNpdmUgZGlhZ25vc3RpYyBpbmZvcm1hdGlvbiBiZWluZyBzZW50IHRvIHRoZSBjb25zb2xlIGR1cmluZyB0aGUgZXN0aW1hdGlvbiwgYW5kIHJlc3VsdHMgYWZ0ZXIgdGhlIGVzdGltYXRpb24gKHRoZXNlIHJlc3VsdHMgYXJlIGFsc28gY29waWVkIHRvIHRoZSBvdXRwdXQgZmlsZSBwcm9qbmFtZS50eHQsIHNlZSBhYm92ZSk7IHdoaWxlIGBiYXRjaD1UUlVFYCBnaXZlcyBvbmx5IGEgbGltaXRlZCBhbW91bnQgb2YgcHJpbnRvdXQgc2VudCB0byB0aGUgY29uc29sZSBkdXJpbmcgdGhlIGVzdGltYXRpb24gKHdoaWNoIGlzIHNlZW4gd2hlbiBjbGlja2luZyBpbiB0aGUgY29uc29sZSwgb3IgbW9yZSBpbW1lZGlhdGVseSBpZiB0aGUgQnVmZmVyZWQgT3V0cHV0IGlzIGRlc2VsZWN0ZWQgaW4gdGhlIE1pc2MgbWVudSkgIHdoaWNoIG1vbml0b3JzIHRoZSBwcm9ncmVzcyBvZiB0aGUgZXN0aW1hdGlvbiBhbGdvcml0aG0gaW4gYSBkaWZmZXJlbnQgd2F5Lg0KDQpUaGUgY2FsbCBvZiBzaWVuYTA3IGxlYWRzIHRvIG91dHB1dCBpbiB0aGUgZmlsZSAqKnM1MF8zLnR4dCoqIChvciBtb3JlIGdlbmVyYWxseSBwcm9qbmFtZS50eHQsIHdoZXJlIHByb2puYW1lIGlzIHRoZSBuYW1lIGdpdmVuIGluIGBzaWVuYUFsZ29yaXRobUNyZWF0ZSgpYCkgYW5kIHRvIHRoZSBjcmVhdGlvbiBvZiB0aGUgb2JqZWN0IHdoaWNoIGhlcmUgaXMgY2FsbGVkIGFucyAoZm9yICJhbnN3ZXIiKS4gDQoNClRvIHVzZSBtdWx0aXBsZSBwcm9jZXNzb3JzLCBlLmcuLCBpZiB5b3Ugd2lzaCB0byB1c2UgMiBwcm9jZXNzZXMsIHJlcXVlc3Q6ICANCg0KYGFucyA8LSBzaWVuYTA3KCBteWFsZ29yaXRobSwgZGF0YSA9IG15ZGF0YSwgZWZmZWN0cyA9IG15ZWZmLCBuYnJOb2RlcyA9IDIsIHVzZUNsdXN0ZXIgPSBUUlVFKWAuICANCg0KQWRqdXN0IHRoZSBuYnJOb2RlcyB0byB0aGUgbnVtYmVyIHRoYXQgeW91IHdpc2ggdG8gdXNlLiBJZiB5b3Ugd2lzaCB0byB3b3JrIG9uIHdpdGggb3RoZXIgcHJvZ3JhbXMgd2hpbGUgcnVubmluZyBzaWVuYTA3LCBpdCBpcyBhZHZpc2FibGUgdG8gdXNlIG9uZSBub2RlIGxlc3MgdGhhbiB0aGUgbnVtYmVyIG9mIGF2YWlsYWJsZSBwcm9jZXNzb3JzLiBJZiB5b3Ugd2lzaCB0byB1c2Ugb3RoZXIgbWFjaGluZXMgYXMgd2VsbCwgc2VlIHRoZSBtb3JlIGRldGFpbGVkIGluc3RydWN0aW9ucyBiZWxvdy4gWW91IHdpbGwgdGhlbiBuZWVkIHRvIHVzZSB0aGUgY2x1c3RlclN0cmluZyBhcmd1bWVudCBhcyB3ZWxsLg0KDQoNCkZvciBtb3JlIGFkdmFuY2VkIHVzZSwgaXQgY2FuIGJlIGhlbHBmdWwgdG8gaGF2ZSBhY2Nlc3MgdG8gdGhlIG5ldHdvcmtzIHNpbXVsYXRlZCBpbiB0aGUgc28tY2FsbGVkIHRoaXJkIHBoYXNlIG9mIHRoZSBlc3RpbWF0aW9uIGFsZ29yaXRobS4gVGhlc2UgbmV0d29ya3MgY2FuIGJlIHVzZWQsIGUuZy4sIGZvciBjaGVja2luZyBnb29kbmVzcyBvZiBmaXQuIFRoaXMgY2FuIGJlIGFjaGlldmVkIGJ5IHVzaW5nIHRoZSBwYXJhbWV0ZXIgYHJldHVybkRlcHM9VFJVRWAuIFRoZSBmaXR0ZWQgb2JqZWN0IGBhbnNgIHdpbGwgdGhlbiBoYXZlIGEgY29tcG9uZW50IG5hbWVkICJzaW1zIiB3aGljaCBjb250YWlucyBhIGxpc3QgKGVhY2ggaXRlcmF0aW9uKSBvZiBsaXN0cyAoZWFjaCBkYXRhIG9iamVjdCkgb2YgbGlzdHMgKGVhY2ggZGVwZW5kZW50IG5ldHdvcmsgb3IgYmVoYXZpb3IgdmFyaWFibGUpIG9mIGVkZ2VsaXN0cyBmb3IgbmV0d29ya3Mgb3IgdmVjdG9ycyBmb3IgYmVoYXZpb3IgdmFyaWFibGVzLiBTZWUgdGhlIG1hbnVhbCBmb3IgZnVydGhlciBleHBsYW5hdGlvbi4NCg0KDQojIyBMb29raW5nIGF0IHRoZSByZXN1bHRzDQoNClRoZSBmaWxlICJzNTBfMy50eHQiIHdpbGwgY29udGFpbiB0aGUgcmVzdWx0cyBvZiB0aGUgZXN0aW1hdGlvbi4gSXQgaXMgY29udGFpbmVkIGluIHRoZSBjdXJyZW50IGRpcmVjdG9yeSAoYGdldHdkKClgKS4gVGhpcyBmaWxlIGNhbiBiZSByZWFkIGJ5IGFueSB0ZXh0IGVkaXRvci4gQSBzdW1tYXJ5IG9mIHRoZSByZXN1bHRzIGlzIG9idGFpbmVkIG9uIHRoZSBzY3JlZW4gYnk6ICANCg0KDQpgYGB7ciwgZXZhbD1GQUxTRX0NCmFucw0KYGBgDQoNCmFuZCBhIGxhcmdlciBzdW1tYXJ5IGJ5Li4uDQoNCmBgYHtyLCBldmFsPUZBTFNFfQ0Kc3VtbWFyeShhbnMpDQoNCmBgYA0KDQoNCkRlcGVuZGluZyBvbiB0aGUgcmFuZG9tIHNlZWQgYW5kIHRoZSBtb2RlbCBzcGVjaWZpY2F0aW9uLA0KdGhlIHJlc3VsdHMgY291bGQgYmUgc29tZXRoaW5nIGxpa2UgdGhlIGZvbGxvd2luZy4NCg0KDQpgYGB7ciwgZWNobz1GQUxTRX0NCnN1bW1hcnkoYW5zKQ0KDQpgYGANCg0KVGhlIHJlc3VsdHMgY2FuIGFsc28gYmUgdmlld2VkIGV4dGVybmFsbHkgaW4gdGhlIG91dHB1dCBmaWxlICoqczUwXzMudHh0KiouIEl0IGlzIGFkdmlzYWJsZSB0aGF0IHlvdSBoYXZlIGEgbG9vayBhdCBhbGwgdGhyZWUgcmVwb3J0cyBhbmQgdW5kZXJzdGFuZCBob3cgaW5mb3JtYXRpb24gaXMgb3JnYW5pemVkIGluIGVhY2ggb2YgdGhlbS4gIA0KDQpUbyB1bmRlcnN0YW5kIHRoZSB0YWJsZSBhYm92ZSwgbm90ZSB0aGF0IHRoZSAiY29udmVyZ2VuY2UgdC1yYXRpbyIgaXMgdGhlIHQtcmF0aW8gZm9yIGNvbnZlcmdlbmNlIGNoZWNraW5nLCBub3QgdGhlIHQgc3RhdGlzdGljIGZvciB0ZXN0aW5nIHRoZSBzaWduaWZpY2FuY2Ugb2YgdGhpcyBlZmZlY3QhIFNlZSBTZWN0aW9uIDYuMiBvZiB0aGUgbWFudWFsIHRvIHVuZGVyc3RhbmQgdGhpcyBiZXR0ZXIuICANCkluIHRoZSBleHRlcm5hbCBvdXRwdXQgZmlsZSwgdGhlc2UgYXJlIGNhbGxlZCAidC1yYXRpb3MgZm9yIGRldmlhdGlvbnMgZnJvbSB0YXJnZXRzIi4gVGhlIHJ1bGUgb2YgdGh1bWIgaXMgdGhhdCBhbGwgdC1yYXRpb3MgZm9yIGNvbnZlcmdlbmNlIHNob3VsZCBpZGVhbGx5IGJlIGxlc3MgdGhhbiAwLjEgaW4gYWJzb2x1dGUgdmFsdWUsIGFuZCB0aGUgIk92ZXJhbGwgbWF4aW11bSBjb252ZXJnZW5jZSByYXRpbyIgc2hvdWxkIGJlIGxlc3MgdGhhbiAwLjI1OyB0aGlzIHNpZ25pZmllcyBnb29kIGNvbnZlcmdlbmNlIG9mIHRoZSBhbGdvcml0aG0uICANCg0KSW4gdGhlIGV4YW1wbGUgaGVyZSwgdGhpcyBpcyB0aGUgY2FzZS4gSWYgdGhpcyB3b3VsZCBub3QgYmUgdGhlIGNhc2UsIHRoZSBiZXN0IHRoaW5nIHRvIGRvIHdvdWxkIGJlIHRvIGNvbnRpbnVlIHRoZSBlc3RpbWF0aW9uLCB1c2luZyB0aGUgZXN0aW1hdGVzIHByb2R1Y2VkIGhlcmUsIGFuZCBjb250YWluZWQgaW4gYW5zLCBhcyB0aGUgbmV3IGluaXRpYWwgdmFsdWVzLiBUaGlzIGlzIGV4cGxhaW5lZCBiZWxvdy4gQmVjYXVzZSB0aGUgZXN0aW1hdGlvbiBhbGdvcml0aG0gaXMgYmFzZWQgb24gcmFuZG9tIHNpbXVsYXRpb25zIG9mIHRoZSBuZXR3b3JrIGV2b2x1dGlvbiwgdGhlcmUgYWx3YXlzIHdpbGwgYmUgc21hbGwgZGlmZmVyZW5jZXMgYmV0d2VlbiBkaWZmZXJlbnQgcnVucyBvZiB0aGUgYWxnb3JpdGhtLiBUbyBvYnRhaW4gInB1YmxpY2F0aW9uIGdyYWRlIiBlc3RpbWF0ZXMsIHdoZXJlIHRoaXMgdmFyaWFiaWxpdHkgaXMgbWluaW1pemVkLCBjaG9vc2UgdGhlIHZhbHVlIG9mIHBhcmFtZXRlciBuMyBpbiBgc2llbmFBbGdvcml0aG1DcmVhdGUoKWAgKCJOdW1iZXIgb2YgaXRlcmF0aW9ucyBpbiBwaGFzZSAzIikgbGFyZ2VyIHRoYW4gdGhlIGRlZmF1bHQgdmFsdWUgb2YgMTAwMDsgZS5nLiwgYG4zPTUwMDBgLg0KDQpXaXRoIGZ1bmN0aW9uIHNpZW5hMDcgd2UgbWFkZSBhbnMgYXMgdGhlIG9iamVjdCBjb250YWluaW5nIGFsbCB0aGUgcmVzdWx0cyBvZiB0aGUgZXN0aW1hdGlvbi4gRm9yIGV4YW1wbGUsDQoNCg0KYGBge3IsIHJlc3VsdHM9J2hvbGQnfQ0KYW5zJHRoZXRhDQoNCiMgY29udGFpbnMgdGhlIHZlY3RvciBvZiBwYXJhbWV0ZXIgZXN0aW1hdGVzLA0KDQphbnMkc2UNCg0KIyBjb250YWlucyB0aGUgc3RhbmRhcmQgZXJyb3JzLCB3aGlsZQ0KDQphbnMkY292dGhldGENCg0KIyBjb250YWlucyB0aGUgY292YXJpYW5jZSBtYXRyaXggb2YgdGhlIGVzdGltYXRlcy4NCg0KYGBgDQoNClRoZXJlIGFyZSBzZXZlcmFsICJtZXRob2RzIiBhdmFpbGFibGUgZm9yIHZpZXdpbmcgdGhlIG9iamVjdCBjb250YWluaW5nIHRoZSByZXN1bHRzIG9mIHRoZSBlc3RpbWF0aW9uLiANCkFib3ZlIHdlIGFscmVhZHkgbWVudGlvbmVkIHRoZSBjb21tYW5kcyBgYW5zYCBhbmQgYHN1bW1hcnkoYW5zKWAgVGhlIGNvbW1hbmQgYHNpZW5hLnRhYmxlKCBhbnMgKWAgd2lsbCBwcm9kdWNlIGluIHlvdXIgd29ya2luZyBkaXJlY3RvcnkgYSB0YWJsZSBmb3JtYXR0ZWQgZm9yIGluY2x1c2lvbiBpbiBhIExhVGVYIGRvY3VtZW50LiBUaGUgY29tbWFuZCBgc2llbmEudGFibGUoYW5zLCB0eXBlPSJodG1sIiApYCBwcm9kdWNlcyBhIHRhYmxlIGZvcm1hdHRlZCBpbiBodG1sLCB3aGljaCBjYW4gYmUgaW5jbHVkZWQsIGUuZy4sIGluIGEgV29yZCBkb2N1bWVudC4gU2VlIGA/cHJpbnQuc2llbmFGaXRgIGZvciBmdXJ0aGVyIGluZm9ybWF0aW9uLCBlLmcuLCBhYm91dCB0aGUgdXNlIG9mIHRoZSB4dGFibGUgcGFja2FnZSBmb3IgUlNpZW5hOyBpZiB5b3UgdXNlIHh0YWJsZSwgc2VlIHRoZSBzZXQgb2YgdmlnbmV0dGVzIGZvciBbeHRhYmxlXShodHRwOi8vY3Jhbi5yLXByb2plY3Qub3JnL3dlYi9wYWNrYWdlcy94dGFibGUpLCB3aGljaCBnaXZlcyBtb3JlIG9wdGlvbnMuDQoNCg0KIyMgSW5pdGlhbGl6aW5nIHBhcmFtZXRlcnMgZm9yIGVzdGltYXRpb24NCg0KSWYgdGhlIGVzdGltYXRpb24gYWxnb3JpdGhtIGhhcyBub3QgcHJvZHVjZWQgZ29vZCBlc3RpbWF0ZXMgKGl0ICdoYXMgbm90IGNvbnZlcmdlZCB3ZWxsJyksIGFzIHdpbGwgYmUgaW5kaWNhdGVkIGJ5IHNvbWUgb2YgdGhlIHQtcmF0aW9zIGZvciBjb252ZXJnZW5jZSBiZWluZyBsYXJnZXIgdGhhbiAwLjEgb3IgdGhlIG92ZXJhbGwgbWF4aW11bSBjb252ZXJnZW5jZSByYXRpbyBiZWluZyBtb3JlIHRoYW4gMC4yNSwgKHRoZSBwcmVjaXNlIHZhbHVlcyBvZiB0aGVzZSB0aHJlc2hvbGRzIG1heSBiZSB0YWtlbiB3aXRoIGEgZ2FpbiBvZiBzYWx0KSB0aGUgYmVzdCB0aGluZyB0byBkbyBpcyBjb250aW51aW5nIHRoZSBlc3RpbWF0aW9uLCB1c2luZyB0aGUgZXN0aW1hdGVzIHByb2R1Y2VkIGhlcmUsIGFuZCBjb250YWluZWQgaW4gYGFuc2AsIGFzIHRoZSBuZXcgaW5pdGlhbCB2YWx1ZXMuICANCg0KVGhpcyBpcyBkb25lIGJ5IHRoZSBvcHRpb24gYHByZXZBbnNgICgncHJldmlvdXMgYW5zJykgYXMgaW46IA0KDQpgYGB7ciwgZXZhbD1GQUxTRX0NCmFucyA8LSBzaWVuYTA3KG15YWxnb3JpdGhtLCBkYXRhPW15ZGF0YSwgZWZmZWN0cz1teWVmZiwgcHJldkFucz1hbnMpDQpgYGANCg0KDQp0aGUgcGFyYW1ldGVyIGVzdGltYXRlcyBpbiBgYW5zYCB0aGVuIGFyZSBleHRyYWN0ZWQgYW5kIHVzZWQgaW4gdGhlIG5ldyBlc3RpbWF0aW9uOyBtb3Jlb3ZlciwgUGhhc2UgMSB3aWxsIGJlIG9taXR0ZWQgZnJvbSB0aGUgYWxnb3JpdGhtLCBhcyBkZXJpdmF0aXZlcyBhbmQgY292YXJpYW5jZSBtYXRyaXggYXJlIHVzZWQgZnJvbSB0aGUgcHJldmlvdXMgcnVuLiBUaGlzIHNob3VsZCBiZSB1c2VkIG9ubHkgaWYgdGhlIG1vZGVsIHNwZWNpZmljYXRpb24gaW4gYG15ZWZmYCBoYXMgbm90IGNoYW5nZWQsIGFuZCBpZiB0aGUgcHJvdmlzaW9uYWwgcGFyYW1ldGVyIGVzdGltYXRlcyBvYnRhaW5lZCBpbiBgYW5zYCBhcmUgcmVhc29uYWJsZTsgaWYgdGhleSBhcmUgbm90IHJlYXNvbmFibGUsIG1ha2UgYSBmcmVzaCBlc3RpbWF0aW9uIHdpdGhvdXQgdGhlIGBwcmV2QW5zYCBwYXJhbWV0ZXIuDQoNCkluIFNlY3Rpb24gNi4zLjEgb2YgdGhlIG1hbnVhbCB5b3UgY2FuIHJlYWQgbW9yZSBhYm91dCB0aGUgaW5pdGlhbCB2YWx1ZXMgdXNlZCBmb3IgdGhlIGVzdGltYXRpb24gYWxnb3JpdGhtOyBidXQgdGhpcyByYXJlbHkgaXMgb2YgYW55IGNvbmNlcm4uIFNlY3Rpb25zIDYuMy02LjUgb2YgdGhlIG1hbnVhbCBnaXZlIGZ1cnRoZXIgaGVscC4NCg0KIyMgVGVzdGluZyBlZmZlY3RzIA0KDQpUaHJlZSB0eXBlcyBvZiB0ZXN0cyBhcmUgYXZhaWxhYmxlIGluIFNJRU5BOiAgDQoNCjEuIHQtdHlwZSB0ZXN0cyBvZiBzaW5nbGUgcGFyYW1ldGVycyBjYW4gYmUgY2FycmllZCBvdXQgYnkgZGl2aWRpbmcgdGhlIHBhcmFtZXRlciBlc3RpbWF0ZSBieSBpdHMgc3RhbmRhcmQgZXJyb3IuIFVuZGVyIHRoZSBudWxsIGh5cG90aGVzaXMgdGhhdCB0aGUgcGFyYW1ldGVyIGlzIDAsIHRoZXNlIHRlc3RzIGhhdmUgYXBwcm94aW1hdGVseSBhIHN0YW5kYXJkIG5vcm1hbCBkaXN0cmlidXRpb24uICANCjIuIFNjb3JlLXR5cGUgdGVzdHMgb2Ygc2luZ2xlIGFuZCBtdWx0aXBsZSBwYXJhbWV0ZXJzIGFyZSBkZXNjcmliZWQgaW4gdGhlIG1hbnVhbC4gIA0KMy4gV2FsZCB0ZXN0cyBvZiBzaW5nbGUgYW5kIG11bHRpcGxlIHBhcmFtZXRlcnMgY2FuIGJlIG9idGFpbmVkIGJ5IG1lYW5zIG9mIHRoZSBmdW5jdGlvbnMgYFdhbGQuUlNpZW5hKCkgYW5kIE11bHRpcGFyLlJTaWVuYSgpOyBzZWUgdGhlIGhlbHAgcGFnZXMgZm9yIHRoZXNlIGZ1bmN0aW9ucyBhbmQgYWxzbyBzZWUgdGhlIG1hbnVhbC4gIA0KDQoNCg0KUGFyYW1ldGVycyBjYW4gYmUgcmVzdHJpY3RlZCBieSBwdXR0aW5nIFRSVUUgaW4gdGhlIGluY2x1ZGUsIGZpeCBhbmQgdGVzdCBjb2x1bW5zIG9mIHRoZSBlZmZlY3RzIG9iamVjdC4gRm9yIGV4YW1wbGUsIHRvIHJlcXVlc3QgYSBzY29yZSB0ZXN0IGZvciB0aGUgaW5kZWdyZWUgcG9wdWxhcml0eSBlZmZlY3QsIHRoZSBjb21tYW5kcyBjYW4gYmUgYXMgZm9sbG93cy4NCg0KYGBge3J9DQpteWVmZiA8LSBzZXRFZmZlY3QobXllZmYsIGluUG9wU3FydCwgZml4PVRSVUUsIHRlc3Q9VFJVRSwgaW5pdGlhbFZhbHVlPTAuMCkNCmFucyA8LSBzaWVuYTA3KG15YWxnb3JpdGhtLCBkYXRhPW15ZGF0YSwgZWZmZWN0cz1teWVmZikNCnN1bW1hcnkoYW5zKQ0KYGBgDQoNClRvIHNlZSB0aGUgcmVzdWx0cywgaW5jbHVkaW5nIHRob3NlIGZvciB0aGUgc2NvcmUgdGVzdC4gWW91IGNhbiBhbHNvIHNpbXBseSByZXF1ZXN0OiAgDQpgYGB7cn0NCnNjb3JlLlRlc3QoYW5zKQ0KYGBgDQoNCg0Kc2VlIGA/c2NvcmUuVGVzdGAgZm9yIGZ1cnRoZXIgZXhwbGFuYXRpb24uICANCg0KIyMgVGltZSB0ZXN0IA0KDQpBbiBhcHBsaWNhdGlvbiBvZiB0aGUgc2NvcmUgdGVzdCBpcyBnaXZlbiBmb3IgdGhlIHNwZWNpYWwgY2FzZSBvZiBwYXJhbWV0ZXIgaGV0ZXJvZ2VuZWl0eSBieSBMb3NwaW5vc28gZXQgYWwuICgyMDEwKSBhbmQgaW1wbGVtZW50ZWQgaW4gUlNpZW5hLiBUbyBhcHBseSB0aGUgdGVzdCB0byB0aGUgcmVzdWx0cyBvYnRhaW5lZCBhYm92ZSwgcmVxdWVzdCwgZS5nLiwNCg0KYGBge3J9DQp0dDIgPC0gc2llbmFUaW1lVGVzdChhbnMpDQp0dDINCmBgYA0KDQoNCklmIHlvdSB3aXNoIG1vcmUgaW5mb3JtYXRpb24sIHNlZSBgc3VtbWFyeSh0dDIpYC4gIA0KDQotLS0gIA0KDQojIyBTdW1tYXJ5IA0KDQpgYGB7ciwgZXZhbD1GQUxTRX0NCiMjIyBTdGVwIDE6IGRlZmluZSBkYXRhICANCmZyaWVuZC5kYXRhLncxIDwtIHM1MDENCmZyaWVuZC5kYXRhLncyIDwtIHM1MDINCmZyaWVuZC5kYXRhLnczIDwtIHM1MDMNCmRyaW5rIDwtIHM1MGENCnNtb2tlIDwtIHM1MHMNCiMgZGVmaW5lIFJTaWVuYSBkYXRhIHN0cnVjdHVyZXMNCmZyaWVuZHNoaXAgPC0gc2llbmFEZXBlbmRlbnQoIGFycmF5KCBjKCBmcmllbmQuZGF0YS53MSwgZnJpZW5kLmRhdGEudzIsIGZyaWVuZC5kYXRhLnczICksIGRpbSA9IGMoIDUwLCA1MCwgMyApICkgKQ0Kc21va2UxIDwtIGNvQ292YXIoIHNtb2tlWyAsIDEgXSApDQphbGNvaG9sIDwtIHZhckNvdmFyKCBkcmluayApDQpteWRhdGEgPC0gc2llbmFEYXRhQ3JlYXRlKCBmcmllbmRzaGlwLCBzbW9rZTEsIGFsY29ob2wgKSANCg0KIyMjIFN0ZXAgMjogY3JlYXRlIGVmZmVjdHMgc3RydWN0dXJlIA0KbXllZmYgPC0gZ2V0RWZmZWN0cyggbXlkYXRhICkNCg0KIyMjIFN0ZXAgMzogZ2V0IGluaXRpYWwgZGVzY3JpcHRpb24NCnByaW50MDFSZXBvcnQoIG15ZGF0YSwgbW9kZWxuYW1lID0gJ3M1MF8zX2luaXQnICkNCg0KIyMjIFN0ZXA0OiBzcGVjaWZ5IG1vZGVsDQpteWVmZiA8LSBpbmNsdWRlRWZmZWN0cyggbXllZmYsIHRyYW5zVHJpcCwgY3ljbGUzICkNCm15ZWZmIDwtIGluY2x1ZGVFZmZlY3RzKCBteWVmZiwgZWdvWCwgYWx0WCwgZWdvWGFsdFgsIGludGVyYWN0aW9uMSA9ICJhbGNvaG9sIiApDQpteWVmZiA8LSBpbmNsdWRlRWZmZWN0cyggbXllZmYsIHNpbVgsIGludGVyYWN0aW9uMSA9ICJzbW9rZTEiICkNCg0KIyMjIFN0ZXA1IGVzdGltYXRlDQpteUFsZ29yaXRobSA8LSBzaWVuYUFsZ29yaXRobUNyZWF0ZSggcHJvam5hbWUgPSAnczUwXzMnICkNCihhbnMgPC0gc2llbmEwNyggbXlBbGdvcml0aG0sIGRhdGEgPSBteWRhdGEsIGVmZmVjdHMgPSBteWVmZikpDQojICh0aGUgb3V0ZXIgcGFyZW50aGVzZXMgbGVhZCB0byBwcmludGluZyB0aGUgb2J0YWluZWQgcmVzdWx0IG9uIHRoZSBzY3JlZW4pDQojIGlmIG5lY2Vzc2FyeSwgZXN0aW1hdGUgZnVydGhlcg0KKGFucyA8LSBzaWVuYTA3KCBteUFsZ29yaXRobSwgZGF0YSA9IG15ZGF0YSwgZWZmZWN0cyA9IG15ZWZmLCBwcmV2QW5zPWFucykpDQpgYGAgDQoNCg0KLS0tIA0KDQpbKipOZXh0OiBTaWVuYUJlaGF2aW91ciBGT1IgTU9ERUxJTkcgTkVUV09SS1MgQU5EIEJFSEFWSU9VUiBCWSBSU0lFTkEqKl0oL3JzY3JpcHQwNC5odG1sKQ0KDQotLS0NCg0K</div>
+<p>Copyright &copy; 2020 Jochem Tolsma</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("rscript03.rmd");
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

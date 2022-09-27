@@ -12,14 +12,24 @@
 <meta name="author" content="Jochem Tolsma - Radboud University, the Netherlands" />
 
 
-<title>RSiena-scripts</title>
+<title>Descriptives</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
@@ -35,12 +45,16 @@
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
-<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -53,35 +67,13 @@ if (window.hljs) {
 
 
 
+
 <style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
 #rmd-source-code {
   display: none;
 }
 </style>
+
 
 
 
@@ -91,10 +83,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -111,40 +99,16 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 60px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 65px;
-  margin-top: -65px;
-}
-.section h2 {
-  padding-top: 65px;
-  margin-top: -65px;
-}
-.section h3 {
-  padding-top: 65px;
-  margin-top: -65px;
-}
-.section h4 {
-  padding-top: 65px;
-  margin-top: -65px;
-}
-.section h5 {
-  padding-top: 65px;
-  margin-top: -65px;
-}
-.section h6 {
-  padding-top: 65px;
-  margin-top: -65px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -172,7 +136,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -184,7 +148,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -195,10 +159,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -210,7 +187,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -339,7 +315,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -353,7 +329,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -393,11 +369,11 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu" style="min-width: 50px;">
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
 <li role="separator" class="divider"></li>
@@ -407,9 +383,10 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">RSiena-scripts</h1>
-<h4 class="author"><a href="https://www.jochemtolsma.nl">Jochem Tolsma</a> - Radboud University, the Netherlands</h4>
-<h4 class="date">Last compiled on december, 2020</h4>
+<h1 class="title toc-ignore">Descriptives</h1>
+<h4 class="author"><a href="https://www.jochemtolsma.nl">Jochem
+Tolsma</a> - Radboud University, the Netherlands</h4>
+<h4 class="date">Last compiled on September, 2022</h4>
 
 </div>
 
@@ -423,14 +400,14 @@ pre.test {
   max-height: 300px;
   overflow-y: auto;
   overflow-x: auto;
-  margin: 0px;
+  margin: 10px;
 }
 
 pre.test2 {
   max-height: 300px;
   overflow-y: auto;
   overflow-x: auto;
-  margin: 0px;
+  margin: 10px;
   background-color: white
 }
 
@@ -442,11 +419,12 @@ h1, .h1, h2, .h2, h3, .h3 {
 
 </style>
 <hr />
-<p>This website converted the following original .R scripts into .rmd files.</p>
+<p>This website converted the following original .R scripts into .rmd
+files.</p>
 <ul>
-<li>Rscript01DataFormat.R<br />
-</li>
 <li>RScriptSNADescriptives.R<br />
+</li>
+<li>Rscript01DataFormat.R<br />
 </li>
 <li>Rscript02SienaVariableFormat.R<br />
 </li>
@@ -454,46 +432,66 @@ h1, .h1, h2, .h2, h3, .h3 {
 </li>
 <li>Rscript04SienaBehaviour.R</li>
 </ul>
-<p>Please visit <a href="https://github.com/snlab-nl/rsiena/tree/main/inst/scripts">GitHub</a> for the latest .R files.</p>
+<p>Please visit <a
+href="https://github.com/snlab-nl/rsiena/tree/main/inst/scripts">GitHub</a>
+for the latest .R files.</p>
 <blockquote>
-<p>To download this .rmd file use the button in the upper right corner of your screen.<br />
-To copy the R code in the code-chunks, use the copy-paste button in the upper right corner of the code-chunks.</p>
+<p>To download this .rmd file use the button in the upper right corner
+of your screen.<br />
+To copy the R code in the code-chunks, use the copy-paste button in the
+upper right corner of the code-chunks.</p>
 </blockquote>
 <hr />
-<div id="data" class="section level2">
+<div id="data" class="section level2" number="0.1">
 <h2><span class="header-section-number">0.1</span> Data</h2>
-<p>All files (data, scripts, etc.) can also be found on <a href="https://github.com/JochemTolsma/Rsiena-scripts">Github</a></p>
+<p>All files (data, scripts, etc.) can also be found on <a
+href="https://github.com/JochemTolsma/Rsiena-scripts">Github</a></p>
 <hr />
 </div>
-<div id="contact" class="section level2">
+<div id="contact" class="section level2" number="0.2">
 <h2><span class="header-section-number">0.2</span> Contact</h2>
-<p>Specific questions with respect to the .rmd files can be addressed to: <a href="mailto:j.tolsma@ru.nl">Jochem Tolsma</a>.</p>
-<p>For questions on RSiena please visit the designated <a href="https://github.com/snlab-nl/rsiena">GitHub</a> page.</p>
+<p>Specific questions with respect to the .rmd files can be addressed
+to: <a href="mailto:j.tolsma@ru.nl">Jochem Tolsma</a>.</p>
+<p>For questions on RSiena please visit the designated <a
+href="https://github.com/snlab-nl/rsiena">GitHub</a> page.</p>
 <hr />
 </div>
-<div id="introduction" class="section level2">
+<div id="introduction" class="section level2" number="0.3">
 <h2><span class="header-section-number">0.3</span> Introduction</h2>
-<p><strong>RscriptSNADescriptives.R: a script for the introduction to RSiena</strong></p>
+<p><strong>RscriptSNADescriptives.R: a script for the introduction to
+RSiena</strong></p>
 <ul>
 <li><strong>Rscript01DataFormat.R</strong> is followed by<br />
 </li>
-<li><strong>RScriptSNADescriptives.R</strong>, code for descriptive analysis of the data, and<br />
+<li><strong>RScriptSNADescriptives.R</strong>, code for descriptive
+analysis of the data, and<br />
 </li>
-<li><strong>Rscript02SienaVariableFormat.R</strong>, which formats data and specifies the model, and<br />
+<li><strong>Rscript02SienaVariableFormat.R</strong>, which formats data
+and specifies the model, and<br />
 </li>
-<li><strong>Rscript03SienaRunModel.R</strong>, which runs the model and estimates parameters<br />
+<li><strong>Rscript03SienaRunModel.R</strong>, which runs the model and
+estimates parameters<br />
 </li>
-<li><strong>Rscript04SienaBehaviour.R</strong>, which illustrates an example of analysing the coevolution of networks and behaviour<br />
+<li><strong>Rscript04SienaBehaviour.R</strong>, which illustrates an
+example of analysing the coevolution of networks and behaviour<br />
 </li>
-<li>The entire model fitting is summarised at the end of <strong>Rscript03SienaRunModel.R</strong> (without comments).</li>
+<li>The entire model fitting is summarised at the end of
+<strong>Rscript03SienaRunModel.R</strong> (without comments).</li>
 </ul>
-<p>This is an R script for getting started with RSiena, written by Robin Gauthier, Tom Snijders, Ruth Ripley, Johan Koskinen, and Paulina Preciado, with some examples borrowed from Christian Steglich.<br />
-Lines starting with # are not processed by R but treated as comments. The script has a lot of explanation of R possibilities that will be familiar for readers well acquainted with R, and can be skipped by them.</p>
+<p>This is an R script for getting started with RSiena, written by Robin
+Gauthier, Tom Snijders, Ruth Ripley, Johan Koskinen, and Paulina
+Preciado, with some examples borrowed from Christian Steglich.<br />
+Lines starting with # are not processed by R but treated as comments.
+The script has a lot of explanation of R possibilities that will be
+familiar for readers well acquainted with R, and can be skipped by
+them.</p>
 <hr />
 </div>
-<div id="getting-started" class="section level2">
+<div id="getting-started" class="section level2" number="0.4">
 <h2><span class="header-section-number">0.4</span> Getting Started</h2>
-<p>For this script, you will need the data read and modified in the script Rscript01DataFormat.R. If you have already ran that script, you may load the required workspace:</p>
+<p>For this script, you will need the data read and modified in the
+script Rscript01DataFormat.R. If you have already ran that script, you
+may load the required workspace:</p>
 <pre class="r test"><code>load(&quot;WorkspaceRscript01.RData&quot;)</code></pre>
 <p>Alternatively, you may run the following code-chunk:</p>
 <pre class="r test"><code>library(RSiena)  #to access the build-in data
@@ -509,9 +507,13 @@ net2 &lt;- as.network(friend.data.w2)
 net3 &lt;- as.network(friend.data.w3)</code></pre>
 <hr />
 </div>
-<div id="visual-inspection" class="section level2">
-<h2><span class="header-section-number">0.5</span> Visual inspection</h2>
-<p>A visual inspection of the adjacency matrices can sometimes be useful. This will, for example, help in highlighting outliers with respect to outdegrees or indegrees, if there are any of such outliers.</p>
+<div id="visual-inspection" class="section level2" number="0.5">
+<h2><span class="header-section-number">0.5</span> Visual
+inspection</h2>
+<p>A visual inspection of the adjacency matrices can sometimes be
+useful. This will, for example, help in highlighting outliers with
+respect to outdegrees or indegrees, if there are any of such
+outliers.</p>
 <p><strong>sociomatrix net1</strong></p>
 <pre class="r test"><code>require(sna)
 plot.sociomatrix(net1, drawlab = F, diaglab = F, xlab = &quot;friendship t1&quot;)</code></pre>
@@ -526,9 +528,14 @@ plot.sociomatrix(net3, drawlab = F, diaglab = F, xlab = &quot;friendship t3&quot
 <p><img src="rscript00_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <hr />
 </div>
-<div id="plotting-network-data" class="section level2">
-<h2><span class="header-section-number">0.6</span> Plotting network data</h2>
-<p>The class <em>network</em> with attributes <em>names, class</em>, has special methods associated with it. While <code>plot( friend.data.w1 )</code> only produces a rather dull plot of the first two columns, <code>plot( net1, xlab = 'friendship t1' )</code> produces a nice sociogram.</p>
+<div id="plotting-network-data" class="section level2" number="0.6">
+<h2><span class="header-section-number">0.6</span> Plotting network
+data</h2>
+<p>The class <em>network</em> with attributes <em>names, class</em>, has
+special methods associated with it. While
+<code>plot( friend.data.w1 )</code> only produces a rather dull plot of
+the first two columns, <code>plot( net1, xlab = 'friendship t1' )</code>
+produces a nice sociogram.</p>
 <pre class="r test"><code># The class,
 class(net1)</code></pre>
 <pre class="test2"><code>#&gt; [1] &quot;network&quot;</code></pre>
@@ -546,20 +553,26 @@ plot(friend.data.w1, main = &quot;plot( friend.data.w1)&quot;)</code></pre>
 plot(net1, xlab = &quot;friendship t1&quot;, main = &quot;plot(net1)&quot;)</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
 <pre class="r test"><code># produces a nice sociogram</code></pre>
-<div id="tweaking-network-plot" class="section level3">
-<h3><span class="header-section-number">0.6.1</span> Tweaking network plot</h3>
+<div id="tweaking-network-plot" class="section level3" number="0.6.1">
+<h3><span class="header-section-number">0.6.1</span> Tweaking network
+plot</h3>
 <ul>
-<li>Add the attribute drink to the network object: <code>net1 %v% "drink" &lt;- drink[ , 1 ]</code><br />
+<li>Add the attribute drink to the network object:
+<code>net1 %v% "drink" &lt;- drink[ , 1 ]</code><br />
 </li>
-<li>Color the nodes by drink: <code>plot( net1, vertex.col = "drink", xlab = 'friendship t1' )</code><br />
+<li>Color the nodes by drink:
+<code>plot( net1, vertex.col = "drink", xlab = 'friendship t1' )</code><br />
 </li>
 <li>Scale the vertex by degree of nodes!
 <ul>
-<li>First calculate degree: <code>deg &lt;- rowSums( as.matrix( net1 ) )# NB:  rowSums() is defined for class matrix</code></li>
-<li>Have a look at the degree distribution: <code>table( deg, useNA = 'always' )</code></li>
+<li>First calculate degree:
+<code>deg &lt;- rowSums( as.matrix( net1 ) )# NB:  rowSums() is defined for class matrix</code></li>
+<li>Have a look at the degree distribution:
+<code>table( deg, useNA = 'always' )</code></li>
 </ul></li>
 </ul>
-<p>Now do the desired plot: <code>plot( net1, vertex.col = "drink", vertex.cex = (deg + 1)/1.5 )</code></p>
+<p>Now do the desired plot:
+<code>plot( net1, vertex.col = "drink", vertex.cex = (deg + 1)/1.5 )</code></p>
 <pre class="r test"><code># add the attribute drink to the network object
 
 net1 %v% &quot;drink&quot; &lt;- drink[, 1]
@@ -586,8 +599,10 @@ plot(net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5)</code></p
 <hr />
 </div>
 </div>
-<div id="plot-the-three-waves-of-data" class="section level2">
-<h2><span class="header-section-number">0.7</span> Plot the three waves of data</h2>
+<div id="plot-the-three-waves-of-data" class="section level2"
+number="0.7">
+<h2><span class="header-section-number">0.7</span> Plot the three waves
+of data</h2>
 <pre class="r test"><code># Add drink to waves 2 and 3
 net2 %v% &quot;drink&quot; &lt;- drink[, 2]
 net3 %v% &quot;drink&quot; &lt;- drink[, 3]
@@ -602,27 +617,38 @@ plot(net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5)
 plot(net2, vertex.col = &quot;drink&quot;, vertex.cex = (deg2 + 1)/1.5)
 plot(net3, vertex.col = &quot;drink&quot;, vertex.cex = (deg3 + 1)/1.5)</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p>Each time we make a plot the coordinates move - because always the starting values are random. We can also save coordinates and use them for later plotting:</p>
+<p>Each time we make a plot the coordinates move - because always the
+starting values are random. We can also save coordinates and use them
+for later plotting:</p>
 <pre class="r test"><code>par(mfrow = c(1, 3))
 coordin &lt;- plot(net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5)
 plot(net2, coord = coordin, vertex.col = &quot;drink&quot;, vertex.cex = (deg2 + 1)/1.5)
 plot(net3, coord = coordin, vertex.col = &quot;drink&quot;, vertex.cex = (deg3 + 1)/1.5)</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p>To get coordinates based on all three waves: <code>coordin &lt;-  plot( net1 + net2 + net3 )</code>.<br />
-For more plotting options, try the <code>gplot</code> function in the <code>sna</code> library. And try <code>?gplot</code> and <code>?gplot.layout</code>.</p>
+<p>To get coordinates based on all three waves:
+<code>coordin &lt;-  plot( net1 + net2 + net3 )</code>.<br />
+For more plotting options, try the <code>gplot</code> function in the
+<code>sna</code> library. And try <code>?gplot</code> and
+<code>?gplot.layout</code>.</p>
 <hr />
 </div>
-<div id="basic-network-statistics" class="section level2 tabset tabset-fade">
-<h2><span class="header-section-number">0.8</span> Basic network statistics</h2>
-<p>The package <code>sna</code> can be used for a variety of descriptions and analyses. The following are examples of some important graph level statistics</p>
-<div id="density" class="section level3">
+<div id="basic-network-statistics"
+class="section level2 tabset tabset-fade" number="0.8">
+<h2 class="tabset tabset-fade"><span
+class="header-section-number">0.8</span> Basic network statistics</h2>
+<p>The package <code>sna</code> can be used for a variety of
+descriptions and analyses. The following are examples of some important
+graph level statistics</p>
+<div id="density" class="section level3" number="0.8.1">
 <h3><span class="header-section-number">0.8.1</span> density</h3>
 <pre class="r test"><code>gden(net1)  # density</code></pre>
 <pre class="test2"><code>#&gt; [1] 0.04612245</code></pre>
 <hr />
 </div>
-<div id="symmetry-and-reciprocity" class="section level3">
-<h3><span class="header-section-number">0.8.2</span> symmetry and reciprocity</h3>
+<div id="symmetry-and-reciprocity" class="section level3"
+number="0.8.2">
+<h3><span class="header-section-number">0.8.2</span> symmetry and
+reciprocity</h3>
 <pre class="r test"><code>grecip(net1)  # proportion of dyads that are symmetric</code></pre>
 <pre class="test2"><code>#&gt;       Mut 
 #&gt; 0.9714286</code></pre>
@@ -631,37 +657,25 @@ For more plotting options, try the <code>gplot</code> function in the <code>sna<
 #&gt; 0.527027</code></pre>
 <hr />
 </div>
-<div id="transitivity" class="section level3">
+<div id="transitivity" class="section level3" number="0.8.3">
 <h3><span class="header-section-number">0.8.3</span> transitivity</h3>
 <pre class="r test"><code>gtrans(net1)  # transitivity</code></pre>
-<pre><code>#&gt; Warning in if (is.edgelist.sna(z)) {: the condition has length &gt; 1 and only the first element will
-#&gt; be used
-
-#&gt; Warning in if (is.edgelist.sna(z)) {: the condition has length &gt; 1 and only the first element will
-#&gt; be used
-
-#&gt; Warning in if (is.edgelist.sna(z)) {: the condition has length &gt; 1 and only the first element will
-#&gt; be used
-
-#&gt; Warning in if (is.edgelist.sna(z)) {: the condition has length &gt; 1 and only the first element will
-#&gt; be used
-
-#&gt; Warning in if (is.edgelist.sna(z)) {: the condition has length &gt; 1 and only the first element will
-#&gt; be used</code></pre>
 <pre class="test2"><code>#&gt; [1] 0.3873874</code></pre>
 <hr />
 </div>
 </div>
-<div id="dyad-and-triad-census" class="section level2 tabset tabset-fade">
-<h2><span class="header-section-number">0.9</span> Dyad and triad census</h2>
-<div id="dyad-census" class="section level3">
+<div id="dyad-and-triad-census"
+class="section level2 tabset tabset-fade" number="0.9">
+<h2 class="tabset tabset-fade"><span
+class="header-section-number">0.9</span> Dyad and triad census</h2>
+<div id="dyad-census" class="section level3" number="0.9.1">
 <h3><span class="header-section-number">0.9.1</span> Dyad census</h3>
 <pre class="r test"><code>dyad.census(net1)</code></pre>
 <pre class="test2"><code>#&gt;      Mut Asym Null
 #&gt; [1,]  39   35 1151</code></pre>
 <hr />
 </div>
-<div id="triad-census" class="section level3">
+<div id="triad-census" class="section level3" number="0.9.2">
 <h3><span class="header-section-number">0.9.2</span> Triad census</h3>
 <pre class="r test"><code>triad.census(net1)</code></pre>
 <pre class="test2"><code>#&gt;        003  012  102 021D 021U 021C 111D 111U 030T 030C 201 120D 120U 120C 210 300
@@ -669,8 +683,9 @@ For more plotting options, try the <code>gplot</code> function in the <code>sna<
 <hr />
 </div>
 </div>
-<div id="outdegree-distribution" class="section level2">
-<h2><span class="header-section-number">0.10</span> (out)degree distribution</h2>
+<div id="outdegree-distribution" class="section level2" number="0.10">
+<h2><span class="header-section-number">0.10</span> (out)degree
+distribution</h2>
 <p>Of course for a symmetric network outdegree=indegree.</p>
 <pre class="r test"><code>outdegree &lt;- degree(net1, cmode = &quot;outdegree&quot;)
 outdegree  #outgoing ties of each note</code></pre>
@@ -683,9 +698,11 @@ outdegree  #outgoing ties of each note</code></pre>
 #&gt;    0    2    2    3    5</code></pre>
 <hr />
 </div>
-<div id="distance-and-connectivity" class="section level2 tabset tabset-fade">
-<h2><span class="header-section-number">0.11</span> distance and connectivity</h2>
-<div id="distance" class="section level3">
+<div id="distance-and-connectivity"
+class="section level2 tabset tabset-fade" number="0.11">
+<h2 class="tabset tabset-fade"><span
+class="header-section-number">0.11</span> distance and connectivity</h2>
+<div id="distance" class="section level3" number="0.11.1">
 <h3><span class="header-section-number">0.11.1</span> distance</h3>
 <pre class="r test"><code>dist &lt;- geodist(net1, inf.replace = Inf, count.paths = TRUE)
 # calculate the geodesic distance (shortest path length) matrix
@@ -754,7 +771,7 @@ head(dist$counts)</code></pre>
 #&gt; 1811  558  100   20    8    3</code></pre>
 <hr />
 </div>
-<div id="connectivity" class="section level3">
+<div id="connectivity" class="section level3" number="0.11.2">
 <h3><span class="header-section-number">0.11.2</span> connectivity</h3>
 <p>Reachability matrix, see <code>?reachability</code>.</p>
 <pre class="r test"><code>reach &lt;- reachability(net1)  # calculate the reachability matrix
@@ -790,8 +807,9 @@ head(reach)</code></pre>
 <hr />
 </div>
 </div>
-<div id="network-autocorrelation" class="section level2">
-<h2><span class="header-section-number">0.12</span> Network autocorrelation</h2>
+<div id="network-autocorrelation" class="section level2" number="0.12">
+<h2><span class="header-section-number">0.12</span> Network
+autocorrelation</h2>
 <p>Moran’s autocorrelation for outgoing ties:</p>
 <pre class="r test"><code>nacf(net1, drink[, 1], type = &quot;moran&quot;, neighborhood.type = &quot;out&quot;)[2]</code></pre>
 <pre class="test2"><code>#&gt;         1 
@@ -813,11 +831,12 @@ head(reach)</code></pre>
 <pre class="test2"><code>#&gt;         1 
 #&gt; 0.4162185</code></pre>
 <hr />
-<p><a href="/rscript01.html"><strong>Next: VariableFormat FOR PREPARING DATA FOR RSIENA</strong></a></p>
+<p><a href="/rscript01.html"><strong>Next: VariableFormat FOR PREPARING
+DATA FOR RSIENA</strong></a></p>
 <hr />
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlJTaWVuYS1zY3JpcHRzIg0KYXV0aG9yOiAnW0pvY2hlbSBUb2xzbWFdKGh0dHBzOi8vd3d3LmpvY2hlbXRvbHNtYS5ubCkgLSBSYWRib3VkIFVuaXZlcnNpdHksIHRoZSBOZXRoZXJsYW5kcycNCmJpYmxpb2dyYXBoeTogcmVmZXJlbmNlcy5iaWINCmRhdGU6ICJMYXN0IGNvbXBpbGVkIG9uIGByIGZvcm1hdChTeXMudGltZSgpLCAnJUIsICVZJylgIg0Kb3V0cHV0OiANCiAgaHRtbF9kb2N1bWVudDoNCiAgICB0b2M6ICB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlDQogICAgY29kZV9mb2xkaW5nOiBzaG93DQogICAgY29kZV9kb3dubG9hZDogeWVzDQotLS0NCg0KYGBge3IsIGdsb2JhbHNldHRpbmdzLCBlY2hvPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQ0KbGlicmFyeShrbml0cikNCm9wdHNfY2h1bmskc2V0KHRpZHkub3B0cz1saXN0KHdpZHRoLmN1dG9mZj0xMDApLHRpZHk9VFJVRSwgd2FybmluZyA9IEZBTFNFLCBtZXNzYWdlID0gRkFMU0UsY29tbWVudCA9ICIjPiIsIGNhY2hlPVRSVUUsIGNsYXNzLnNvdXJjZT1jKCJ0ZXN0IiksIGNsYXNzLm91dHB1dD1jKCJ0ZXN0MiIpKQ0Kb3B0aW9ucyh3aWR0aCA9IDEwMCkNCnJnbDo6c2V0dXBLbml0cigpDQoNCg0KY29sb3JpemUgPC0gZnVuY3Rpb24oeCwgY29sb3IpIHsNCiAgaWYgKGtuaXRyOjppc19sYXRleF9vdXRwdXQoKSkgew0KICAgIHNwcmludGYoIlxcdGV4dGNvbG9yeyVzfXslc30iLCBjb2xvciwgeCkNCiAgfSBlbHNlIGlmIChrbml0cjo6aXNfaHRtbF9vdXRwdXQoKSkgew0KICAgIHNwcmludGYoIjxzcGFuIHN0eWxlPSdjb2xvcjogJXM7Jz4lczwvc3Bhbj4iLCBjb2xvciwgDQogICAgICB4KQ0KICB9IGVsc2UgeA0KfQ0KDQpgYGANCg0KYGBge3Iga2xpcHB5LCBlY2hvPUZBTFNFLCBpbmNsdWRlPVRSVUV9DQprbGlwcHk6OmtsaXBweShwb3NpdGlvbiA9IGMoJ3RvcCcsICdyaWdodCcpKQ0KI2tsaXBweTo6a2xpcHB5KGNvbG9yID0gJ2RhcmtyZWQnKQ0KI2tsaXBweTo6a2xpcHB5KHRvb2x0aXBfbWVzc2FnZSA9ICdDbGljayB0byBjb3B5JywgdG9vbHRpcF9zdWNjZXNzID0gJ0RvbmUnKQ0KYGBgDQoNCmBgYHtjc3MsIGVjaG89RkFMU0V9DQpwcmUudGVzdCB7DQogIG1heC1oZWlnaHQ6IDMwMHB4Ow0KICBvdmVyZmxvdy15OiBhdXRvOw0KICBvdmVyZmxvdy14OiBhdXRvOw0KICBtYXJnaW46IDBweDsNCn0NCg0KcHJlLnRlc3QyIHsNCiAgbWF4LWhlaWdodDogMzAwcHg7DQogIG92ZXJmbG93LXk6IGF1dG87DQogIG92ZXJmbG93LXg6IGF1dG87DQogIG1hcmdpbjogMHB4Ow0KICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZQ0KfQ0KDQoNCmgxLCAuaDEsIGgyLCAuaDIsIGgzLCAuaDMgew0KICAgIG1hcmdpbi10b3A6IDI0cHg7DQp9DQoNCg0KYGBgDQoNCi0tLS0NCg0KVGhpcyB3ZWJzaXRlIGNvbnZlcnRlZCB0aGUgZm9sbG93aW5nIG9yaWdpbmFsIC5SIHNjcmlwdHMgaW50byAucm1kIGZpbGVzLiANCg0KLSBSc2NyaXB0MDFEYXRhRm9ybWF0LlIgIA0KLSBSU2NyaXB0U05BRGVzY3JpcHRpdmVzLlIgIA0KLSBSc2NyaXB0MDJTaWVuYVZhcmlhYmxlRm9ybWF0LlIgIA0KLSBSc2NyaXB0MDNTaWVuYVJ1bk1vZGVsLlIgIA0KLSBSc2NyaXB0MDRTaWVuYUJlaGF2aW91ci5SDQoNClBsZWFzZSB2aXNpdCBbR2l0SHViXShodHRwczovL2dpdGh1Yi5jb20vc25sYWItbmwvcnNpZW5hL3RyZWUvbWFpbi9pbnN0L3NjcmlwdHMpIGZvciB0aGUgbGF0ZXN0IC5SIGZpbGVzLiANCg0KPiBUbyBkb3dubG9hZCB0aGlzIC5ybWQgZmlsZSB1c2UgdGhlIGJ1dHRvbiBpbiB0aGUgdXBwZXIgcmlnaHQgY29ybmVyIG9mIHlvdXIgc2NyZWVuLiAgDQo+IFRvIGNvcHkgdGhlIFIgY29kZSBpbiB0aGUgY29kZS1jaHVua3MsIHVzZSB0aGUgY29weS1wYXN0ZSBidXR0b24gaW4gdGhlIHVwcGVyIHJpZ2h0IGNvcm5lciBvZiB0aGUgY29kZS1jaHVua3MuIA0KDQotLS0tDQoNCiMjIERhdGENCkFsbCBmaWxlcyAoZGF0YSwgc2NyaXB0cywgZXRjLikgY2FuIGFsc28gYmUgZm91bmQgb24gW0dpdGh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL0pvY2hlbVRvbHNtYS9Sc2llbmEtc2NyaXB0cykNCg0KLS0tLQ0KDQojIyBDb250YWN0DQpTcGVjaWZpYyBxdWVzdGlvbnMgd2l0aCByZXNwZWN0IHRvIHRoZSAucm1kIGZpbGVzIGNhbiBiZSBhZGRyZXNzZWQgdG86IFtKb2NoZW0gVG9sc21hXShtYWlsdG86ai50b2xzbWFAcnUubmwpLiAgDQoNCkZvciBxdWVzdGlvbnMgb24gUlNpZW5hIHBsZWFzZSB2aXNpdCB0aGUgZGVzaWduYXRlZCBbR2l0SHViXShodHRwczovL2dpdGh1Yi5jb20vc25sYWItbmwvcnNpZW5hKSBwYWdlLiANCg0KLS0tLSAgDQoNCiMjIEludHJvZHVjdGlvbiANCg0KKipSc2NyaXB0U05BRGVzY3JpcHRpdmVzLlI6IGEgc2NyaXB0IGZvciB0aGUgaW50cm9kdWN0aW9uIHRvIFJTaWVuYSoqICANCg0KLSAqKlJzY3JpcHQwMURhdGFGb3JtYXQuUioqIGlzIGZvbGxvd2VkIGJ5ICANCi0gKipSU2NyaXB0U05BRGVzY3JpcHRpdmVzLlIqKiwgY29kZSBmb3IgZGVzY3JpcHRpdmUgYW5hbHlzaXMgb2YgdGhlIGRhdGEsIGFuZCAgDQotICoqUnNjcmlwdDAyU2llbmFWYXJpYWJsZUZvcm1hdC5SKiosIHdoaWNoIGZvcm1hdHMgZGF0YSBhbmQgc3BlY2lmaWVzIHRoZSBtb2RlbCwgYW5kICANCi0gKipSc2NyaXB0MDNTaWVuYVJ1bk1vZGVsLlIqKiwgd2hpY2ggcnVucyB0aGUgbW9kZWwgYW5kIGVzdGltYXRlcyBwYXJhbWV0ZXJzICANCi0gKipSc2NyaXB0MDRTaWVuYUJlaGF2aW91ci5SKiosIHdoaWNoIGlsbHVzdHJhdGVzIGFuIGV4YW1wbGUgb2YgYW5hbHlzaW5nIHRoZSBjb2V2b2x1dGlvbiBvZiBuZXR3b3JrcyBhbmQgYmVoYXZpb3VyICANCi0gVGhlIGVudGlyZSBtb2RlbCBmaXR0aW5nIGlzIHN1bW1hcmlzZWQgYXQgdGhlIGVuZCBvZiAqKlJzY3JpcHQwM1NpZW5hUnVuTW9kZWwuUioqICh3aXRob3V0IGNvbW1lbnRzKS4gDQoNClRoaXMgaXMgYW4gUiBzY3JpcHQgZm9yIGdldHRpbmcgc3RhcnRlZCB3aXRoIFJTaWVuYSwgd3JpdHRlbiBieSBSb2JpbiBHYXV0aGllciwgVG9tIFNuaWpkZXJzLCBSdXRoIFJpcGxleSwgSm9oYW4gS29za2luZW4sIGFuZCBQYXVsaW5hIFByZWNpYWRvLCB3aXRoIHNvbWUgZXhhbXBsZXMgYm9ycm93ZWQgZnJvbSBDaHJpc3RpYW4gU3RlZ2xpY2guICANCkxpbmVzIHN0YXJ0aW5nIHdpdGggIyBhcmUgbm90IHByb2Nlc3NlZCBieSBSIGJ1dCB0cmVhdGVkIGFzIGNvbW1lbnRzLiBUaGUgc2NyaXB0IGhhcyBhIGxvdCBvZiBleHBsYW5hdGlvbiBvZiBSIHBvc3NpYmlsaXRpZXMgdGhhdCB3aWxsIGJlIGZhbWlsaWFyIGZvciByZWFkZXJzIHdlbGwgYWNxdWFpbnRlZCB3aXRoIFIsIGFuZCBjYW4gYmUgc2tpcHBlZCBieSB0aGVtLiAgDQoNCi0tLSAgDQoNCiMjIEdldHRpbmcgU3RhcnRlZCAgDQoNCkZvciB0aGlzIHNjcmlwdCwgeW91IHdpbGwgbmVlZCB0aGUgZGF0YSByZWFkIGFuZCBtb2RpZmllZCBpbiB0aGUgc2NyaXB0IFJzY3JpcHQwMURhdGFGb3JtYXQuUi4gSWYgeW91IGhhdmUgYWxyZWFkeSByYW4gdGhhdCBzY3JpcHQsIHlvdSBtYXkgbG9hZCB0aGUgcmVxdWlyZWQgd29ya3NwYWNlOiANCg0KYGBge3IsIGV2YWw9RkFMU0V9DQpsb2FkKCJXb3Jrc3BhY2VSc2NyaXB0MDEuUkRhdGEiKQ0KYGBgDQogIA0KICANCkFsdGVybmF0aXZlbHksIHlvdSBtYXkgcnVuIHRoZSBmb2xsb3dpbmcgY29kZS1jaHVuazogDQoNCmBgYHtyfQ0KbGlicmFyeShSU2llbmEpICN0byBhY2Nlc3MgdGhlIGJ1aWxkLWluIGRhdGENCmxpYnJhcnkobmV0d29yaykgI3RvIGNvbnZlcnQNCmZyaWVuZC5kYXRhLncxIDwtIHM1MDENCmZyaWVuZC5kYXRhLncyIDwtIHM1MDINCmZyaWVuZC5kYXRhLnczIDwtIHM1MDMNCmRyaW5rIDwtIHM1MGENCnNtb2tlIDwtIHM1MHMNCg0KbmV0MSA8LSBhcy5uZXR3b3JrKGZyaWVuZC5kYXRhLncxKQ0KbmV0MiA8LSBhcy5uZXR3b3JrKGZyaWVuZC5kYXRhLncyKQ0KbmV0MyA8LSBhcy5uZXR3b3JrKGZyaWVuZC5kYXRhLnczKQ0KYGBgDQotLS0gIA0KDQoNCiMjIFZpc3VhbCBpbnNwZWN0aW9uDQoNCkEgdmlzdWFsIGluc3BlY3Rpb24gb2YgdGhlIGFkamFjZW5jeSBtYXRyaWNlcyBjYW4gc29tZXRpbWVzIGJlIHVzZWZ1bC4gVGhpcyB3aWxsLCBmb3IgZXhhbXBsZSwgaGVscCBpbiBoaWdobGlnaHRpbmcgb3V0bGllcnMgd2l0aCByZXNwZWN0IHRvIG91dGRlZ3JlZXMgb3IgaW5kZWdyZWVzLCBpZiB0aGVyZSBhcmUgYW55IG9mIHN1Y2ggb3V0bGllcnMuICANCg0KKipzb2Npb21hdHJpeCBuZXQxKiogDQoNCmBgYHtyfQ0KcmVxdWlyZShzbmEpDQpwbG90LnNvY2lvbWF0cml4KCBuZXQxLCBkcmF3bGFiID0gRiwgZGlhZ2xhYiA9IEYsIHhsYWIgPSAnZnJpZW5kc2hpcCB0MScgKQ0KYGBgDQoNCioqc29jaW9tYXRyaXggbmV0MioqDQoNCmBgYHtyfQ0KcmVxdWlyZShzbmEpDQpwbG90LnNvY2lvbWF0cml4KCBuZXQyLGRyYXdsYWIgPSBGLCBkaWFnbGFiID0gRiwgeGxhYiA9ICdmcmllbmRzaGlwIHQyJyApDQpgYGANCg0KKipzb2Npb21hdHJpeCBuZXQzKioNCg0KYGBge3J9DQpyZXF1aXJlKHNuYSkNCnBsb3Quc29jaW9tYXRyaXgoIG5ldDMsZHJhd2xhYiA9IEYsIGRpYWdsYWIgPSBGLCB4bGFiID0gJ2ZyaWVuZHNoaXAgdDMnICkNCg0KYGBgDQoNCi0tLSAgDQoNCg0KIyMgUGxvdHRpbmcgbmV0d29yayBkYXRhDQoNClRoZSBjbGFzcyAqYHIgY2xhc3MobmV0MSlgKiB3aXRoIGF0dHJpYnV0ZXMgKmByIG5hbWVzKGF0dHJpYnV0ZXMoIG5ldDEgKSlgKiwgaGFzIHNwZWNpYWwgbWV0aG9kcyBhc3NvY2lhdGVkIHdpdGggaXQuIFdoaWxlICBgcGxvdCggZnJpZW5kLmRhdGEudzEgKWAgb25seSBwcm9kdWNlcyBhIHJhdGhlciBkdWxsIHBsb3Qgb2YNCnRoZSBmaXJzdCB0d28gY29sdW1ucywgYHBsb3QoIG5ldDEsIHhsYWIgPSAnZnJpZW5kc2hpcCB0MScgKWAgcHJvZHVjZXMgYSBuaWNlIHNvY2lvZ3JhbS4gDQoNCmBgYHtyfQ0KIyBUaGUgY2xhc3MsDQpjbGFzcyggbmV0MSApDQojIHdpdGggYXR0cmlidXRlcw0KYXR0cmlidXRlcyggbmV0MSApDQojIGhhcyBzcGVjaWFsIG1ldGhvZHMgYXNzb2NpYXRlZCB3aXRoIGl0Lg0KIyBXaGlsZSAgDQpwbG90KCBmcmllbmQuZGF0YS53MSwgbWFpbj0icGxvdCggZnJpZW5kLmRhdGEudzEpIiApIA0KIyBvbmx5IHByb2R1Y2VzIGEgcmF0aGVyIGR1bGwgcGxvdCBvZiB0aGUgZmlyc3QgdHdvIGNvbHVtbnMsDQpwbG90KCBuZXQxLCB4bGFiID0gJ2ZyaWVuZHNoaXAgdDEnLCBtYWluPSJwbG90KG5ldDEpIiApDQojIHByb2R1Y2VzIGEgbmljZSBzb2Npb2dyYW0NCmBgYA0KICANCiAgDQoNCiMjIyBUd2Vha2luZyBuZXR3b3JrIHBsb3QgIA0KDQotIEFkZCB0aGUgYXR0cmlidXRlIGRyaW5rIHRvIHRoZSBuZXR3b3JrIG9iamVjdDogYG5ldDEgJXYlICJkcmluayIgPC0gZHJpbmtbICwgMSBdYCAgDQotIENvbG9yIHRoZSBub2RlcyBieSBkcmluazogYHBsb3QoIG5ldDEsIHZlcnRleC5jb2wgPSAiZHJpbmsiLCB4bGFiID0gJ2ZyaWVuZHNoaXAgdDEnIClgICANCi0gU2NhbGUgdGhlIHZlcnRleCBieSBkZWdyZWUgb2Ygbm9kZXMhDQogICogRmlyc3QgY2FsY3VsYXRlIGRlZ3JlZTogYGRlZyA8LSByb3dTdW1zKCBhcy5tYXRyaXgoIG5ldDEgKSApIyBOQjogIHJvd1N1bXMoKSBpcyBkZWZpbmVkIGZvciBjbGFzcyBtYXRyaXhgIA0KICAqIEhhdmUgYSBsb29rIGF0IHRoZSBkZWdyZWUgZGlzdHJpYnV0aW9uOiBgdGFibGUoIGRlZywgdXNlTkEgPSAnYWx3YXlzJyApYCANCg0KTm93IGRvIHRoZSBkZXNpcmVkIHBsb3Q6IGBwbG90KCBuZXQxLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgdmVydGV4LmNleCA9IChkZWcgKyAxKS8xLjUgKWAgDQoNCmBgYHtyfQ0KIyBhZGQgdGhlIGF0dHJpYnV0ZSBkcmluayB0byB0aGUgbmV0d29yayBvYmplY3QNCg0KbmV0MSAldiUgImRyaW5rIiA8LSBkcmlua1sgLCAxIF0NCg0KIyBjb2xvciB0aGUgbm9kZXMgYnkgZHJpbmsNCg0KcGxvdCggbmV0MSwgdmVydGV4LmNvbCA9ICJkcmluayIsIHhsYWIgPSAnZnJpZW5kc2hpcCB0MScgKQ0KDQoNCiMgTm93IGxldCdzIGNvbG9yIHRoZSBub2RlcyBieSBkcmluayBhbmQgc2NhbGUgdGhlIHZlcnRleCBieSBkZWdyZWUgb2Ygbm9kZXMhDQojDQojIEZpcnN0IGNhbGN1bGF0ZSBkZWdyZWU6DQoNCmRlZyA8LSByb3dTdW1zKCBhcy5tYXRyaXgoIG5ldDEgKSApIyBOQjogIHJvd1N1bXMoKSBpcyBkZWZpbmVkIGZvciBjbGFzcyBtYXRyaXgNCg0KIyBoYXZlIGEgbG9vayBhdCB0aGUgZGVncmVlIGRpc3RyaWJ1dGlvbg0KDQp0YWJsZSggZGVnLCB1c2VOQSA9ICdhbHdheXMnICkNCg0KIyBOb3cgZG8gdGhlIGRlc2lyZWQgcGxvdDoNCg0KcGxvdCggbmV0MSwgdmVydGV4LmNvbCA9ICJkcmluayIsIHZlcnRleC5jZXggPSAoZGVnICsgMSkvMS41ICkNCmBgYA0KDQotLS0gIA0KDQojIyBQbG90IHRoZSB0aHJlZSB3YXZlcyBvZiBkYXRhIA0KDQpgYGB7cn0NCiMgQWRkIGRyaW5rIHRvIHdhdmVzIDIgYW5kIDMNCm5ldDIgJXYlICJkcmluayIgPC0gZHJpbmtbICwgMiBdDQpuZXQzICV2JSAiZHJpbmsiIDwtIGRyaW5rWyAsIDMgXQ0KZGVnMiA8LSByb3dTdW1zKCBhcy5tYXRyaXgoIG5ldDIgKSApDQpkZWczIDwtIHJvd1N1bXMoIGFzLm1hdHJpeCggbmV0MyApICkNCg0KIyBDcmVhdGUgYSBzZXQgb2YgcGFuZWxzICggMSByb3cgYnkgMyBjb2x1bW5zLCBvciAzIGNvbHVtbnMgYnkgMSByb3cpDQpwYXIoIG1mcm93ID0gYyggMSwgMyApICkNCg0KIyBjcmVhdGluZyB0aHJlZSBwbG90cyBhZnRlciBlYWNoIG90aGVyIHdpbGwgcGxhY2UgdGhlbSBpbiBjb25zZWN1dGl2ZSBwYW5lbHMNCnBsb3QoIG5ldDEsIHZlcnRleC5jb2wgPSAiZHJpbmsiLCB2ZXJ0ZXguY2V4ID0gKGRlZyArIDEpLzEuNSApDQpwbG90KCBuZXQyLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgdmVydGV4LmNleCA9IChkZWcyICsgMSkvMS41ICkNCnBsb3QoIG5ldDMsIHZlcnRleC5jb2wgPSAiZHJpbmsiLCB2ZXJ0ZXguY2V4ID0gKGRlZzMgKyAxKS8xLjUgKQ0KDQpgYGANCg0KRWFjaCB0aW1lIHdlIG1ha2UgYSBwbG90IHRoZSBjb29yZGluYXRlcyBtb3ZlIC0gYmVjYXVzZSBhbHdheXMgdGhlIHN0YXJ0aW5nIHZhbHVlcyBhcmUgcmFuZG9tLiBXZSBjYW4gYWxzbyBzYXZlIGNvb3JkaW5hdGVzIGFuZCB1c2UgdGhlbSBmb3IgbGF0ZXIgcGxvdHRpbmc6DQoNCmBgYHtyfQ0KcGFyKCBtZnJvdyA9IGMoIDEsIDMgKSApDQpjb29yZGluIDwtICBwbG90KCBuZXQxLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgdmVydGV4LmNleCA9IChkZWcgKzEgKS8xLjUgKQ0KcGxvdCggbmV0MiwgY29vcmQgPSBjb29yZGluLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgdmVydGV4LmNleCA9IChkZWcyICsgMSkvMS41ICkNCnBsb3QoIG5ldDMsIGNvb3JkID0gY29vcmRpbiwgdmVydGV4LmNvbCA9ICJkcmluayIsIHZlcnRleC5jZXggPSAoZGVnMyArIDEpIC8xLjUgKQ0KYGBgDQoNClRvIGdldCBjb29yZGluYXRlcyBiYXNlZCBvbiBhbGwgdGhyZWUgd2F2ZXM6IGBjb29yZGluIDwtICBwbG90KCBuZXQxICsgbmV0MiArIG5ldDMgKWAuICANCkZvciBtb3JlIHBsb3R0aW5nIG9wdGlvbnMsIHRyeSB0aGUgYGdwbG90YCBmdW5jdGlvbiBpbiB0aGUgYHNuYWAgbGlicmFyeS4gQW5kIHRyeSBgP2dwbG90YCBhbmQgYD9ncGxvdC5sYXlvdXRgLg0KDQotLS0gIA0KDQojIyBCYXNpYyBuZXR3b3JrIHN0YXRpc3RpY3Mgey50YWJzZXQgLnRhYnNldC1mYWRlfQ0KDQpUaGUgcGFja2FnZSBgc25hYCBjYW4gYmUgdXNlZCBmb3IgYSB2YXJpZXR5IG9mIGRlc2NyaXB0aW9ucyBhbmQgYW5hbHlzZXMuIFRoZSBmb2xsb3dpbmcgYXJlIGV4YW1wbGVzIG9mIHNvbWUgaW1wb3J0YW50IGdyYXBoIGxldmVsIHN0YXRpc3RpY3MNCg0KIyMjIGRlbnNpdHkNCg0KYGBge3J9DQpnZGVuKCBuZXQxICkgIyBkZW5zaXR5DQpgYGANCi0tLSAgDQoNCiMjIyBzeW1tZXRyeSBhbmQgcmVjaXByb2NpdHkNCg0KYGBge3J9DQpncmVjaXAoIG5ldDEgKSAjIHByb3BvcnRpb24gb2YgZHlhZHMgdGhhdCBhcmUgc3ltbWV0cmljDQpncmVjaXAoIG5ldDEsIG1lYXN1cmUgPSAiZHlhZGljLm5vbm51bGwiICkgIyByZWNpcHJvY2l0eSwgaWdub3JpbmcgdGhlIG51bGwgZHlhZHMNCmBgYA0KLS0tICANCg0KIyMjIHRyYW5zaXRpdml0eQ0KYGBge3IsIHdhcm5pbmc9IkZBTFNFIn0NCmd0cmFucyggbmV0MSApICMgdHJhbnNpdGl2aXR5DQpgYGANCi0tLSAgDQoNCiMjIER5YWQgYW5kIHRyaWFkIGNlbnN1cyB7LnRhYnNldCAudGFic2V0LWZhZGV9DQoNCiMjIyBEeWFkIGNlbnN1cw0KDQpgYGB7cn0NCmR5YWQuY2Vuc3VzKCBuZXQxICkNCmBgYA0KLS0tICANCg0KDQojIyMgVHJpYWQgY2Vuc3VzDQoNCmBgYHtyfQ0KdHJpYWQuY2Vuc3VzKCBuZXQxICkNCmBgYA0KLS0tICANCg0KIyMgKG91dClkZWdyZWUgZGlzdHJpYnV0aW9uIA0KDQpPZiBjb3Vyc2UgZm9yIGEgc3ltbWV0cmljIG5ldHdvcmsgb3V0ZGVncmVlPWluZGVncmVlLg0KDQpgYGB7cn0NCm91dGRlZ3JlZSA8LSBkZWdyZWUoIG5ldDEsIGNtb2RlID0gIm91dGRlZ3JlZSIgKQ0Kb3V0ZGVncmVlICNvdXRnb2luZyB0aWVzIG9mIGVhY2ggbm90ZQ0KDQpoaXN0KCBvdXRkZWdyZWUgKQ0KcXVhbnRpbGUoIG91dGRlZ3JlZSApDQpgYGANCi0tLSAgDQoNCiMjIGRpc3RhbmNlIGFuZCBjb25uZWN0aXZpdHkgey50YWJzZXQgLnRhYnNldC1mYWRlfQ0KDQojIyMgZGlzdGFuY2UgDQoNCmBgYHtyfQ0KZGlzdCA8LSBnZW9kaXN0KG5ldDEsIGluZi5yZXBsYWNlID0gSW5mLCBjb3VudC5wYXRocyA9IFRSVUUpDQojIGNhbGN1bGF0ZSB0aGUgZ2VvZGVzaWMgZGlzdGFuY2UgKHNob3J0ZXN0IHBhdGggbGVuZ3RoKSBtYXRyaXgNCmhlYWQoZGlzdCRnZCkNCiMgbWF0cml4IG9mIGdlb2Rlc2ljIGRpc3RhbmNlcw0KaGVhZChkaXN0JGNvdW50cykNCnRhYmxlKGRpc3QkY291bnRzKQ0KYGBgDQotLS0gIA0KDQojIyMgY29ubmVjdGl2aXR5IA0KDQpSZWFjaGFiaWxpdHkgbWF0cml4LCBzZWUgYD9yZWFjaGFiaWxpdHlgLiANCg0KYGBge3J9DQpyZWFjaCA8LSByZWFjaGFiaWxpdHkoIG5ldDEgKSAgIyBjYWxjdWxhdGUgdGhlIHJlYWNoYWJpbGl0eSBtYXRyaXgNCmhlYWQocmVhY2gpDQpgYGANCi0tLSAgDQoNCiMjIE5ldHdvcmsgYXV0b2NvcnJlbGF0aW9uICANCg0KTW9yYW4ncyBhdXRvY29ycmVsYXRpb24gZm9yIG91dGdvaW5nIHRpZXM6DQoNCmBgYHtyfQ0KDQpuYWNmKG5ldDEsIGRyaW5rWywgMV0sIHR5cGU9Im1vcmFuIiwgbmVpZ2hib3Job29kLnR5cGU9J291dCcpWzJdDQpuYWNmKG5ldDIsIGRyaW5rWywgMl0sIHR5cGU9Im1vcmFuIiwgbmVpZ2hib3Job29kLnR5cGU9J291dCcpWzJdDQpuYWNmKG5ldDMsIGRyaW5rWywgM10sIHR5cGU9Im1vcmFuIiwgbmVpZ2hib3Job29kLnR5cGU9J291dCcpWzJdDQpgYGANCg0KTW9yYW4ncyBhdXRvY29ycmVsYXRpb24gZm9yIG91dGdvaW5nIGFuZCBpbmNvbWluZyB0aWVzOg0KYGBge3J9DQoNCm5hY2YobmV0MSwgZHJpbmtbLCAxXSwgdHlwZT0ibW9yYW4iLCBuZWlnaGJvcmhvb2QudHlwZT0ndG90YWwnKVsyXQ0KbmFjZihuZXQyLCBkcmlua1ssIDJdLCB0eXBlPSJtb3JhbiIsIG5laWdoYm9yaG9vZC50eXBlPSd0b3RhbCcpWzJdDQpuYWNmKG5ldDMsIGRyaW5rWywgM10sIHR5cGU9Im1vcmFuIiwgbmVpZ2hib3Job29kLnR5cGU9J3RvdGFsJylbMl0NCmBgYA0KDQotLS0gDQoNClsqKk5leHQ6IFZhcmlhYmxlRm9ybWF0IEZPUiBQUkVQQVJJTkcgREFUQSBGT1IgUlNJRU5BKipdKC9yc2NyaXB0MDEuaHRtbCkNCg0KLS0tDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkRlc2NyaXB0aXZlcyINCmF1dGhvcjogJ1tKb2NoZW0gVG9sc21hXShodHRwczovL3d3dy5qb2NoZW10b2xzbWEubmwpIC0gUmFkYm91ZCBVbml2ZXJzaXR5LCB0aGUgTmV0aGVybGFuZHMnDQpiaWJsaW9ncmFwaHk6IHJlZmVyZW5jZXMuYmliDQpkYXRlOiAiTGFzdCBjb21waWxlZCBvbiBgciBmb3JtYXQoU3lzLnRpbWUoKSwgJyVCLCAlWScpYCINCm91dHB1dDogDQogIGh0bWxfZG9jdW1lbnQ6DQogICAgdG9jOiAgdHJ1ZQ0KICAgIHRvY19mbG9hdDogdHJ1ZQ0KICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KICAgIGNvZGVfZG93bmxvYWQ6IHllcw0KLS0tDQoNCmBgYHtyLCBnbG9iYWxzZXR0aW5ncywgZWNobz1GQUxTRSwgd2FybmluZz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgcmVzdWx0cz0naGlkZSd9DQpsaWJyYXJ5KGtuaXRyKQ0Kb3B0c19jaHVuayRzZXQodGlkeS5vcHRzPWxpc3Qod2lkdGguY3V0b2ZmPTEwMCksdGlkeT1UUlVFLCB3YXJuaW5nID0gRkFMU0UsIG1lc3NhZ2UgPSBGQUxTRSxjb21tZW50ID0gIiM+IiwgY2FjaGU9VFJVRSwgY2xhc3Muc291cmNlPWMoInRlc3QiKSwgY2xhc3Mub3V0cHV0PWMoInRlc3QyIikpDQpvcHRpb25zKHdpZHRoID0gMTAwKQ0KcmdsOjpzZXR1cEtuaXRyKCkNCg0KDQpjb2xvcml6ZSA8LSBmdW5jdGlvbih4LCBjb2xvcikgew0KICBpZiAoa25pdHI6OmlzX2xhdGV4X291dHB1dCgpKSB7DQogICAgc3ByaW50ZigiXFx0ZXh0Y29sb3J7JXN9eyVzfSIsIGNvbG9yLCB4KQ0KICB9IGVsc2UgaWYgKGtuaXRyOjppc19odG1sX291dHB1dCgpKSB7DQogICAgc3ByaW50ZigiPHNwYW4gc3R5bGU9J2NvbG9yOiAlczsnPiVzPC9zcGFuPiIsIGNvbG9yLCANCiAgICAgIHgpDQogIH0gZWxzZSB4DQp9DQoNCmBgYA0KDQpgYGB7ciBrbGlwcHksIGVjaG89RkFMU0UsIGluY2x1ZGU9VFJVRX0NCmtsaXBweTo6a2xpcHB5KHBvc2l0aW9uID0gYygndG9wJywgJ3JpZ2h0JykpDQoja2xpcHB5OjprbGlwcHkoY29sb3IgPSAnZGFya3JlZCcpDQoja2xpcHB5OjprbGlwcHkodG9vbHRpcF9tZXNzYWdlID0gJ0NsaWNrIHRvIGNvcHknLCB0b29sdGlwX3N1Y2Nlc3MgPSAnRG9uZScpDQpgYGANCg0KYGBge2NzcywgZWNobz1GQUxTRX0NCnByZS50ZXN0IHsNCiAgbWF4LWhlaWdodDogMzAwcHg7DQogIG92ZXJmbG93LXk6IGF1dG87DQogIG92ZXJmbG93LXg6IGF1dG87DQogIG1hcmdpbjogMTBweDsNCn0NCg0KcHJlLnRlc3QyIHsNCiAgbWF4LWhlaWdodDogMzAwcHg7DQogIG92ZXJmbG93LXk6IGF1dG87DQogIG92ZXJmbG93LXg6IGF1dG87DQogIG1hcmdpbjogMTBweDsNCiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGUNCn0NCg0KDQpoMSwgLmgxLCBoMiwgLmgyLCBoMywgLmgzIHsNCiAgICBtYXJnaW4tdG9wOiAyNHB4Ow0KfQ0KDQoNCmBgYA0KDQotLS0tDQoNClRoaXMgd2Vic2l0ZSBjb252ZXJ0ZWQgdGhlIGZvbGxvd2luZyBvcmlnaW5hbCAuUiBzY3JpcHRzIGludG8gLnJtZCBmaWxlcy4gDQoNCi0gUlNjcmlwdFNOQURlc2NyaXB0aXZlcy5SICANCi0gUnNjcmlwdDAxRGF0YUZvcm1hdC5SICANCi0gUnNjcmlwdDAyU2llbmFWYXJpYWJsZUZvcm1hdC5SICANCi0gUnNjcmlwdDAzU2llbmFSdW5Nb2RlbC5SICANCi0gUnNjcmlwdDA0U2llbmFCZWhhdmlvdXIuUg0KDQpQbGVhc2UgdmlzaXQgW0dpdEh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL3NubGFiLW5sL3JzaWVuYS90cmVlL21haW4vaW5zdC9zY3JpcHRzKSBmb3IgdGhlIGxhdGVzdCAuUiBmaWxlcy4gDQoNCj4gVG8gZG93bmxvYWQgdGhpcyAucm1kIGZpbGUgdXNlIHRoZSBidXR0b24gaW4gdGhlIHVwcGVyIHJpZ2h0IGNvcm5lciBvZiB5b3VyIHNjcmVlbi4gIA0KPiBUbyBjb3B5IHRoZSBSIGNvZGUgaW4gdGhlIGNvZGUtY2h1bmtzLCB1c2UgdGhlIGNvcHktcGFzdGUgYnV0dG9uIGluIHRoZSB1cHBlciByaWdodCBjb3JuZXIgb2YgdGhlIGNvZGUtY2h1bmtzLiANCg0KLS0tLQ0KDQojIyBEYXRhDQpBbGwgZmlsZXMgKGRhdGEsIHNjcmlwdHMsIGV0Yy4pIGNhbiBhbHNvIGJlIGZvdW5kIG9uIFtHaXRodWJdKGh0dHBzOi8vZ2l0aHViLmNvbS9Kb2NoZW1Ub2xzbWEvUnNpZW5hLXNjcmlwdHMpDQoNCi0tLS0NCg0KIyMgQ29udGFjdA0KU3BlY2lmaWMgcXVlc3Rpb25zIHdpdGggcmVzcGVjdCB0byB0aGUgLnJtZCBmaWxlcyBjYW4gYmUgYWRkcmVzc2VkIHRvOiBbSm9jaGVtIFRvbHNtYV0obWFpbHRvOmoudG9sc21hQHJ1Lm5sKS4gIA0KDQpGb3IgcXVlc3Rpb25zIG9uIFJTaWVuYSBwbGVhc2UgdmlzaXQgdGhlIGRlc2lnbmF0ZWQgW0dpdEh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL3NubGFiLW5sL3JzaWVuYSkgcGFnZS4gDQoNCi0tLS0gIA0KDQojIyBJbnRyb2R1Y3Rpb24gDQoNCioqUnNjcmlwdFNOQURlc2NyaXB0aXZlcy5SOiBhIHNjcmlwdCBmb3IgdGhlIGludHJvZHVjdGlvbiB0byBSU2llbmEqKiAgDQoNCi0gKipSc2NyaXB0MDFEYXRhRm9ybWF0LlIqKiBpcyBmb2xsb3dlZCBieSAgDQotICoqUlNjcmlwdFNOQURlc2NyaXB0aXZlcy5SKiosIGNvZGUgZm9yIGRlc2NyaXB0aXZlIGFuYWx5c2lzIG9mIHRoZSBkYXRhLCBhbmQgIA0KLSAqKlJzY3JpcHQwMlNpZW5hVmFyaWFibGVGb3JtYXQuUioqLCB3aGljaCBmb3JtYXRzIGRhdGEgYW5kIHNwZWNpZmllcyB0aGUgbW9kZWwsIGFuZCAgDQotICoqUnNjcmlwdDAzU2llbmFSdW5Nb2RlbC5SKiosIHdoaWNoIHJ1bnMgdGhlIG1vZGVsIGFuZCBlc3RpbWF0ZXMgcGFyYW1ldGVycyAgDQotICoqUnNjcmlwdDA0U2llbmFCZWhhdmlvdXIuUioqLCB3aGljaCBpbGx1c3RyYXRlcyBhbiBleGFtcGxlIG9mIGFuYWx5c2luZyB0aGUgY29ldm9sdXRpb24gb2YgbmV0d29ya3MgYW5kIGJlaGF2aW91ciAgDQotIFRoZSBlbnRpcmUgbW9kZWwgZml0dGluZyBpcyBzdW1tYXJpc2VkIGF0IHRoZSBlbmQgb2YgKipSc2NyaXB0MDNTaWVuYVJ1bk1vZGVsLlIqKiAod2l0aG91dCBjb21tZW50cykuIA0KDQpUaGlzIGlzIGFuIFIgc2NyaXB0IGZvciBnZXR0aW5nIHN0YXJ0ZWQgd2l0aCBSU2llbmEsIHdyaXR0ZW4gYnkgUm9iaW4gR2F1dGhpZXIsIFRvbSBTbmlqZGVycywgUnV0aCBSaXBsZXksIEpvaGFuIEtvc2tpbmVuLCBhbmQgUGF1bGluYSBQcmVjaWFkbywgd2l0aCBzb21lIGV4YW1wbGVzIGJvcnJvd2VkIGZyb20gQ2hyaXN0aWFuIFN0ZWdsaWNoLiAgDQpMaW5lcyBzdGFydGluZyB3aXRoICMgYXJlIG5vdCBwcm9jZXNzZWQgYnkgUiBidXQgdHJlYXRlZCBhcyBjb21tZW50cy4gVGhlIHNjcmlwdCBoYXMgYSBsb3Qgb2YgZXhwbGFuYXRpb24gb2YgUiBwb3NzaWJpbGl0aWVzIHRoYXQgd2lsbCBiZSBmYW1pbGlhciBmb3IgcmVhZGVycyB3ZWxsIGFjcXVhaW50ZWQgd2l0aCBSLCBhbmQgY2FuIGJlIHNraXBwZWQgYnkgdGhlbS4gIA0KDQotLS0gIA0KDQojIyBHZXR0aW5nIFN0YXJ0ZWQgIA0KDQpGb3IgdGhpcyBzY3JpcHQsIHlvdSB3aWxsIG5lZWQgdGhlIGRhdGEgcmVhZCBhbmQgbW9kaWZpZWQgaW4gdGhlIHNjcmlwdCBSc2NyaXB0MDFEYXRhRm9ybWF0LlIuIElmIHlvdSBoYXZlIGFscmVhZHkgcmFuIHRoYXQgc2NyaXB0LCB5b3UgbWF5IGxvYWQgdGhlIHJlcXVpcmVkIHdvcmtzcGFjZTogDQoNCmBgYHtyLCBldmFsPUZBTFNFfQ0KbG9hZCgiV29ya3NwYWNlUnNjcmlwdDAxLlJEYXRhIikNCmBgYA0KICANCiAgDQpBbHRlcm5hdGl2ZWx5LCB5b3UgbWF5IHJ1biB0aGUgZm9sbG93aW5nIGNvZGUtY2h1bms6IA0KDQpgYGB7cn0NCmxpYnJhcnkoUlNpZW5hKSAjdG8gYWNjZXNzIHRoZSBidWlsZC1pbiBkYXRhDQpsaWJyYXJ5KG5ldHdvcmspICN0byBjb252ZXJ0DQpmcmllbmQuZGF0YS53MSA8LSBzNTAxDQpmcmllbmQuZGF0YS53MiA8LSBzNTAyDQpmcmllbmQuZGF0YS53MyA8LSBzNTAzDQpkcmluayA8LSBzNTBhDQpzbW9rZSA8LSBzNTBzDQoNCm5ldDEgPC0gYXMubmV0d29yayhmcmllbmQuZGF0YS53MSkNCm5ldDIgPC0gYXMubmV0d29yayhmcmllbmQuZGF0YS53MikNCm5ldDMgPC0gYXMubmV0d29yayhmcmllbmQuZGF0YS53MykNCmBgYA0KLS0tICANCg0KDQojIyBWaXN1YWwgaW5zcGVjdGlvbg0KDQpBIHZpc3VhbCBpbnNwZWN0aW9uIG9mIHRoZSBhZGphY2VuY3kgbWF0cmljZXMgY2FuIHNvbWV0aW1lcyBiZSB1c2VmdWwuIFRoaXMgd2lsbCwgZm9yIGV4YW1wbGUsIGhlbHAgaW4gaGlnaGxpZ2h0aW5nIG91dGxpZXJzIHdpdGggcmVzcGVjdCB0byBvdXRkZWdyZWVzIG9yIGluZGVncmVlcywgaWYgdGhlcmUgYXJlIGFueSBvZiBzdWNoIG91dGxpZXJzLiAgDQoNCioqc29jaW9tYXRyaXggbmV0MSoqIA0KDQpgYGB7cn0NCnJlcXVpcmUoc25hKQ0KcGxvdC5zb2Npb21hdHJpeCggbmV0MSwgZHJhd2xhYiA9IEYsIGRpYWdsYWIgPSBGLCB4bGFiID0gJ2ZyaWVuZHNoaXAgdDEnICkNCmBgYA0KDQoqKnNvY2lvbWF0cml4IG5ldDIqKg0KDQpgYGB7cn0NCnJlcXVpcmUoc25hKQ0KcGxvdC5zb2Npb21hdHJpeCggbmV0MixkcmF3bGFiID0gRiwgZGlhZ2xhYiA9IEYsIHhsYWIgPSAnZnJpZW5kc2hpcCB0MicgKQ0KYGBgDQoNCioqc29jaW9tYXRyaXggbmV0MyoqDQoNCmBgYHtyfQ0KcmVxdWlyZShzbmEpDQpwbG90LnNvY2lvbWF0cml4KCBuZXQzLGRyYXdsYWIgPSBGLCBkaWFnbGFiID0gRiwgeGxhYiA9ICdmcmllbmRzaGlwIHQzJyApDQoNCmBgYA0KDQotLS0gIA0KDQoNCiMjIFBsb3R0aW5nIG5ldHdvcmsgZGF0YQ0KDQpUaGUgY2xhc3MgKmByIGNsYXNzKG5ldDEpYCogd2l0aCBhdHRyaWJ1dGVzICpgciBuYW1lcyhhdHRyaWJ1dGVzKCBuZXQxICkpYCosIGhhcyBzcGVjaWFsIG1ldGhvZHMgYXNzb2NpYXRlZCB3aXRoIGl0LiBXaGlsZSAgYHBsb3QoIGZyaWVuZC5kYXRhLncxIClgIG9ubHkgcHJvZHVjZXMgYSByYXRoZXIgZHVsbCBwbG90IG9mDQp0aGUgZmlyc3QgdHdvIGNvbHVtbnMsIGBwbG90KCBuZXQxLCB4bGFiID0gJ2ZyaWVuZHNoaXAgdDEnIClgIHByb2R1Y2VzIGEgbmljZSBzb2Npb2dyYW0uIA0KDQpgYGB7cn0NCiMgVGhlIGNsYXNzLA0KY2xhc3MoIG5ldDEgKQ0KIyB3aXRoIGF0dHJpYnV0ZXMNCmF0dHJpYnV0ZXMoIG5ldDEgKQ0KIyBoYXMgc3BlY2lhbCBtZXRob2RzIGFzc29jaWF0ZWQgd2l0aCBpdC4NCiMgV2hpbGUgIA0KcGxvdCggZnJpZW5kLmRhdGEudzEsIG1haW49InBsb3QoIGZyaWVuZC5kYXRhLncxKSIgKSANCiMgb25seSBwcm9kdWNlcyBhIHJhdGhlciBkdWxsIHBsb3Qgb2YgdGhlIGZpcnN0IHR3byBjb2x1bW5zLA0KcGxvdCggbmV0MSwgeGxhYiA9ICdmcmllbmRzaGlwIHQxJywgbWFpbj0icGxvdChuZXQxKSIgKQ0KIyBwcm9kdWNlcyBhIG5pY2Ugc29jaW9ncmFtDQpgYGANCiAgDQogIA0KDQojIyMgVHdlYWtpbmcgbmV0d29yayBwbG90ICANCg0KLSBBZGQgdGhlIGF0dHJpYnV0ZSBkcmluayB0byB0aGUgbmV0d29yayBvYmplY3Q6IGBuZXQxICV2JSAiZHJpbmsiIDwtIGRyaW5rWyAsIDEgXWAgIA0KLSBDb2xvciB0aGUgbm9kZXMgYnkgZHJpbms6IGBwbG90KCBuZXQxLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgeGxhYiA9ICdmcmllbmRzaGlwIHQxJyApYCAgDQotIFNjYWxlIHRoZSB2ZXJ0ZXggYnkgZGVncmVlIG9mIG5vZGVzIQ0KICAqIEZpcnN0IGNhbGN1bGF0ZSBkZWdyZWU6IGBkZWcgPC0gcm93U3VtcyggYXMubWF0cml4KCBuZXQxICkgKSMgTkI6ICByb3dTdW1zKCkgaXMgZGVmaW5lZCBmb3IgY2xhc3MgbWF0cml4YCANCiAgKiBIYXZlIGEgbG9vayBhdCB0aGUgZGVncmVlIGRpc3RyaWJ1dGlvbjogYHRhYmxlKCBkZWcsIHVzZU5BID0gJ2Fsd2F5cycgKWAgDQoNCk5vdyBkbyB0aGUgZGVzaXJlZCBwbG90OiBgcGxvdCggbmV0MSwgdmVydGV4LmNvbCA9ICJkcmluayIsIHZlcnRleC5jZXggPSAoZGVnICsgMSkvMS41IClgIA0KDQpgYGB7cn0NCiMgYWRkIHRoZSBhdHRyaWJ1dGUgZHJpbmsgdG8gdGhlIG5ldHdvcmsgb2JqZWN0DQoNCm5ldDEgJXYlICJkcmluayIgPC0gZHJpbmtbICwgMSBdDQoNCiMgY29sb3IgdGhlIG5vZGVzIGJ5IGRyaW5rDQoNCnBsb3QoIG5ldDEsIHZlcnRleC5jb2wgPSAiZHJpbmsiLCB4bGFiID0gJ2ZyaWVuZHNoaXAgdDEnICkNCg0KDQojIE5vdyBsZXQncyBjb2xvciB0aGUgbm9kZXMgYnkgZHJpbmsgYW5kIHNjYWxlIHRoZSB2ZXJ0ZXggYnkgZGVncmVlIG9mIG5vZGVzIQ0KIw0KIyBGaXJzdCBjYWxjdWxhdGUgZGVncmVlOg0KDQpkZWcgPC0gcm93U3VtcyggYXMubWF0cml4KCBuZXQxICkgKSMgTkI6ICByb3dTdW1zKCkgaXMgZGVmaW5lZCBmb3IgY2xhc3MgbWF0cml4DQoNCiMgaGF2ZSBhIGxvb2sgYXQgdGhlIGRlZ3JlZSBkaXN0cmlidXRpb24NCg0KdGFibGUoIGRlZywgdXNlTkEgPSAnYWx3YXlzJyApDQoNCiMgTm93IGRvIHRoZSBkZXNpcmVkIHBsb3Q6DQoNCnBsb3QoIG5ldDEsIHZlcnRleC5jb2wgPSAiZHJpbmsiLCB2ZXJ0ZXguY2V4ID0gKGRlZyArIDEpLzEuNSApDQpgYGANCg0KLS0tICANCg0KIyMgUGxvdCB0aGUgdGhyZWUgd2F2ZXMgb2YgZGF0YSANCg0KYGBge3J9DQojIEFkZCBkcmluayB0byB3YXZlcyAyIGFuZCAzDQpuZXQyICV2JSAiZHJpbmsiIDwtIGRyaW5rWyAsIDIgXQ0KbmV0MyAldiUgImRyaW5rIiA8LSBkcmlua1sgLCAzIF0NCmRlZzIgPC0gcm93U3VtcyggYXMubWF0cml4KCBuZXQyICkgKQ0KZGVnMyA8LSByb3dTdW1zKCBhcy5tYXRyaXgoIG5ldDMgKSApDQoNCiMgQ3JlYXRlIGEgc2V0IG9mIHBhbmVscyAoIDEgcm93IGJ5IDMgY29sdW1ucywgb3IgMyBjb2x1bW5zIGJ5IDEgcm93KQ0KcGFyKCBtZnJvdyA9IGMoIDEsIDMgKSApDQoNCiMgY3JlYXRpbmcgdGhyZWUgcGxvdHMgYWZ0ZXIgZWFjaCBvdGhlciB3aWxsIHBsYWNlIHRoZW0gaW4gY29uc2VjdXRpdmUgcGFuZWxzDQpwbG90KCBuZXQxLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgdmVydGV4LmNleCA9IChkZWcgKyAxKS8xLjUgKQ0KcGxvdCggbmV0MiwgdmVydGV4LmNvbCA9ICJkcmluayIsIHZlcnRleC5jZXggPSAoZGVnMiArIDEpLzEuNSApDQpwbG90KCBuZXQzLCB2ZXJ0ZXguY29sID0gImRyaW5rIiwgdmVydGV4LmNleCA9IChkZWczICsgMSkvMS41ICkNCg0KYGBgDQoNCkVhY2ggdGltZSB3ZSBtYWtlIGEgcGxvdCB0aGUgY29vcmRpbmF0ZXMgbW92ZSAtIGJlY2F1c2UgYWx3YXlzIHRoZSBzdGFydGluZyB2YWx1ZXMgYXJlIHJhbmRvbS4gV2UgY2FuIGFsc28gc2F2ZSBjb29yZGluYXRlcyBhbmQgdXNlIHRoZW0gZm9yIGxhdGVyIHBsb3R0aW5nOg0KDQpgYGB7cn0NCnBhciggbWZyb3cgPSBjKCAxLCAzICkgKQ0KY29vcmRpbiA8LSAgcGxvdCggbmV0MSwgdmVydGV4LmNvbCA9ICJkcmluayIsIHZlcnRleC5jZXggPSAoZGVnICsxICkvMS41ICkNCnBsb3QoIG5ldDIsIGNvb3JkID0gY29vcmRpbiwgdmVydGV4LmNvbCA9ICJkcmluayIsIHZlcnRleC5jZXggPSAoZGVnMiArIDEpLzEuNSApDQpwbG90KCBuZXQzLCBjb29yZCA9IGNvb3JkaW4sIHZlcnRleC5jb2wgPSAiZHJpbmsiLCB2ZXJ0ZXguY2V4ID0gKGRlZzMgKyAxKSAvMS41ICkNCmBgYA0KDQpUbyBnZXQgY29vcmRpbmF0ZXMgYmFzZWQgb24gYWxsIHRocmVlIHdhdmVzOiBgY29vcmRpbiA8LSAgcGxvdCggbmV0MSArIG5ldDIgKyBuZXQzIClgLiAgDQpGb3IgbW9yZSBwbG90dGluZyBvcHRpb25zLCB0cnkgdGhlIGBncGxvdGAgZnVuY3Rpb24gaW4gdGhlIGBzbmFgIGxpYnJhcnkuIEFuZCB0cnkgYD9ncGxvdGAgYW5kIGA/Z3Bsb3QubGF5b3V0YC4NCg0KLS0tICANCg0KIyMgQmFzaWMgbmV0d29yayBzdGF0aXN0aWNzIHsudGFic2V0IC50YWJzZXQtZmFkZX0NCg0KVGhlIHBhY2thZ2UgYHNuYWAgY2FuIGJlIHVzZWQgZm9yIGEgdmFyaWV0eSBvZiBkZXNjcmlwdGlvbnMgYW5kIGFuYWx5c2VzLiBUaGUgZm9sbG93aW5nIGFyZSBleGFtcGxlcyBvZiBzb21lIGltcG9ydGFudCBncmFwaCBsZXZlbCBzdGF0aXN0aWNzDQoNCiMjIyBkZW5zaXR5DQoNCmBgYHtyfQ0KZ2RlbiggbmV0MSApICMgZGVuc2l0eQ0KYGBgDQotLS0gIA0KDQojIyMgc3ltbWV0cnkgYW5kIHJlY2lwcm9jaXR5DQoNCmBgYHtyfQ0KZ3JlY2lwKCBuZXQxICkgIyBwcm9wb3J0aW9uIG9mIGR5YWRzIHRoYXQgYXJlIHN5bW1ldHJpYw0KZ3JlY2lwKCBuZXQxLCBtZWFzdXJlID0gImR5YWRpYy5ub25udWxsIiApICMgcmVjaXByb2NpdHksIGlnbm9yaW5nIHRoZSBudWxsIGR5YWRzDQpgYGANCi0tLSAgDQoNCiMjIyB0cmFuc2l0aXZpdHkNCmBgYHtyLCB3YXJuaW5nPSJGQUxTRSJ9DQpndHJhbnMoIG5ldDEgKSAjIHRyYW5zaXRpdml0eQ0KYGBgDQotLS0gIA0KDQojIyBEeWFkIGFuZCB0cmlhZCBjZW5zdXMgey50YWJzZXQgLnRhYnNldC1mYWRlfQ0KDQojIyMgRHlhZCBjZW5zdXMNCg0KYGBge3J9DQpkeWFkLmNlbnN1cyggbmV0MSApDQpgYGANCi0tLSAgDQoNCg0KIyMjIFRyaWFkIGNlbnN1cw0KDQpgYGB7cn0NCnRyaWFkLmNlbnN1cyggbmV0MSApDQpgYGANCi0tLSAgDQoNCiMjIChvdXQpZGVncmVlIGRpc3RyaWJ1dGlvbiANCg0KT2YgY291cnNlIGZvciBhIHN5bW1ldHJpYyBuZXR3b3JrIG91dGRlZ3JlZT1pbmRlZ3JlZS4NCg0KYGBge3J9DQpvdXRkZWdyZWUgPC0gZGVncmVlKCBuZXQxLCBjbW9kZSA9ICJvdXRkZWdyZWUiICkNCm91dGRlZ3JlZSAjb3V0Z29pbmcgdGllcyBvZiBlYWNoIG5vdGUNCg0KaGlzdCggb3V0ZGVncmVlICkNCnF1YW50aWxlKCBvdXRkZWdyZWUgKQ0KYGBgDQotLS0gIA0KDQojIyBkaXN0YW5jZSBhbmQgY29ubmVjdGl2aXR5IHsudGFic2V0IC50YWJzZXQtZmFkZX0NCg0KIyMjIGRpc3RhbmNlIA0KDQpgYGB7cn0NCmRpc3QgPC0gZ2VvZGlzdChuZXQxLCBpbmYucmVwbGFjZSA9IEluZiwgY291bnQucGF0aHMgPSBUUlVFKQ0KIyBjYWxjdWxhdGUgdGhlIGdlb2Rlc2ljIGRpc3RhbmNlIChzaG9ydGVzdCBwYXRoIGxlbmd0aCkgbWF0cml4DQpoZWFkKGRpc3QkZ2QpDQojIG1hdHJpeCBvZiBnZW9kZXNpYyBkaXN0YW5jZXMNCmhlYWQoZGlzdCRjb3VudHMpDQp0YWJsZShkaXN0JGNvdW50cykNCmBgYA0KLS0tICANCg0KIyMjIGNvbm5lY3Rpdml0eSANCg0KUmVhY2hhYmlsaXR5IG1hdHJpeCwgc2VlIGA/cmVhY2hhYmlsaXR5YC4gDQoNCmBgYHtyfQ0KcmVhY2ggPC0gcmVhY2hhYmlsaXR5KCBuZXQxICkgICMgY2FsY3VsYXRlIHRoZSByZWFjaGFiaWxpdHkgbWF0cml4DQpoZWFkKHJlYWNoKQ0KYGBgDQotLS0gIA0KDQojIyBOZXR3b3JrIGF1dG9jb3JyZWxhdGlvbiAgDQoNCk1vcmFuJ3MgYXV0b2NvcnJlbGF0aW9uIGZvciBvdXRnb2luZyB0aWVzOg0KDQpgYGB7cn0NCg0KbmFjZihuZXQxLCBkcmlua1ssIDFdLCB0eXBlPSJtb3JhbiIsIG5laWdoYm9yaG9vZC50eXBlPSdvdXQnKVsyXQ0KbmFjZihuZXQyLCBkcmlua1ssIDJdLCB0eXBlPSJtb3JhbiIsIG5laWdoYm9yaG9vZC50eXBlPSdvdXQnKVsyXQ0KbmFjZihuZXQzLCBkcmlua1ssIDNdLCB0eXBlPSJtb3JhbiIsIG5laWdoYm9yaG9vZC50eXBlPSdvdXQnKVsyXQ0KYGBgDQoNCk1vcmFuJ3MgYXV0b2NvcnJlbGF0aW9uIGZvciBvdXRnb2luZyBhbmQgaW5jb21pbmcgdGllczoNCmBgYHtyfQ0KDQpuYWNmKG5ldDEsIGRyaW5rWywgMV0sIHR5cGU9Im1vcmFuIiwgbmVpZ2hib3Job29kLnR5cGU9J3RvdGFsJylbMl0NCm5hY2YobmV0MiwgZHJpbmtbLCAyXSwgdHlwZT0ibW9yYW4iLCBuZWlnaGJvcmhvb2QudHlwZT0ndG90YWwnKVsyXQ0KbmFjZihuZXQzLCBkcmlua1ssIDNdLCB0eXBlPSJtb3JhbiIsIG5laWdoYm9yaG9vZC50eXBlPSd0b3RhbCcpWzJdDQpgYGANCg0KLS0tIA0KDQpbKipOZXh0OiBWYXJpYWJsZUZvcm1hdCBGT1IgUFJFUEFSSU5HIERBVEEgRk9SIFJTSUVOQSoqXSgvcnNjcmlwdDAxLmh0bWwpDQoNCi0tLQ0K</div>
 <p>Copyright &copy; 2020 Jochem Tolsma</p>
 
 
@@ -830,7 +849,7 @@ head(reach)</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -848,7 +867,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -863,6 +882,9 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
 
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')

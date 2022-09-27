@@ -1,5 +1,5 @@
 ---
-title: "RSiena-scripts"
+title: "Descriptives"
 author: '[Jochem Tolsma](https://www.jochemtolsma.nl) - Radboud University, the Netherlands'
 bibliography: references.bib
 date: "Last compiled on `r format(Sys.time(), '%B, %Y')`"
@@ -12,7 +12,7 @@ output:
     code_download: yes
 ---
 
-```{r, globalsettings, echo=FALSE, warning=FALSE}
+```{r, globalsettings, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
 library(knitr)
 opts_chunk$set(tidy.opts=list(width.cutoff=100),tidy=TRUE, warning = FALSE, message = FALSE,comment = "#>", cache=TRUE, class.source=c("test"), class.output=c("test2"))
 options(width = 100)
@@ -41,14 +41,14 @@ pre.test {
   max-height: 300px;
   overflow-y: auto;
   overflow-x: auto;
-  margin: 0px;
+  margin: 10px;
 }
 
 pre.test2 {
   max-height: 300px;
   overflow-y: auto;
   overflow-x: auto;
-  margin: 0px;
+  margin: 10px;
   background-color: white
 }
 
@@ -64,8 +64,8 @@ h1, .h1, h2, .h2, h3, .h3 {
 
 This website converted the following original .R scripts into .rmd files. 
 
-- Rscript01DataFormat.R  
 - RScriptSNADescriptives.R  
+- Rscript01DataFormat.R  
 - Rscript02SienaVariableFormat.R  
 - Rscript03SienaRunModel.R  
 - Rscript04SienaBehaviour.R
