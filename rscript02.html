@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jochem Tolsma - Radboud University, the Netherlands" />
+
+
+<title>VariableFormat</title>
+
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RSiena-scripts</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ReadMe</a>
+</li>
+<li>
+  <a href="rscript01.html">DataFormat</a>
+</li>
+<li>
+  <a href="rscript00.html">Descriptives</a>
+</li>
+<li>
+  <a href="rscript02.html">VariableFormat</a>
+</li>
+<li>
+  <a href="rscript03.html">RunModel</a>
+</li>
+<li>
+  <a href="rscript04.html">Behaviour</a>
+</li>
+<li>
+  <a href="rscript05.html">GOF</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/JochemTolsma/RSiena-scripts">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">VariableFormat</h1>
+<h4 class="author"><a href="https://www.jochemtolsma.nl">Jochem
+Tolsma</a> - Radboud University, the Netherlands</h4>
+<h4 class="date">Last compiled on juni, 2023</h4>
+
+</div>
+
+
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
+<style type="text/css">
+pre.test {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 10px;
+}
+
+pre.test2 {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 10px;
+  background-color: white
+}
+
+
+h1, .h1, h2, .h2, h3, .h3 {
+    margin-top: 24px;
+}
+
+
+</style>
+<hr />
+<p>This website converted the following original .R scripts into .rmd
+files.</p>
+<ul>
+<li>Rscript01DataFormat.R</li>
+<li>RScriptSNADescriptives.R</li>
+<li>Rscript02SienaVariableFormat.R<br />
+</li>
+<li>Rscript03SienaRunModel.R<br />
+</li>
+<li>Rscript04SienaBehaviour.R</li>
+</ul>
+<p>Please visit <a
+href="https://github.com/snlab-nl/rsiena/tree/main/inst/scripts">GitHub</a>
+for the latest .R files.</p>
+<hr />
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>All files (data, scripts, etc.) can also be found on <a
+href="https://github.com/JochemTolsma/Rsiena-scripts">Github</a></p>
+<hr />
+</div>
+<div id="contact" class="section level2">
+<h2>Contact</h2>
+<p>Specific questions with respect to the .rmd files can be addressed
+to: <a href="mailto:j.tolsma@ru.nl">Jochem Tolsma</a>.</p>
+<p>For questions on RSiena please visit the designated <a
+href="https://github.com/snlab-nl/rsiena">GitHub</a> page.</p>
+<hr />
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Let us start by loading the data</p>
+<pre class="r test"><code>library(RSiena)
+friend.data.w1 &lt;- s501
+friend.data.w2 &lt;- s502
+friend.data.w3 &lt;- s503
+drink &lt;- s50a
+smoke &lt;- s50s</code></pre>
+<p>A number of objects need to be created in R, as preparations to
+letting siena07 execute the estimation. This will be indicated by:</p>
+<ul>
+<li>A: dependent variables;<br />
+</li>
+<li>B: explanatory variables;<br />
+</li>
+<li>C: combination of dependent and explanatory variables;<br />
+</li>
+<li>D: model specification.</li>
+</ul>
+<hr />
+</div>
+<div id="a.-dependent-variables" class="section level2">
+<h2>A. dependent variables</h2>
+<p>First we have to create objects for the dependent variables.</p>
+<p><code>sienaDependent()</code> creates a sienaDependent object, here a
+network, from a matrix or array or list of sparse matrix of triples.
+This object will have the role of a dependent variable in the
+analysis.</p>
+<p>The name of this network object (here: <strong>friendship</strong>)
+will be used in the output file.</p>
+<pre class="r test"><code>friendship &lt;- sienaDependent(
+  array( c( friend.data.w1, friend.data.w2, friend.data.w3 ),
+         dim = c( 50, 50, 3 ) ) )</code></pre>
+<p>The integers in the <code>dim()</code> here refer to the number of
+nodes (senders, receivers) and the number of waves. This object is an
+array of dimension 50 x 50 x 3, representing three adjacency matrices,
+with a number of attributes.</p>
+<p>You can ask for a brief decription of this object simply by
+typing:</p>
+<pre class="r test"><code>print(friendship)</code></pre>
+<pre class="test2"><code>#&gt; Type         oneMode             
+#&gt; Observations 3                   
+#&gt; Nodeset      Actors (50 elements)</code></pre>
+<pre class="r test"><code># for which the shorthand is
+
+friendship</code></pre>
+<pre class="test2"><code>#&gt; Type         oneMode             
+#&gt; Observations 3                   
+#&gt; Nodeset      Actors (50 elements)</code></pre>
+<p>Note that this is an object of class</p>
+<pre class="r test"><code>class(friendship)</code></pre>
+<pre class="test2"><code>#&gt; [1] &quot;sienaDependent&quot;</code></pre>
+<p>With specific attributes and methods associated with it. YYou can get
+the detailed information by requesting:</p>
+<pre class="r test"><code>dim( friendship )</code></pre>
+<pre class="test2"><code>#&gt; [1] 50 50  3</code></pre>
+<pre class="r test"><code>attributes( friendship )</code></pre>
+<pre class="test2"><code>#&gt; $dim
+#&gt; [1] 50 50  3
+#&gt; 
+#&gt; $class
+#&gt; [1] &quot;sienaDependent&quot;
+#&gt; 
+#&gt; $type
+#&gt; [1] &quot;oneMode&quot;
+#&gt; 
+#&gt; $sparse
+#&gt; [1] FALSE
+#&gt; 
+#&gt; $nodeSet
+#&gt; [1] &quot;Actors&quot;
+#&gt; 
+#&gt; $netdims
+#&gt; [1] 50 50  3
+#&gt; 
+#&gt; $allowOnly
+#&gt; [1] TRUE</code></pre>
+<p>If you only are interested in the value of one particular attribute,
+you can request this by, e.g.,</p>
+<pre class="r test"><code>attr( friendship, &quot;type&quot;)</code></pre>
+<pre class="test2"><code>#&gt; [1] &quot;oneMode&quot;</code></pre>
+<p>An extensive description of the friendship data is obtained by
+typing:</p>
+<pre class="r test"><code>str(friendship)</code></pre>
+<pre class="test2"><code>#&gt;  &#39;sienaDependent&#39; int [1:50, 1:50, 1:3] 0 0 0 0 0 0 0 0 0 0 ...
+#&gt;  - attr(*, &quot;type&quot;)= chr &quot;oneMode&quot;
+#&gt;  - attr(*, &quot;sparse&quot;)= logi FALSE
+#&gt;  - attr(*, &quot;nodeSet&quot;)= chr &quot;Actors&quot;
+#&gt;  - attr(*, &quot;netdims&quot;)= int [1:3] 50 50 3
+#&gt;  - attr(*, &quot;allowOnly&quot;)= logi TRUE</code></pre>
+<p>The function <code>sienaDependent()</code> can also be used to create
+a behavior variable object with the extra argument
+<strong><code>type = "behavior"</code></strong>.</p>
+<p>Non-mentioned attributes get the default value, and in this case
+oneMode is the default; see below.</p>
+<p>The <code>drink</code> data (created in RscriptDataFormat.R ) is made
+available as a dependent behavior variable by the function:</p>
+<pre class="r test"><code>drinkingbeh &lt;- sienaDependent( drink, type = &quot;behavior&quot; )
+
+# the class, class(drinkingbeh), is still sienaDependent.</code></pre>
+<p>Note: only use the variable in ONE role in a given model: behavior
+variable or changing covariate!</p>
+<p>The options available for defining a sienaDependent object are
+displayed by typing: <code>?sienaDependent</code>.</p>
+<p>This shows that next to one-mode (unipartite) and behavior dependent
+variables, also two-mode (bipartite) dependent variables are
+possible.<br />
+You can infer that oneMode is the default type from the fact that it is
+mentioned first.</p>
+<p>To create bipartite network objects you need two node sets and must
+create the node sets too.</p>
+<p>Please See <code>?sienaNodeSet</code> where the Examples section
+shows an example of the syntax.</p>
+<hr />
+</div>
+<div id="b.-explanatory-variables" class="section level2">
+<h2>B. explanatory variables</h2>
+<p>Second we construct objects for the explanatory (independent)
+variables.<br />
+From the help request: <code>?sienaDataCreate</code></p>
+<p>We see that these can be of five kinds:</p>
+<ol style="list-style-type: decimal">
+<li><code>coCovar</code>: Constant actor covariates<br />
+</li>
+<li><code>varCovar</code>: Time-varying actor covariates<br />
+</li>
+<li><code>coDyadCovar</code>: Constant dyadic covariates<br />
+</li>
+<li><code>varDyadCovar</code>: Time-varying dyadic covariates<br />
+</li>
+<li><code>compositionChange</code> Composition change indicators</li>
+</ol>
+<p>You can get help about this by the following requests:</p>
+<ul>
+<li><code>?coCovar</code><br />
+</li>
+<li><code>?varCovar</code><br />
+</li>
+<li><code>?coDyadCovar</code><br />
+</li>
+<li><code>?varDyadCovar</code><br />
+</li>
+<li><code>?sienaCompositionChange</code></li>
+</ul>
+<p>The variables available for this data set all are changing actor
+covariates.<br />
+For illustrative purposes, we use smoking as observed at the first wave
+as a constant covariate:</p>
+<pre class="r test"><code>smoke1 &lt;- coCovar( smoke[ , 1 ] )</code></pre>
+<p>This selects the first column of smoke, which contains the first wave
+observations, and makes it available as a constant covariate. This is
+the pattern for for evey covariate file,
+e.g. <code>Attr1 &lt;- coCovar( Covariate1 )</code> where Covariate1 is
+a matrix with <code>dim(Covariate1)</code> equal to n x 1.</p>
+<p>Note, if Covariates is a matrix with <code>dim(Covariates)</code>
+equal to n x p you can create constant covariates through:</p>
+<ul>
+<li><code>Attr1 &lt;- coCovar(Covariates[,1])</code><br />
+</li>
+<li>…<br />
+</li>
+<li><code>Attrp &lt;- coCovar(Covariates[,p])</code></li>
+</ul>
+<p>We use the drinking data as a changing covariate. The function
+`varCovar() creates a changing covariate object from a matrix; the name
+comes from ‘varying covariate’.</p>
+<pre class="r test"><code>alcohol &lt;- varCovar( drink )</code></pre>
+<p>You need at least three waves in the data set to define a varying
+covariate by the function <code>varCovar()</code>; the reason is that
+the previous wave is used as a predictor of the next wave.</p>
+<p>The command…</p>
+<pre class="r test"><code>attributes( alcohol )</code></pre>
+<pre class="test2"><code>#&gt; $dim
+#&gt; [1] 50  3
+#&gt; 
+#&gt; $dimnames
+#&gt; $dimnames[[1]]
+#&gt;  [1] &quot;1&quot;  &quot;2&quot;  &quot;3&quot;  &quot;4&quot;  &quot;5&quot;  &quot;6&quot;  &quot;7&quot;  &quot;8&quot;  &quot;9&quot;  &quot;10&quot; &quot;11&quot; &quot;12&quot; &quot;13&quot; &quot;14&quot; &quot;15&quot; &quot;16&quot; &quot;17&quot; &quot;18&quot; &quot;19&quot;
+#&gt; [20] &quot;20&quot; &quot;21&quot; &quot;22&quot; &quot;23&quot; &quot;24&quot; &quot;25&quot; &quot;26&quot; &quot;27&quot; &quot;28&quot; &quot;29&quot; &quot;30&quot; &quot;31&quot; &quot;32&quot; &quot;33&quot; &quot;34&quot; &quot;35&quot; &quot;36&quot; &quot;37&quot; &quot;38&quot;
+#&gt; [39] &quot;39&quot; &quot;40&quot; &quot;41&quot; &quot;42&quot; &quot;43&quot; &quot;44&quot; &quot;45&quot; &quot;46&quot; &quot;47&quot; &quot;48&quot; &quot;49&quot; &quot;50&quot;
+#&gt; 
+#&gt; $dimnames[[2]]
+#&gt; [1] &quot;V1&quot; &quot;V2&quot; &quot;V3&quot;
+#&gt; 
+#&gt; 
+#&gt; $class
+#&gt; [1] &quot;varCovar&quot;
+#&gt; 
+#&gt; $centered
+#&gt; [1] TRUE
+#&gt; 
+#&gt; $nodeSet
+#&gt; [1] &quot;Actors&quot;</code></pre>
+<p>…will tell you the information that RSiena now has added to the drink
+data.</p>
+<hr />
+</div>
+<div id="c.-combination-of-dependent-and-explanatory-variables"
+class="section level2">
+<h2>C. combination of dependent and explanatory variables</h2>
+<p>We now combine the dependent and independent variables.<br />
+The function <code>sienaDataCreate()</code> creates a Siena data object
+from input networks, covariates and composition change objects; the
+objects that earlier were created by <code>sienaDependent()</code> will
+have the role of dependent variables, and similarly the other roles are
+predetermined by creation by the functions <code>coCovar()</code>,
+<code>varCovar()</code>, <code>coDyadCovar()</code>,
+<code>varDyadCovar()</code>, and
+<code>sienaCompositionChange()</code>.</p>
+<pre class="r test"><code>mydata &lt;- sienaDataCreate( friendship, smoke1, alcohol )</code></pre>
+<p>You may check the result by requesting</p>
+<pre class="r test"><code>mydata</code></pre>
+<pre class="test2"><code>#&gt; Dependent variables:  friendship 
+#&gt; Number of observations: 3 
+#&gt; 
+#&gt; Nodeset                  Actors 
+#&gt; Number of nodes              50 
+#&gt; 
+#&gt; Dependent variable friendship      
+#&gt; Type               oneMode         
+#&gt; Observations       3               
+#&gt; Nodeset            Actors          
+#&gt; Densities          0.046 0.047 0.05
+#&gt; 
+#&gt; Constant covariates:  smoke1 
+#&gt; Changing covariates:  alcohol</code></pre>
+<p>You should now understand how this differs from the result of:</p>
+<p><code>mybehdata &lt;- sienaDataCreate( friendship, smoke1, drinkingbeh)</code></p>
+<p>If you would like to use different names, you could request this as
+follows:</p>
+<pre class="r test"><code>mydata &lt;- sienaDataCreate(nominations = friendship, smoke1, drinking = alcohol)</code></pre>
+<p>Another type of dependent network is a two-mode network, which here
+is also called a bipartite network.<br />
+To get advice for a first step in the use of two-mode networks, see the
+script RscriptSienaBipartite.R on the Siena scripts page.</p>
+<p>This finishes the data specification. Now we have to specify the
+model.</p>
+</div>
+<div id="d.-model-specification" class="section level2">
+<h2>D. model specification</h2>
+<div id="defining-effects-i" class="section level3">
+<h3>Defining effects I</h3>
+<p>The data set as combined in <code>mydata</code> implies a certain set
+of effects that can be included in the specification of the model.<br />
+The function <code>getEffects()</code> creates a dataframe of effects
+with a number of extra properties for use in RSiena:</p>
+<pre class="r test"><code>myeff &lt;- getEffects( mydata )</code></pre>
+<p><code>mydata</code> is needed as an argument as the effects depend on
+the number and types of covariates and dependent variables.<br />
+Before we explain the object <code>myeff</code> and how we shall be
+going to use it, we first produce a data description which is available
+now:</p>
+</div>
+<div id="data-description" class="section level3">
+<h3>Data description</h3>
+<pre class="r test"><code>print01Report( mydata, modelname = &#39;s50_3_init&#39; )</code></pre>
+<p>This writes a basic report of the data to the fil
+<em>s50_3_init.txt</em> in the current working directory. Locate and
+open it!<br />
+Inspecting this is important because it serves as a check and also
+contains a number of basic descriptives.<br />
+In this description you can see that the third wave for alcohol is not
+used. This is because changing covariates are assumed to be constant
+from one wave until immediately before the next wave, so that the values
+for the last wave are ignored.</p>
+</div>
+<div id="defining-effects-ii" class="section level3">
+<h3>Defining effects II</h3>
+<p>Let us now consider the <code>myeff</code> object, which is used to
+specify the model.<br />
+It is of the class <code>sienaEffects</code>, and contains the model
+specification.<br />
+You can inspect the current model specification by simply
+requesting…</p>
+<pre class="r test"><code>myeff</code></pre>
+<pre class="test2"><code>#&gt;   effectName                          include fix   test  initialValue parm
+#&gt; 1 constant friendship rate (period 1) TRUE    FALSE FALSE    4.69604   0   
+#&gt; 2 constant friendship rate (period 2) TRUE    FALSE FALSE    4.32885   0   
+#&gt; 3 outdegree (density)                 TRUE    FALSE FALSE   -1.46770   0   
+#&gt; 4 reciprocity                         TRUE    FALSE FALSE    0.00000   0</code></pre>
+<p>For starting, the model specification is just a very limited default
+(including rates of change, outdegree and reciprocity only). To make a
+meaningful analysis, you will need to add to it.</p>
+<p>The rows of myeff correspond to the effects.<br />
+By requesting…</p>
+<pre class="r test"><code>names(myeff)</code></pre>
+<pre class="test2"><code>#&gt;  [1] &quot;name&quot;            &quot;effectName&quot;      &quot;functionName&quot;    &quot;shortName&quot;       &quot;interaction1&quot;   
+#&gt;  [6] &quot;interaction2&quot;    &quot;type&quot;            &quot;basicRate&quot;       &quot;include&quot;         &quot;randomEffects&quot;  
+#&gt; [11] &quot;fix&quot;             &quot;test&quot;            &quot;timeDummy&quot;       &quot;initialValue&quot;    &quot;parm&quot;           
+#&gt; [16] &quot;functionType&quot;    &quot;period&quot;          &quot;rateType&quot;        &quot;untrimmedValue&quot;  &quot;effect1&quot;        
+#&gt; [21] &quot;effect2&quot;         &quot;effect3&quot;         &quot;interactionType&quot; &quot;local&quot;           &quot;setting&quot;        
+#&gt; [26] &quot;effectFn&quot;        &quot;statisticFn&quot;     &quot;netType&quot;         &quot;groupName&quot;       &quot;group&quot;          
+#&gt; [31] &quot;effectNumber&quot;</code></pre>
+<p>You see the type of information that is stored about the effects,
+i.e., the columns (characteristics) defined for the effects. If desired,
+more information about these variables can be obtained from the help
+files: <code>?getEffects</code> where the characteristics are
+described.</p>
+<p>Some often used variables are <em>effectName</em>, <em>shortName</em>
+, <em>type</em>, and <em>parameter</em>.<br />
+The set of available effects and their most used columns can be
+inspected as follows:</p>
+<pre class="r test"><code>effectsDocumentation(myeff)</code></pre>
+<p>This creates an html file with the list of all effects available in
+<code>myeff</code>; the effects are all defined in Section 12 of the
+RSiena manual, but only those that are meaningful for dataset
+<code>mydata</code> are used in <code>myeff</code>. The <em>include</em>
+column defines whether effects are included in the model.</p>
+<pre class="r test"><code>myeff$include</code></pre>
+<pre class="test2"><code>#&gt;   [1]  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE
+#&gt;  [16] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt;  [31] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt;  [46] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt;  [61] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt;  [76] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt;  [91] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [106] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [121] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [136] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [151] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [166] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [181] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [196] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [211] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [226] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [241] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [256] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [271] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [286] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [301] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [316] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [331] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [346] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [361] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [376] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [391] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [406] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [421] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [436] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [451] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [466] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [481] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [496] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [511] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [526] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [541] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [556] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [571] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</code></pre>
+<p>Here the TRUE values correspond to the default model specification
+which, however, is not meant as a serious model, being too limited.
+There are 3 main ways to operate on <code>myeff</code>:</p>
+<ol style="list-style-type: decimal">
+<li>Using RSiena functions <code>includeEffects()</code>, `setEffects(),
+etc;<br />
+</li>
+<li>Changing <code>myeff</code> in spreadsheet form by the function
+<code>fix()</code>;<br />
+</li>
+<li>Changing <code>myeff</code> directly by operating on its
+elements.</li>
+</ol>
+<p>The first way is most in line with the design philosophy of R, and
+allows you to save scripts that also can be used when there will be new
+versions of RSiena. Therefore, we suggest that for starting you only
+study option 1, <em>Adding/removing effects using
+includeEffects</em>.<br />
+The other two options are treated only for special and more difficult
+occasions; and for looking ‘behind the screens’.</p>
+<p>For identifying your effects you need the <em>shortName</em>s, which
+can be read in the manual (section “Mathematical definition of
+effects”), or obtained from the <code>effectsDocumentation()</code>
+function mentioned above.</p>
+</div>
+<div id="addingremoving-effects-using-includeeffects"
+class="section level3">
+<h3>1. Adding/removing effects using <code>includeEffects()</code></h3>
+<div id="structural-effects" class="section level4">
+<h4><strong>structural effects</strong></h4>
+<p>The best way of specifying the model is by the
+<code>includeEffects()</code> function. This function uses short names
+instead of full names. The short names are given by the
+<code>effectsDocumentation()</code> function mentioned above, and also
+are listed in the descriptions given in Section 12 of the manual.</p>
+<p>For illustration, let us start from scratch with a new sienaEffects
+object, and add the transitive triples and 3-cycles effects.</p>
+<pre class="r test"><code>myeff &lt;- getEffects( mydata )
+myeff &lt;- includeEffects( myeff, transTrip, cycle3 )
+# To see the current model specification,
+myeff</code></pre>
+<pre class="test2"><code>#&gt;   effectName          include fix   test  initialValue parm
+#&gt; 1 transitive triplets TRUE    FALSE FALSE          0   0   
+#&gt; 2 3-cycles            TRUE    FALSE FALSE          0   0   
+#&gt;   effectName                          include fix   test  initialValue parm
+#&gt; 1 constant friendship rate (period 1) TRUE    FALSE FALSE    4.69604   0   
+#&gt; 2 constant friendship rate (period 2) TRUE    FALSE FALSE    4.32885   0   
+#&gt; 3 outdegree (density)                 TRUE    FALSE FALSE   -1.46770   0   
+#&gt; 4 reciprocity                         TRUE    FALSE FALSE    0.00000   0   
+#&gt; 5 transitive triplets                 TRUE    FALSE FALSE    0.00000   0   
+#&gt; 6 3-cycles                            TRUE    FALSE FALSE    0.00000   0</code></pre>
+<p>Note that we can set several effects in one go! To remove an effect,
+e.g., the 3-cycle effects…</p>
+<pre class="r test"><code>myeff &lt;- includeEffects( myeff, cycle3, include=FALSE )
+
+# Check again which effects now are included in the model
+myeff</code></pre>
+<pre class="test2"><code>#&gt; [1] effectName   include      fix          test         initialValue parm        
+#&gt; &lt;0 rows&gt; (or 0-length row.names)
+#&gt;   effectName                          include fix   test  initialValue parm
+#&gt; 1 constant friendship rate (period 1) TRUE    FALSE FALSE    4.69604   0   
+#&gt; 2 constant friendship rate (period 2) TRUE    FALSE FALSE    4.32885   0   
+#&gt; 3 outdegree (density)                 TRUE    FALSE FALSE   -1.46770   0   
+#&gt; 4 reciprocity                         TRUE    FALSE FALSE    0.00000   0   
+#&gt; 5 transitive triplets                 TRUE    FALSE FALSE    0.00000   0</code></pre>
+</div>
+<div id="covariate-related-effects" class="section level4">
+<h4><strong>covariate related effects</strong></h4>
+<p>Let us demonstrate how to add/remove covariate related effects.<br />
+The short names do not differentiate between the covariates: e.g., the
+effects <em>alcohol ego</em> and <em>smoke1 ego</em> both have shortName
+<em>egoX</em>, and the command
+<code>myeff &lt;- includeEffects(myeff, egoX)</code> results in a
+message that does not (like the earlier one) confirm the newly included
+effect.</p>
+<p>The covariates are indicated by the variable <em>interaction1</em> in
+the sienaEffects object, listed as <em>inter1</em> in the result of
+<code>effectsDocumentation()</code>, and this has to be mentioned to
+include these effects:</p>
+<pre class="r test"><code>myeff &lt;- includeEffects( myeff, egoX, altX, egoXaltX, interaction1 = &quot;alcohol&quot; )
+myeff &lt;- includeEffects( myeff, simX, interaction1 = &quot;smoke1&quot; )
+
+# We check the results again:
+myeff</code></pre>
+<pre class="test2"><code>#&gt;   effectName                  include fix   test  initialValue parm
+#&gt; 1 alcohol alter               TRUE    FALSE FALSE          0   0   
+#&gt; 2 alcohol ego                 TRUE    FALSE FALSE          0   0   
+#&gt; 3 alcohol ego x alcohol alter TRUE    FALSE FALSE          0   0   
+#&gt;   effectName        include fix   test  initialValue parm
+#&gt; 1 smoke1 similarity TRUE    FALSE FALSE          0   0   
+#&gt;   effectName                          include fix   test  initialValue parm
+#&gt; 1 constant friendship rate (period 1) TRUE    FALSE FALSE    4.69604   0   
+#&gt; 2 constant friendship rate (period 2) TRUE    FALSE FALSE    4.32885   0   
+#&gt; 3 outdegree (density)                 TRUE    FALSE FALSE   -1.46770   0   
+#&gt; 4 reciprocity                         TRUE    FALSE FALSE    0.00000   0   
+#&gt; 5 transitive triplets                 TRUE    FALSE FALSE    0.00000   0   
+#&gt; 6 smoke1 similarity                   TRUE    FALSE FALSE    0.00000   0   
+#&gt; 7 alcohol alter                       TRUE    FALSE FALSE    0.00000   0   
+#&gt; 8 alcohol ego                         TRUE    FALSE FALSE    0.00000   0   
+#&gt; 9 alcohol ego x alcohol alter         TRUE    FALSE FALSE    0.00000   0</code></pre>
+<p>By looking at the help offered by <code>?includeEffects</code>.</p>
+<p>you can see how to include endowment and creation effects. Effects
+that depend on other variables, such as egoX, altX, etc. above, need the
+specification of these variables to define them. This is done by the
+<em>interaction1</em> parameter when only one variable name is needed,
+and by <em>interaction2</em> if there is a second variable involved,
+such as AltsAvAlt (see the manual).<br />
+Although the names of these parameters are <em>interaction1</em> and
+<em>interaction2</em>, this does not refer to the common concept of
+interaction in statistical modelling!</p>
+</div>
+<div id="creating-interaction-effects" class="section level4">
+<h4><strong>creating interaction effects</strong></h4>
+<p>As a special topic, let us show how interaction effects are
+created.</p>
+<p>A convenient method to include an interaction is offered by the
+<code>includeInteraction()</code> function. This can be used to interact
+two or three effects (if the interactions are allowed, which depends on
+their interactionType; see the manual for this).</p>
+<p>The interaction between <strong>smoke1 ego</strong> and
+<strong>reciprocity</strong>, for instance, can be defined by the
+command:</p>
+<pre class="r test"><code>myeff &lt;- includeInteraction( myeff, egoX, recip, interaction1 = c(&quot;smoke1&quot;,&quot;&quot;) )
+myeff</code></pre>
+<p>This shows the interaction as an “unspecified interaction effect”;
+but when printing results of the estimation the names of the interacting
+effects will be mentioned.</p>
+<p>An interaction between smoke1 ego and alcohol ego is defined by:</p>
+<pre class="r test"><code>myeff &lt;- includeInteraction( myeff, egoX, egoX, interaction1 = c( &quot;smoke1&quot;, &quot;alcohol&quot; ) )</code></pre>
+<p>Note that the keyword ‘interaction1’ used by RSiena is used for
+identifying the covariate for which the ego effect is selected, and does
+not refer to the interaction effect itself.<br />
+If at least one of the interacting effects requires the interaction1
+parameter for it specification, then this parameter is also required for
+the <code>includeInteraction()</code> function.</p>
+<p>Then the two or three interaction1 parameters must be combined using
+c(); the same goes for interaction2, if that also is necessary for the
+definition. As shown above for the recip effect, the interaction1 or
+interaction2 parameter is “” (i.e., an empty string) for effects where
+it is not needed.</p>
+</div>
+<div id="accessing-other-characteristics-of-effects"
+class="section level4">
+<h4><strong>accessing other characteristics of effects</strong></h4>
+<p>A second special topic is how to access other characteristics of
+effects. This can be done by the <code>setEffect()</code> function.
+E.g., the dense triads effects counts the number of triplets with at
+least xx ties, where xx is the parameter of the effect, which can be 5
+or 6 (note that 6 is the maximum number of ties in a triplet). The
+default is 5. This is changed to 6 by the command:</p>
+<pre class="r test"><code>myeff &lt;- setEffect(myeff, denseTriads, parameter = 6)
+myeff</code></pre>
+<p>The ‘parameter’ keyword refers to the effect parameter, described in
+Section 12 of the manual.</p>
+</div>
+</div>
+<div id="addingremoving-effects-using-fix" class="section level3">
+<h3>2. Adding/removing effects using <code>fix()</code></h3>
+<pre class="r test"><code># fix calls a data editor internal to R, so we can manually edit the effects.
+
+#        fix( myeff )
+
+# How to use fix() is presented merely for getting to know what myeff is.
+# In practical analysis it is more convenient
+# to use routine &quot;includeEffects&quot; instead, as explained above.
+# fix() may not be usable if you do not have tcl/tk available!
+# Note that the top of the dataframe shows the names of the columns:
+# name, effectName, etc.
+# You can edit the &quot;include&quot; column by changing the TRUE and FALSE values
+# as required; when the editor is closed, the new values are stored.
+# When you make an error, however, the effects object may be corrupted.
+# Therefore, this way of adding and removing effects is more risky.</code></pre>
+</div>
+<div id="addingremoving-effects-by-direct-manipulation-of-myeff"
+class="section level3">
+<h3>3. Adding/removing effects by direct manipulation of
+<code>myeff</code></h3>
+<p>Alternatively we can edit the dataframe directly by using R
+functions. You are advised to skip this part (“3.”) at first and second
+reading, and read it only if you wish to get more understanding of the
+internal structure of the effects object. The commands below are used to
+set “include” to TRUE or FALSE, as an alternative to using the data
+editor. The “include” column with values TRUE or FALSE will always be
+located at the 9th column, but transitive triplets will not always be at
+the 16th row as this depends on the number of periods and variables;
+further, the list of available effects changes over different versions
+of RSiena.</p>
+<p>Some examples are the following:</p>
+<pre class="r test"><code>myeff[16,9] &lt;- TRUE   #transitive triples
+myeff[34,9] &lt;- TRUE   #3 cycles
+myeff[37,9] &lt;- TRUE   #transitive ties
+myeff[77,9] &lt;- TRUE   #indegree popularity (sqrt)
+myeff[86,9] &lt;- TRUE   #outdegree popularity (sqrt)
+myeff[93,9] &lt;- TRUE   #indegree based activity (sqrt)
+myeff[102,9] &lt;- TRUE  #outdegree based activity (sqrt)
+myeff[155,9] &lt;- TRUE   #indegree-indegree assortativity
+myeff[319,9] &lt;- TRUE   #alcohol alter
+myeff[331,9] &lt;- TRUE   #alcohol ego
+myeff[370,9] &lt;- TRUE   #alcohol similarity
+myeff[439,9] &lt;- TRUE   #alcohol ego x alcohol alter</code></pre>
+<p>But in other choices of data, the effect numbers will change. This is
+a reason why this is not a convenient method.</p>
+</div>
+</div>
+<div id="save-your-data-if-you-whish." class="section level2">
+<h2>Save your data if you whish.</h2>
+<pre class="r test"><code>save.image(&quot;WorkspaceRscript02.RData&quot;)</code></pre>
+<hr />
+<p><a href="/rscript03.html"><strong>Next: SienaRunModel FOR PARAMETER
+ESTIMATION BY RSIENA</strong></a></p>
+<hr />
+</div>
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlZhcmlhYmxlRm9ybWF0Ig0KYXV0aG9yOiAnW0pvY2hlbSBUb2xzbWFdKGh0dHBzOi8vd3d3LmpvY2hlbXRvbHNtYS5ubCkgLSBSYWRib3VkIFVuaXZlcnNpdHksIHRoZSBOZXRoZXJsYW5kcycNCmJpYmxpb2dyYXBoeTogcmVmZXJlbmNlcy5iaWINCmRhdGU6ICJMYXN0IGNvbXBpbGVkIG9uIGByIGZvcm1hdChTeXMudGltZSgpLCAnJUIsICVZJylgIg0Kb3V0cHV0OiANCiAgaHRtbF9kb2N1bWVudDoNCiAgICB0b2M6ICB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiBmYWxzZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KICAgIGNvZGVfZG93bmxvYWQ6IHllcw0KLS0tDQoNCmBgYHtyLCBnbG9iYWxzZXR0aW5ncywgZWNobz1GQUxTRSwgd2FybmluZz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgcmVzdWx0cz0naGlkZSd9DQpsaWJyYXJ5KGtuaXRyKQ0Kb3B0c19jaHVuayRzZXQodGlkeS5vcHRzPWxpc3Qod2lkdGguY3V0b2ZmPTEwMCksdGlkeT1UUlVFLCB3YXJuaW5nID0gRkFMU0UsIG1lc3NhZ2UgPSBGQUxTRSxjb21tZW50ID0gIiM+IiwgY2FjaGU9VFJVRSwgY2xhc3Muc291cmNlPWMoInRlc3QiKSwgY2xhc3Mub3V0cHV0PWMoInRlc3QyIikpDQpvcHRpb25zKHdpZHRoID0gMTAwKQ0KcmdsOjpzZXR1cEtuaXRyKCkNCg0KDQpjb2xvcml6ZSA8LSBmdW5jdGlvbih4LCBjb2xvcikgew0KICBpZiAoa25pdHI6OmlzX2xhdGV4X291dHB1dCgpKSB7DQogICAgc3ByaW50ZigiXFx0ZXh0Y29sb3J7JXN9eyVzfSIsIGNvbG9yLCB4KQ0KICB9IGVsc2UgaWYgKGtuaXRyOjppc19odG1sX291dHB1dCgpKSB7DQogICAgc3ByaW50ZigiPHNwYW4gc3R5bGU9J2NvbG9yOiAlczsnPiVzPC9zcGFuPiIsIGNvbG9yLCANCiAgICAgIHgpDQogIH0gZWxzZSB4DQp9DQoNCmBgYA0KDQpgYGB7ciBrbGlwcHksIGVjaG89RkFMU0UsIGluY2x1ZGU9VFJVRX0NCmtsaXBweTo6a2xpcHB5KHBvc2l0aW9uID0gYygndG9wJywgJ3JpZ2h0JykpDQoja2xpcHB5OjprbGlwcHkoY29sb3IgPSAnZGFya3JlZCcpDQoja2xpcHB5OjprbGlwcHkodG9vbHRpcF9tZXNzYWdlID0gJ0NsaWNrIHRvIGNvcHknLCB0b29sdGlwX3N1Y2Nlc3MgPSAnRG9uZScpDQpgYGANCg0KYGBge2NzcywgZWNobz1GQUxTRX0NCnByZS50ZXN0IHsNCiAgbWF4LWhlaWdodDogMzAwcHg7DQogIG92ZXJmbG93LXk6IGF1dG87DQogIG92ZXJmbG93LXg6IGF1dG87DQogIG1hcmdpbjogMTBweDsNCn0NCg0KcHJlLnRlc3QyIHsNCiAgbWF4LWhlaWdodDogMzAwcHg7DQogIG92ZXJmbG93LXk6IGF1dG87DQogIG92ZXJmbG93LXg6IGF1dG87DQogIG1hcmdpbjogMTBweDsNCiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGUNCn0NCg0KDQpoMSwgLmgxLCBoMiwgLmgyLCBoMywgLmgzIHsNCiAgICBtYXJnaW4tdG9wOiAyNHB4Ow0KfQ0KDQoNCmBgYA0KDQotLS0tDQoNClRoaXMgd2Vic2l0ZSBjb252ZXJ0ZWQgdGhlIGZvbGxvd2luZyBvcmlnaW5hbCAuUiBzY3JpcHRzIGludG8gLnJtZCBmaWxlcy4gDQoNCi0gUnNjcmlwdDAxRGF0YUZvcm1hdC5SIA0KLSBSU2NyaXB0U05BRGVzY3JpcHRpdmVzLlIgDQotIFJzY3JpcHQwMlNpZW5hVmFyaWFibGVGb3JtYXQuUiAgDQotIFJzY3JpcHQwM1NpZW5hUnVuTW9kZWwuUiAgDQotIFJzY3JpcHQwNFNpZW5hQmVoYXZpb3VyLlINCg0KUGxlYXNlIHZpc2l0IFtHaXRIdWJdKGh0dHBzOi8vZ2l0aHViLmNvbS9zbmxhYi1ubC9yc2llbmEvdHJlZS9tYWluL2luc3Qvc2NyaXB0cykgZm9yIHRoZSBsYXRlc3QgLlIgZmlsZXMuIA0KDQotLS0tDQoNCiMjIERhdGENCkFsbCBmaWxlcyAoZGF0YSwgc2NyaXB0cywgZXRjLikgY2FuIGFsc28gYmUgZm91bmQgb24gW0dpdGh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL0pvY2hlbVRvbHNtYS9Sc2llbmEtc2NyaXB0cykNCg0KLS0tLQ0KDQojIyBDb250YWN0DQpTcGVjaWZpYyBxdWVzdGlvbnMgd2l0aCByZXNwZWN0IHRvIHRoZSAucm1kIGZpbGVzIGNhbiBiZSBhZGRyZXNzZWQgdG86IFtKb2NoZW0gVG9sc21hXShtYWlsdG86ai50b2xzbWFAcnUubmwpLiAgDQoNCkZvciBxdWVzdGlvbnMgb24gUlNpZW5hIHBsZWFzZSB2aXNpdCB0aGUgZGVzaWduYXRlZCBbR2l0SHViXShodHRwczovL2dpdGh1Yi5jb20vc25sYWItbmwvcnNpZW5hKSBwYWdlLiANCg0KLS0tLSAgDQoNCiMjIEludHJvZHVjdGlvbiANCg0KTGV0IHVzIHN0YXJ0IGJ5IGxvYWRpbmcgdGhlIGRhdGENCg0KYGBge3J9DQpsaWJyYXJ5KFJTaWVuYSkNCmZyaWVuZC5kYXRhLncxIDwtIHM1MDENCmZyaWVuZC5kYXRhLncyIDwtIHM1MDINCmZyaWVuZC5kYXRhLnczIDwtIHM1MDMNCmRyaW5rIDwtIHM1MGENCnNtb2tlIDwtIHM1MHMNCmBgYA0KDQpBIG51bWJlciBvZiBvYmplY3RzIG5lZWQgdG8gYmUgY3JlYXRlZCBpbiBSLCBhcyBwcmVwYXJhdGlvbnMgdG8gbGV0dGluZyBzaWVuYTA3IGV4ZWN1dGUgdGhlIGVzdGltYXRpb24uIFRoaXMgd2lsbCBiZSBpbmRpY2F0ZWQgYnk6ICANCg0KLSAgQTogZGVwZW5kZW50IHZhcmlhYmxlczsgIA0KLSAgQjogZXhwbGFuYXRvcnkgdmFyaWFibGVzOyAgDQotICBDOiBjb21iaW5hdGlvbiBvZiBkZXBlbmRlbnQgYW5kIGV4cGxhbmF0b3J5IHZhcmlhYmxlczsgIA0KLSAgRDogbW9kZWwgc3BlY2lmaWNhdGlvbi4NCg0KLS0tICANCg0KIyMgQS4gZGVwZW5kZW50IHZhcmlhYmxlcyAgDQoNCg0KIEZpcnN0IHdlIGhhdmUgdG8gY3JlYXRlIG9iamVjdHMgZm9yIHRoZSBkZXBlbmRlbnQgdmFyaWFibGVzLg0KDQpgc2llbmFEZXBlbmRlbnQoKWAgY3JlYXRlcyBhIHNpZW5hRGVwZW5kZW50IG9iamVjdCwgaGVyZSBhIG5ldHdvcmssIGZyb20gYSBtYXRyaXggb3IgYXJyYXkgb3IgbGlzdCBvZiBzcGFyc2UgbWF0cml4IG9mIHRyaXBsZXMuIFRoaXMgb2JqZWN0IHdpbGwgaGF2ZSB0aGUgcm9sZSBvZiBhIGRlcGVuZGVudCB2YXJpYWJsZSBpbiB0aGUgYW5hbHlzaXMuICANCg0KVGhlIG5hbWUgb2YgdGhpcyBuZXR3b3JrIG9iamVjdCAoaGVyZTogKipmcmllbmRzaGlwKiopIHdpbGwgYmUgdXNlZCBpbiB0aGUgb3V0cHV0IGZpbGUuDQoNCmBgYHtyfQ0KZnJpZW5kc2hpcCA8LSBzaWVuYURlcGVuZGVudCgNCiAgYXJyYXkoIGMoIGZyaWVuZC5kYXRhLncxLCBmcmllbmQuZGF0YS53MiwgZnJpZW5kLmRhdGEudzMgKSwNCiAgICAgICAgIGRpbSA9IGMoIDUwLCA1MCwgMyApICkgKQ0KYGBgDQoNClRoZSBpbnRlZ2VycyBpbiB0aGUgYGRpbSgpYCBoZXJlIHJlZmVyIHRvIHRoZSBudW1iZXIgb2Ygbm9kZXMgKHNlbmRlcnMsIHJlY2VpdmVycykgYW5kIHRoZSBudW1iZXIgb2Ygd2F2ZXMuIFRoaXMgb2JqZWN0IGlzIGFuIGFycmF5IG9mIGRpbWVuc2lvbiA1MCB4IDUwIHggMywgcmVwcmVzZW50aW5nIHRocmVlIGFkamFjZW5jeSBtYXRyaWNlcywgd2l0aCBhIG51bWJlciBvZiBhdHRyaWJ1dGVzLiAgDQoNCllvdSBjYW4gYXNrIGZvciBhIGJyaWVmIGRlY3JpcHRpb24gb2YgdGhpcyBvYmplY3Qgc2ltcGx5IGJ5IHR5cGluZzogIA0KDQoNCg0KYGBge3J9DQpwcmludChmcmllbmRzaGlwKQ0KIyBmb3Igd2hpY2ggdGhlIHNob3J0aGFuZCBpcw0KDQpmcmllbmRzaGlwDQpgYGANCg0KTm90ZSB0aGF0IHRoaXMgaXMgYW4gb2JqZWN0IG9mIGNsYXNzICANCmBgYHtyfQ0KY2xhc3MoZnJpZW5kc2hpcCkNCmBgYA0KDQpXaXRoIHNwZWNpZmljIGF0dHJpYnV0ZXMgYW5kIG1ldGhvZHMgYXNzb2NpYXRlZCB3aXRoIGl0Lg0KWVlvdSBjYW4gZ2V0IHRoZSBkZXRhaWxlZCBpbmZvcm1hdGlvbiBieSByZXF1ZXN0aW5nOiANCg0KYGBge3J9DQpkaW0oIGZyaWVuZHNoaXAgKQ0KYXR0cmlidXRlcyggZnJpZW5kc2hpcCApDQpgYGANCg0KDQpJZiB5b3Ugb25seSBhcmUgaW50ZXJlc3RlZCBpbiB0aGUgdmFsdWUgb2Ygb25lIHBhcnRpY3VsYXIgYXR0cmlidXRlLCB5b3UgY2FuIHJlcXVlc3QgdGhpcyBieSwgZS5nLiwNCg0KYGBge3J9DQphdHRyKCBmcmllbmRzaGlwLCAidHlwZSIpDQpgYGANCg0KQW4gZXh0ZW5zaXZlIGRlc2NyaXB0aW9uIG9mIHRoZSBmcmllbmRzaGlwIGRhdGEgaXMgb2J0YWluZWQgYnkgdHlwaW5nOiANCmBgYHtyfQ0Kc3RyKGZyaWVuZHNoaXApDQpgYGANCg0KVGhlIGZ1bmN0aW9uIGBzaWVuYURlcGVuZGVudCgpYCBjYW4gYWxzbyBiZSB1c2VkIHRvIGNyZWF0ZSBhIGJlaGF2aW9yIHZhcmlhYmxlIG9iamVjdCB3aXRoIHRoZSBleHRyYSBhcmd1bWVudCAqKmB0eXBlID0gImJlaGF2aW9yImAqKi4gIA0KDQpOb24tbWVudGlvbmVkIGF0dHJpYnV0ZXMgZ2V0IHRoZSBkZWZhdWx0IHZhbHVlLCBhbmQgaW4gdGhpcyBjYXNlIG9uZU1vZGUgaXMgdGhlIGRlZmF1bHQ7IHNlZSBiZWxvdy4gIA0KDQpUaGUgYGRyaW5rYCBkYXRhIChjcmVhdGVkIGluIFJzY3JpcHREYXRhRm9ybWF0LlIgKSBpcyBtYWRlIGF2YWlsYWJsZSBhcyBhIGRlcGVuZGVudCBiZWhhdmlvciB2YXJpYWJsZSBieSB0aGUgZnVuY3Rpb246IA0KDQpgYGB7cn0NCmRyaW5raW5nYmVoIDwtIHNpZW5hRGVwZW5kZW50KCBkcmluaywgdHlwZSA9ICJiZWhhdmlvciIgKQ0KDQojIHRoZSBjbGFzcywgY2xhc3MoZHJpbmtpbmdiZWgpLCBpcyBzdGlsbCBzaWVuYURlcGVuZGVudC4NCmBgYA0KDQpOb3RlOiBvbmx5IHVzZSB0aGUgdmFyaWFibGUgaW4gT05FIHJvbGUgaW4gYSBnaXZlbiBtb2RlbDogYmVoYXZpb3IgdmFyaWFibGUgb3IgY2hhbmdpbmcgY292YXJpYXRlISAgDQoNClRoZSBvcHRpb25zIGF2YWlsYWJsZSBmb3IgZGVmaW5pbmcgYSBzaWVuYURlcGVuZGVudCBvYmplY3QgYXJlIGRpc3BsYXllZCBieSB0eXBpbmc6ICBgP3NpZW5hRGVwZW5kZW50YC4gDQoNClRoaXMgc2hvd3MgdGhhdCBuZXh0IHRvIG9uZS1tb2RlICh1bmlwYXJ0aXRlKSBhbmQgYmVoYXZpb3IgZGVwZW5kZW50IHZhcmlhYmxlcywgYWxzbyB0d28tbW9kZSAoYmlwYXJ0aXRlKSBkZXBlbmRlbnQgdmFyaWFibGVzIGFyZSBwb3NzaWJsZS4gIA0KWW91IGNhbiBpbmZlciB0aGF0IG9uZU1vZGUgaXMgdGhlIGRlZmF1bHQgdHlwZSBmcm9tIHRoZSBmYWN0IHRoYXQgaXQgaXMgbWVudGlvbmVkIGZpcnN0LiAgDQoNCg0KVG8gY3JlYXRlIGJpcGFydGl0ZSBuZXR3b3JrIG9iamVjdHMgeW91IG5lZWQgdHdvIG5vZGUgc2V0cyBhbmQgbXVzdCBjcmVhdGUgdGhlIG5vZGUgc2V0cyB0b28uDQoNClBsZWFzZSBTZWUgYD9zaWVuYU5vZGVTZXRgIHdoZXJlIHRoZSBFeGFtcGxlcyBzZWN0aW9uIHNob3dzIGFuIGV4YW1wbGUgb2YgdGhlIHN5bnRheC4NCg0KLS0tICAgDQoNCiMjIEIuIGV4cGxhbmF0b3J5IHZhcmlhYmxlcyAgDQoNClNlY29uZCB3ZSBjb25zdHJ1Y3Qgb2JqZWN0cyBmb3IgdGhlIGV4cGxhbmF0b3J5IChpbmRlcGVuZGVudCkgdmFyaWFibGVzLiAgDQpGcm9tIHRoZSBoZWxwIHJlcXVlc3Q6IGA/c2llbmFEYXRhQ3JlYXRlYA0KIA0KV2Ugc2VlIHRoYXQgdGhlc2UgY2FuIGJlIG9mIGZpdmUga2luZHM6ICANCg0KMS4gYGNvQ292YXJgOiBDb25zdGFudCBhY3RvciBjb3ZhcmlhdGVzICANCjIuIGB2YXJDb3ZhcmA6IFRpbWUtdmFyeWluZyBhY3RvciBjb3ZhcmlhdGVzICANCjMuIGBjb0R5YWRDb3ZhcmA6IENvbnN0YW50IGR5YWRpYyBjb3ZhcmlhdGVzICANCjQuIGB2YXJEeWFkQ292YXJgOiBUaW1lLXZhcnlpbmcgZHlhZGljIGNvdmFyaWF0ZXMgIA0KNS4gYGNvbXBvc2l0aW9uQ2hhbmdlYCBDb21wb3NpdGlvbiBjaGFuZ2UgaW5kaWNhdG9ycyAgDQoNCg0KDQpZb3UgY2FuIGdldCBoZWxwIGFib3V0IHRoaXMgYnkgdGhlIGZvbGxvd2luZyByZXF1ZXN0czogIA0KDQoqIGA/Y29Db3ZhcmAgIA0KKiBgP3ZhckNvdmFyYCAgDQoqIGA/Y29EeWFkQ292YXJgICANCiogYD92YXJEeWFkQ292YXJgICANCiogYD9zaWVuYUNvbXBvc2l0aW9uQ2hhbmdlYCAgDQoNCg0KVGhlIHZhcmlhYmxlcyBhdmFpbGFibGUgZm9yIHRoaXMgZGF0YSBzZXQgYWxsIGFyZSBjaGFuZ2luZyBhY3RvciBjb3ZhcmlhdGVzLiAgDQpGb3IgaWxsdXN0cmF0aXZlIHB1cnBvc2VzLCB3ZSB1c2Ugc21va2luZyBhcyBvYnNlcnZlZCBhdCB0aGUgZmlyc3Qgd2F2ZSBhcyBhIGNvbnN0YW50IGNvdmFyaWF0ZToNCg0KDQpgYGB7cn0NCnNtb2tlMSA8LSBjb0NvdmFyKCBzbW9rZVsgLCAxIF0gKQ0KYGBgDQoNClRoaXMgc2VsZWN0cyB0aGUgZmlyc3QgY29sdW1uIG9mIHNtb2tlLCB3aGljaCBjb250YWlucyB0aGUgZmlyc3Qgd2F2ZSBvYnNlcnZhdGlvbnMsIGFuZCBtYWtlcyBpdCBhdmFpbGFibGUgYXMgYSBjb25zdGFudCBjb3ZhcmlhdGUuIFRoaXMgaXMgdGhlIHBhdHRlcm4gZm9yIGZvciBldmV5IGNvdmFyaWF0ZSBmaWxlLCBlLmcuIGBBdHRyMSA8LSBjb0NvdmFyKCBDb3ZhcmlhdGUxIClgIHdoZXJlIENvdmFyaWF0ZTEgaXMgYSBtYXRyaXggd2l0aCBgZGltKENvdmFyaWF0ZTEpYCBlcXVhbCB0byBuIHggMS4gIA0KDQpOb3RlLCBpZiBDb3ZhcmlhdGVzIGlzIGEgbWF0cml4IHdpdGggYGRpbShDb3ZhcmlhdGVzKWAgZXF1YWwgdG8gbiB4IHAgeW91IGNhbiBjcmVhdGUgY29uc3RhbnQgY292YXJpYXRlcyB0aHJvdWdoOiAgDQoNCi0gYEF0dHIxIDwtIGNvQ292YXIoQ292YXJpYXRlc1ssMV0pYCAgDQotIC4uLiAgDQotIGBBdHRycCA8LSBjb0NvdmFyKENvdmFyaWF0ZXNbLHBdKWAgIA0KDQogV2UgdXNlIHRoZSBkcmlua2luZyBkYXRhIGFzIGEgY2hhbmdpbmcgY292YXJpYXRlLiBUaGUgZnVuY3Rpb24gYHZhckNvdmFyKCkgY3JlYXRlcyBhIGNoYW5naW5nIGNvdmFyaWF0ZSBvYmplY3QgZnJvbSBhIG1hdHJpeDsgdGhlIG5hbWUgY29tZXMgZnJvbSAndmFyeWluZyBjb3ZhcmlhdGUnLiAgDQogDQpgYGB7cn0NCmFsY29ob2wgPC0gdmFyQ292YXIoIGRyaW5rICkNCmBgYA0KDQpZb3UgbmVlZCBhdCBsZWFzdCB0aHJlZSB3YXZlcyBpbiB0aGUgZGF0YSBzZXQgdG8gZGVmaW5lIGEgdmFyeWluZyBjb3ZhcmlhdGUgYnkgdGhlIGZ1bmN0aW9uIGB2YXJDb3ZhcigpYDsgdGhlIHJlYXNvbiBpcyB0aGF0IHRoZSBwcmV2aW91cyB3YXZlIGlzIHVzZWQgYXMgYSBwcmVkaWN0b3Igb2YgdGhlIG5leHQgd2F2ZS4gIA0KDQpUaGUgY29tbWFuZC4uLg0KDQpgYGB7cn0NCmF0dHJpYnV0ZXMoIGFsY29ob2wgKQ0KYGBgDQoNCi4uLndpbGwgdGVsbCB5b3UgdGhlIGluZm9ybWF0aW9uIHRoYXQgUlNpZW5hIG5vdyBoYXMgYWRkZWQgdG8gdGhlIGRyaW5rIGRhdGEuICANCg0KLS0tICANCg0KIyMgQy4gY29tYmluYXRpb24gb2YgZGVwZW5kZW50IGFuZCBleHBsYW5hdG9yeSB2YXJpYWJsZXMgIA0KDQpXZSBub3cgY29tYmluZSB0aGUgZGVwZW5kZW50IGFuZCBpbmRlcGVuZGVudCB2YXJpYWJsZXMuICANClRoZSBmdW5jdGlvbiBgc2llbmFEYXRhQ3JlYXRlKClgIGNyZWF0ZXMgYSBTaWVuYSBkYXRhIG9iamVjdCBmcm9tIGlucHV0IG5ldHdvcmtzLCBjb3ZhcmlhdGVzIGFuZCBjb21wb3NpdGlvbiBjaGFuZ2Ugb2JqZWN0czsgdGhlIG9iamVjdHMgdGhhdCBlYXJsaWVyIHdlcmUgY3JlYXRlZCBieSBgc2llbmFEZXBlbmRlbnQoKWAgd2lsbCBoYXZlIHRoZSByb2xlIG9mIGRlcGVuZGVudCB2YXJpYWJsZXMsIGFuZCBzaW1pbGFybHkgdGhlIG90aGVyIHJvbGVzIGFyZSBwcmVkZXRlcm1pbmVkIGJ5IGNyZWF0aW9uIGJ5IHRoZSBmdW5jdGlvbnMgYGNvQ292YXIoKWAsIGB2YXJDb3ZhcigpYCwgYGNvRHlhZENvdmFyKClgLCBgdmFyRHlhZENvdmFyKClgLCBhbmQgYHNpZW5hQ29tcG9zaXRpb25DaGFuZ2UoKWAuDQoNCmBgYHtyfQ0KbXlkYXRhIDwtIHNpZW5hRGF0YUNyZWF0ZSggZnJpZW5kc2hpcCwgc21va2UxLCBhbGNvaG9sICkNCmBgYA0KDQpZb3UgbWF5IGNoZWNrIHRoZSByZXN1bHQgYnkgcmVxdWVzdGluZw0KYGBge3J9DQpteWRhdGENCmBgYA0KDQpZb3Ugc2hvdWxkIG5vdyB1bmRlcnN0YW5kIGhvdyB0aGlzIGRpZmZlcnMgZnJvbSB0aGUgcmVzdWx0IG9mOiANCg0KYG15YmVoZGF0YSA8LSBzaWVuYURhdGFDcmVhdGUoIGZyaWVuZHNoaXAsIHNtb2tlMSwgZHJpbmtpbmdiZWgpYCANCg0KSWYgeW91IHdvdWxkIGxpa2UgdG8gdXNlIGRpZmZlcmVudCBuYW1lcywgeW91IGNvdWxkIHJlcXVlc3QgdGhpcyBhcyBmb2xsb3dzOg0KDQpgYGB7ciwgZXZhbD1GQUxTRX0NCm15ZGF0YSA8LSBzaWVuYURhdGFDcmVhdGUobm9taW5hdGlvbnMgPSBmcmllbmRzaGlwLCBzbW9rZTEsIGRyaW5raW5nID0gYWxjb2hvbCkNCmBgYA0KDQpBbm90aGVyIHR5cGUgb2YgZGVwZW5kZW50IG5ldHdvcmsgaXMgYSB0d28tbW9kZSBuZXR3b3JrLCB3aGljaCBoZXJlIGlzIGFsc28gY2FsbGVkIGEgYmlwYXJ0aXRlIG5ldHdvcmsuICANClRvIGdldCBhZHZpY2UgZm9yIGEgZmlyc3Qgc3RlcCBpbiB0aGUgdXNlIG9mIHR3by1tb2RlIG5ldHdvcmtzLCBzZWUgdGhlIHNjcmlwdCBSc2NyaXB0U2llbmFCaXBhcnRpdGUuUiBvbiB0aGUgU2llbmEgc2NyaXB0cyBwYWdlLiAgDQoNClRoaXMgZmluaXNoZXMgdGhlIGRhdGEgc3BlY2lmaWNhdGlvbi4gTm93IHdlIGhhdmUgdG8gc3BlY2lmeSB0aGUgbW9kZWwuICANCg0KIyMgRC4gbW9kZWwgc3BlY2lmaWNhdGlvbiAgDQoNCiMjIyBEZWZpbmluZyBlZmZlY3RzIEkgDQoNClRoZSBkYXRhIHNldCBhcyBjb21iaW5lZCBpbiBgbXlkYXRhYCBpbXBsaWVzIGEgY2VydGFpbiBzZXQgb2YgZWZmZWN0cyB0aGF0IGNhbiBiZSBpbmNsdWRlZCBpbiB0aGUgc3BlY2lmaWNhdGlvbiBvZiB0aGUgbW9kZWwuICANClRoZSBmdW5jdGlvbiBgZ2V0RWZmZWN0cygpYCBjcmVhdGVzIGEgZGF0YWZyYW1lIG9mIGVmZmVjdHMgd2l0aCBhIG51bWJlciBvZiBleHRyYSBwcm9wZXJ0aWVzIGZvciB1c2UgaW4gUlNpZW5hOg0KDQpgYGB7cn0NCm15ZWZmIDwtIGdldEVmZmVjdHMoIG15ZGF0YSApDQpgYGANCg0KYG15ZGF0YWAgaXMgbmVlZGVkIGFzIGFuIGFyZ3VtZW50IGFzIHRoZSBlZmZlY3RzIGRlcGVuZCBvbiB0aGUgbnVtYmVyIGFuZCB0eXBlcyBvZiBjb3ZhcmlhdGVzIGFuZCBkZXBlbmRlbnQgdmFyaWFibGVzLiAgDQpCZWZvcmUgd2UgZXhwbGFpbiB0aGUgb2JqZWN0IGBteWVmZmAgYW5kIGhvdyB3ZSBzaGFsbCBiZSBnb2luZyB0byB1c2UgaXQsIHdlIGZpcnN0IHByb2R1Y2UgYSBkYXRhIGRlc2NyaXB0aW9uIHdoaWNoIGlzIGF2YWlsYWJsZSBub3c6DQoNCiMjIyBEYXRhIGRlc2NyaXB0aW9uDQpgYGB7cn0NCnByaW50MDFSZXBvcnQoIG15ZGF0YSwgbW9kZWxuYW1lID0gJ3M1MF8zX2luaXQnICkNCmBgYA0KDQpUaGlzIHdyaXRlcyBhIGJhc2ljIHJlcG9ydCBvZiB0aGUgZGF0YSB0byB0aGUgZmlsICpzNTBfM19pbml0LnR4dCogIGluIHRoZSBjdXJyZW50IHdvcmtpbmcgZGlyZWN0b3J5LiBMb2NhdGUgYW5kIG9wZW4gaXQhICANCkluc3BlY3RpbmcgdGhpcyBpcyBpbXBvcnRhbnQgYmVjYXVzZSBpdCBzZXJ2ZXMgYXMgYSBjaGVjayBhbmQgYWxzbyBjb250YWlucyBhIG51bWJlciBvZiBiYXNpYyBkZXNjcmlwdGl2ZXMuICANCkluIHRoaXMgZGVzY3JpcHRpb24geW91IGNhbiBzZWUgdGhhdCB0aGUgdGhpcmQgd2F2ZSBmb3IgYWxjb2hvbCBpcyBub3QgdXNlZC4gVGhpcyBpcyBiZWNhdXNlIGNoYW5naW5nIGNvdmFyaWF0ZXMgYXJlIGFzc3VtZWQgdG8gYmUgY29uc3RhbnQgZnJvbSBvbmUgd2F2ZSB1bnRpbCBpbW1lZGlhdGVseSBiZWZvcmUgdGhlIG5leHQgd2F2ZSwgc28gdGhhdCB0aGUgdmFsdWVzIGZvciB0aGUgbGFzdCB3YXZlIGFyZSBpZ25vcmVkLiAgDQoNCiMjIyBEZWZpbmluZyBlZmZlY3RzIElJICAgDQoNCkxldCB1cyBub3cgY29uc2lkZXIgdGhlIGBteWVmZmAgb2JqZWN0LCB3aGljaCBpcyB1c2VkIHRvIHNwZWNpZnkgdGhlIG1vZGVsLiAgDQpJdCBpcyBvZiB0aGUgY2xhc3MgYHNpZW5hRWZmZWN0c2AsIGFuZCBjb250YWlucyB0aGUgbW9kZWwgc3BlY2lmaWNhdGlvbi4gIA0KWW91IGNhbiBpbnNwZWN0IHRoZSBjdXJyZW50IG1vZGVsIHNwZWNpZmljYXRpb24gYnkgc2ltcGx5IHJlcXVlc3RpbmcuLi4gDQoNCmBgYHtyfQ0KbXllZmYNCmBgYA0KDQpGb3Igc3RhcnRpbmcsIHRoZSBtb2RlbCBzcGVjaWZpY2F0aW9uIGlzIGp1c3QgYSB2ZXJ5IGxpbWl0ZWQgZGVmYXVsdCAoaW5jbHVkaW5nIHJhdGVzIG9mIGNoYW5nZSwgb3V0ZGVncmVlIGFuZCByZWNpcHJvY2l0eSBvbmx5KS4gIFRvIG1ha2UgYSBtZWFuaW5nZnVsIGFuYWx5c2lzLCB5b3Ugd2lsbCBuZWVkIHRvIGFkZCB0byBpdC4gIA0KDQpUaGUgcm93cyBvZiBteWVmZiBjb3JyZXNwb25kIHRvIHRoZSBlZmZlY3RzLiAgDQpCeSByZXF1ZXN0aW5nLi4uDQpgYGB7cn0NCm5hbWVzKG15ZWZmKQ0KYGBgDQoNCllvdSBzZWUgdGhlIHR5cGUgb2YgaW5mb3JtYXRpb24gdGhhdCBpcyBzdG9yZWQgYWJvdXQgdGhlIGVmZmVjdHMsIGkuZS4sIHRoZSBjb2x1bW5zIChjaGFyYWN0ZXJpc3RpY3MpIGRlZmluZWQgZm9yIHRoZSBlZmZlY3RzLiBJZiBkZXNpcmVkLCBtb3JlIGluZm9ybWF0aW9uIGFib3V0IHRoZXNlIHZhcmlhYmxlcyBjYW4gYmUgb2J0YWluZWQgZnJvbSB0aGUgaGVscCBmaWxlczogYD9nZXRFZmZlY3RzYCB3aGVyZSB0aGUgY2hhcmFjdGVyaXN0aWNzIGFyZSBkZXNjcmliZWQuICANCg0KU29tZSBvZnRlbiB1c2VkIHZhcmlhYmxlcyBhcmUgKmVmZmVjdE5hbWUqLCAqc2hvcnROYW1lKiAsICp0eXBlKiwgYW5kICpwYXJhbWV0ZXIqLiAgDQpUaGUgc2V0IG9mIGF2YWlsYWJsZSBlZmZlY3RzIGFuZCB0aGVpciBtb3N0IHVzZWQgY29sdW1ucyBjYW4gYmUgaW5zcGVjdGVkIGFzIGZvbGxvd3M6DQoNCmBgYHtyLCBldmFsPUZBTFNFfQ0KZWZmZWN0c0RvY3VtZW50YXRpb24obXllZmYpDQpgYGANCg0KVGhpcyBjcmVhdGVzIGFuIGh0bWwgZmlsZSB3aXRoIHRoZSBsaXN0IG9mIGFsbCBlZmZlY3RzIGF2YWlsYWJsZSBpbiBgbXllZmZgOyB0aGUgZWZmZWN0cyBhcmUgYWxsIGRlZmluZWQgaW4gU2VjdGlvbiAxMiBvZiB0aGUgUlNpZW5hIG1hbnVhbCwgYnV0IG9ubHkgdGhvc2UgdGhhdCBhcmUgbWVhbmluZ2Z1bCBmb3IgZGF0YXNldCBgbXlkYXRhYCBhcmUgdXNlZCBpbiBgbXllZmZgLiBUaGUgKmluY2x1ZGUqIGNvbHVtbiBkZWZpbmVzIHdoZXRoZXIgZWZmZWN0cyBhcmUgaW5jbHVkZWQgaW4gdGhlIG1vZGVsLiAgDQoNCmBgYHtyfQ0KbXllZmYkaW5jbHVkZQ0KYGBgDQoNCkhlcmUgdGhlIFRSVUUgdmFsdWVzIGNvcnJlc3BvbmQgdG8gdGhlIGRlZmF1bHQgbW9kZWwgc3BlY2lmaWNhdGlvbiB3aGljaCwgaG93ZXZlciwgaXMgbm90IG1lYW50IGFzIGEgc2VyaW91cyBtb2RlbCwgYmVpbmcgdG9vIGxpbWl0ZWQuIFRoZXJlIGFyZSAzIG1haW4gd2F5cyB0byBvcGVyYXRlIG9uIGBteWVmZmA6ICANCg0KMS4gVXNpbmcgUlNpZW5hIGZ1bmN0aW9ucyBgaW5jbHVkZUVmZmVjdHMoKWAsIGBzZXRFZmZlY3RzKCksIGV0YzsgIA0KMi4gQ2hhbmdpbmcgYG15ZWZmYCBpbiBzcHJlYWRzaGVldCBmb3JtIGJ5IHRoZSBmdW5jdGlvbiBgZml4KClgOyAgDQozLiBDaGFuZ2luZyBgbXllZmZgIGRpcmVjdGx5IGJ5IG9wZXJhdGluZyBvbiBpdHMgZWxlbWVudHMuICANCg0KDQpUaGUgZmlyc3Qgd2F5IGlzIG1vc3QgaW4gbGluZSB3aXRoIHRoZSBkZXNpZ24gcGhpbG9zb3BoeSBvZiBSLCBhbmQgYWxsb3dzIHlvdSB0byBzYXZlIHNjcmlwdHMgdGhhdCBhbHNvIGNhbiBiZSB1c2VkIHdoZW4gdGhlcmUgd2lsbCBiZSBuZXcgdmVyc2lvbnMgb2YgUlNpZW5hLiBUaGVyZWZvcmUsIHdlIHN1Z2dlc3QgdGhhdCBmb3Igc3RhcnRpbmcgeW91IG9ubHkgc3R1ZHkgb3B0aW9uIDEsICpBZGRpbmcvcmVtb3ZpbmcgZWZmZWN0cyB1c2luZyBpbmNsdWRlRWZmZWN0cyouICANClRoZSBvdGhlciB0d28gb3B0aW9ucyBhcmUgdHJlYXRlZCBvbmx5IGZvciBzcGVjaWFsIGFuZCBtb3JlIGRpZmZpY3VsdCBvY2Nhc2lvbnM7IGFuZCBmb3IgbG9va2luZyAnYmVoaW5kIHRoZSBzY3JlZW5zJy4gIA0KDQpGb3IgaWRlbnRpZnlpbmcgeW91ciBlZmZlY3RzIHlvdSBuZWVkIHRoZSAqc2hvcnROYW1lKnMsIHdoaWNoIGNhbiBiZSByZWFkIGluIHRoZSBtYW51YWwgKHNlY3Rpb24gIk1hdGhlbWF0aWNhbCBkZWZpbml0aW9uIG9mIGVmZmVjdHMiKSwgb3Igb2J0YWluZWQgZnJvbSB0aGUgYGVmZmVjdHNEb2N1bWVudGF0aW9uKClgIGZ1bmN0aW9uIG1lbnRpb25lZCBhYm92ZS4gIA0KDQojIyMgMS4gQWRkaW5nL3JlbW92aW5nIGVmZmVjdHMgdXNpbmcgYGluY2x1ZGVFZmZlY3RzKClgICANCg0KIyMjIyAqKnN0cnVjdHVyYWwgZWZmZWN0cyoqICANCg0KVGhlIGJlc3Qgd2F5IG9mIHNwZWNpZnlpbmcgdGhlIG1vZGVsIGlzIGJ5IHRoZSBgaW5jbHVkZUVmZmVjdHMoKWAgZnVuY3Rpb24uIFRoaXMgZnVuY3Rpb24gdXNlcyBzaG9ydCBuYW1lcyBpbnN0ZWFkIG9mIGZ1bGwgbmFtZXMuIFRoZSBzaG9ydCBuYW1lcyBhcmUgZ2l2ZW4gYnkgdGhlIGBlZmZlY3RzRG9jdW1lbnRhdGlvbigpYCBmdW5jdGlvbiBtZW50aW9uZWQgYWJvdmUsIGFuZCBhbHNvIGFyZSBsaXN0ZWQgaW4gdGhlIGRlc2NyaXB0aW9ucyBnaXZlbiBpbiBTZWN0aW9uIDEyIG9mIHRoZSBtYW51YWwuICANCg0KRm9yIGlsbHVzdHJhdGlvbiwgbGV0IHVzIHN0YXJ0IGZyb20gc2NyYXRjaCB3aXRoIGEgbmV3IHNpZW5hRWZmZWN0cyBvYmplY3QsIGFuZCBhZGQgdGhlIHRyYW5zaXRpdmUgdHJpcGxlcyBhbmQgMy1jeWNsZXMgZWZmZWN0cy4gDQoNCg0KYGBge3IsIHJlc3VsdHM9J2hvbGQnfQ0KbXllZmYgPC0gZ2V0RWZmZWN0cyggbXlkYXRhICkNCm15ZWZmIDwtIGluY2x1ZGVFZmZlY3RzKCBteWVmZiwgdHJhbnNUcmlwLCBjeWNsZTMgKQ0KIyBUbyBzZWUgdGhlIGN1cnJlbnQgbW9kZWwgc3BlY2lmaWNhdGlvbiwNCm15ZWZmDQpgYGANCg0KDQpOb3RlIHRoYXQgd2UgY2FuIHNldCBzZXZlcmFsIGVmZmVjdHMgaW4gb25lIGdvISBUbyByZW1vdmUgYW4gZWZmZWN0LCBlLmcuLCB0aGUgMy1jeWNsZSBlZmZlY3RzLi4uDQoNCmBgYHtyLCByZXN1bHRzPSdob2xkJ30NCm15ZWZmIDwtIGluY2x1ZGVFZmZlY3RzKCBteWVmZiwgY3ljbGUzLCBpbmNsdWRlPUZBTFNFICkNCg0KIyBDaGVjayBhZ2FpbiB3aGljaCBlZmZlY3RzIG5vdyBhcmUgaW5jbHVkZWQgaW4gdGhlIG1vZGVsDQpteWVmZg0KDQpgYGANCg0KIyMjIyAqKmNvdmFyaWF0ZSByZWxhdGVkIGVmZmVjdHMqKiAgDQoNCkxldCB1cyBkZW1vbnN0cmF0ZSBob3cgdG8gYWRkL3JlbW92ZSBjb3ZhcmlhdGUgcmVsYXRlZCBlZmZlY3RzLiAgDQpUaGUgc2hvcnQgbmFtZXMgZG8gbm90IGRpZmZlcmVudGlhdGUgYmV0d2VlbiB0aGUgY292YXJpYXRlczogIGUuZy4sIHRoZSBlZmZlY3RzICphbGNvaG9sIGVnbyogYW5kICpzbW9rZTEgZWdvKiBib3RoIGhhdmUgc2hvcnROYW1lICplZ29YKiwgYW5kIHRoZSBjb21tYW5kIGBteWVmZiA8LSBpbmNsdWRlRWZmZWN0cyhteWVmZiwgZWdvWClgIHJlc3VsdHMgaW4gYSBtZXNzYWdlIHRoYXQgZG9lcyBub3QgKGxpa2UgdGhlIGVhcmxpZXIgb25lKSBjb25maXJtIHRoZSBuZXdseSBpbmNsdWRlZCBlZmZlY3QuICANCg0KVGhlIGNvdmFyaWF0ZXMgYXJlIGluZGljYXRlZCBieSB0aGUgdmFyaWFibGUgKmludGVyYWN0aW9uMSogaW4gdGhlIHNpZW5hRWZmZWN0cyBvYmplY3QsIGxpc3RlZCBhcyAqaW50ZXIxKiBpbiB0aGUgcmVzdWx0IG9mIGBlZmZlY3RzRG9jdW1lbnRhdGlvbigpYCwgYW5kIHRoaXMgaGFzIHRvIGJlIG1lbnRpb25lZCB0byBpbmNsdWRlIHRoZXNlIGVmZmVjdHM6DQoNCmBgYHtyLCByZXN1bHRzPSdob2xkJ30NCm15ZWZmIDwtIGluY2x1ZGVFZmZlY3RzKCBteWVmZiwgZWdvWCwgYWx0WCwgZWdvWGFsdFgsIGludGVyYWN0aW9uMSA9ICJhbGNvaG9sIiApDQpteWVmZiA8LSBpbmNsdWRlRWZmZWN0cyggbXllZmYsIHNpbVgsIGludGVyYWN0aW9uMSA9ICJzbW9rZTEiICkNCg0KIyBXZSBjaGVjayB0aGUgcmVzdWx0cyBhZ2FpbjoNCm15ZWZmDQpgYGANCg0KDQpCeSBsb29raW5nIGF0IHRoZSBoZWxwIG9mZmVyZWQgYnkgYD9pbmNsdWRlRWZmZWN0c2AuICANCg0KeW91IGNhbiBzZWUgaG93IHRvIGluY2x1ZGUgZW5kb3dtZW50IGFuZCBjcmVhdGlvbiBlZmZlY3RzLiBFZmZlY3RzIHRoYXQgZGVwZW5kIG9uIG90aGVyIHZhcmlhYmxlcywgc3VjaCBhcyBlZ29YLCBhbHRYLCBldGMuIGFib3ZlLCBuZWVkIHRoZSBzcGVjaWZpY2F0aW9uIG9mIHRoZXNlIHZhcmlhYmxlcyB0byBkZWZpbmUgdGhlbS4gVGhpcyBpcyBkb25lIGJ5IHRoZSAqaW50ZXJhY3Rpb24xKiBwYXJhbWV0ZXIgd2hlbiBvbmx5IG9uZSB2YXJpYWJsZSBuYW1lIGlzIG5lZWRlZCwgYW5kIGJ5ICppbnRlcmFjdGlvbjIqIGlmIHRoZXJlIGlzIGEgc2Vjb25kIHZhcmlhYmxlIGludm9sdmVkLCBzdWNoIGFzIEFsdHNBdkFsdCAoc2VlIHRoZSBtYW51YWwpLiAgDQpBbHRob3VnaCB0aGUgbmFtZXMgb2YgdGhlc2UgcGFyYW1ldGVycyBhcmUgKmludGVyYWN0aW9uMSogYW5kICppbnRlcmFjdGlvbjIqLCB0aGlzIGRvZXMgbm90IHJlZmVyIHRvIHRoZSBjb21tb24gY29uY2VwdCBvZiBpbnRlcmFjdGlvbiBpbiBzdGF0aXN0aWNhbCBtb2RlbGxpbmchDQoNCg0KIyMjIyAqKmNyZWF0aW5nIGludGVyYWN0aW9uIGVmZmVjdHMqKiANCg0KDQpBcyBhIHNwZWNpYWwgdG9waWMsIGxldCB1cyBzaG93IGhvdyBpbnRlcmFjdGlvbiBlZmZlY3RzIGFyZSBjcmVhdGVkLiAgDQoNCkEgY29udmVuaWVudCBtZXRob2QgdG8gaW5jbHVkZSBhbiBpbnRlcmFjdGlvbiBpcyBvZmZlcmVkIGJ5IHRoZSBgaW5jbHVkZUludGVyYWN0aW9uKClgIGZ1bmN0aW9uLiBUaGlzIGNhbiBiZSB1c2VkIHRvIGludGVyYWN0IHR3byBvciB0aHJlZSBlZmZlY3RzIChpZiB0aGUgaW50ZXJhY3Rpb25zIGFyZSBhbGxvd2VkLCB3aGljaCBkZXBlbmRzIG9uIHRoZWlyIGludGVyYWN0aW9uVHlwZTsgc2VlIHRoZSBtYW51YWwgZm9yIHRoaXMpLiAgDQoNClRoZSBpbnRlcmFjdGlvbiBiZXR3ZWVuICoqc21va2UxIGVnbyoqIGFuZCAqKnJlY2lwcm9jaXR5KiosIGZvciBpbnN0YW5jZSwgY2FuIGJlIGRlZmluZWQgYnkgdGhlIGNvbW1hbmQ6IA0KDQpgYGB7ciwgZXZhbD1GQUxTRX0NCm15ZWZmIDwtIGluY2x1ZGVJbnRlcmFjdGlvbiggbXllZmYsIGVnb1gsIHJlY2lwLCBpbnRlcmFjdGlvbjEgPSBjKCJzbW9rZTEiLCIiKSApDQpteWVmZg0KYGBgDQoNClRoaXMgc2hvd3MgdGhlIGludGVyYWN0aW9uIGFzIGFuICJ1bnNwZWNpZmllZCBpbnRlcmFjdGlvbiBlZmZlY3QiOyBidXQgd2hlbiBwcmludGluZyByZXN1bHRzIG9mIHRoZSBlc3RpbWF0aW9uIHRoZSBuYW1lcyBvZiB0aGUgaW50ZXJhY3RpbmcgZWZmZWN0cyB3aWxsIGJlIG1lbnRpb25lZC4gDQoNCkFuIGludGVyYWN0aW9uIGJldHdlZW4gc21va2UxIGVnbyBhbmQgYWxjb2hvbCBlZ28gaXMgZGVmaW5lZCBieTogIA0KDQpgYGB7ciwgZXZhbD1GQUxTRX0NCm15ZWZmIDwtIGluY2x1ZGVJbnRlcmFjdGlvbiggbXllZmYsIGVnb1gsIGVnb1gsIGludGVyYWN0aW9uMSA9IGMoICJzbW9rZTEiLCAiYWxjb2hvbCIgKSApDQpgYGANCg0KDQpOb3RlIHRoYXQgdGhlIGtleXdvcmQgJ2ludGVyYWN0aW9uMScgdXNlZCBieSBSU2llbmEgaXMgdXNlZCBmb3IgaWRlbnRpZnlpbmcgdGhlIGNvdmFyaWF0ZSBmb3Igd2hpY2ggdGhlIGVnbyBlZmZlY3QgaXMgc2VsZWN0ZWQsIGFuZCBkb2VzIG5vdCByZWZlciB0byB0aGUgaW50ZXJhY3Rpb24gZWZmZWN0IGl0c2VsZi4gIA0KSWYgYXQgbGVhc3Qgb25lIG9mIHRoZSBpbnRlcmFjdGluZyBlZmZlY3RzIHJlcXVpcmVzIHRoZSBpbnRlcmFjdGlvbjEgcGFyYW1ldGVyIGZvciBpdCBzcGVjaWZpY2F0aW9uLCB0aGVuIHRoaXMgcGFyYW1ldGVyIGlzIGFsc28gcmVxdWlyZWQgZm9yIHRoZSBgaW5jbHVkZUludGVyYWN0aW9uKClgIGZ1bmN0aW9uLiAgDQoNClRoZW4gdGhlIHR3byBvciB0aHJlZSBpbnRlcmFjdGlvbjEgcGFyYW1ldGVycyBtdXN0IGJlIGNvbWJpbmVkIHVzaW5nIGMoKTsgdGhlIHNhbWUgZ29lcyBmb3IgaW50ZXJhY3Rpb24yLCBpZiB0aGF0IGFsc28gaXMgbmVjZXNzYXJ5IGZvciB0aGUgZGVmaW5pdGlvbi4gQXMgc2hvd24gYWJvdmUgZm9yIHRoZSByZWNpcCBlZmZlY3QsIHRoZSBpbnRlcmFjdGlvbjEgb3IgaW50ZXJhY3Rpb24yIHBhcmFtZXRlciBpcyAiIiAoaS5lLiwgYW4gZW1wdHkgc3RyaW5nKSBmb3IgZWZmZWN0cyB3aGVyZSBpdCBpcyBub3QgbmVlZGVkLiAgDQoNCiMjIyMgKiphY2Nlc3Npbmcgb3RoZXIgY2hhcmFjdGVyaXN0aWNzIG9mIGVmZmVjdHMqKiAgDQoNCkEgc2Vjb25kIHNwZWNpYWwgdG9waWMgaXMgaG93IHRvIGFjY2VzcyBvdGhlciBjaGFyYWN0ZXJpc3RpY3Mgb2YgZWZmZWN0cy4gVGhpcyBjYW4gYmUgZG9uZSBieSB0aGUgYHNldEVmZmVjdCgpYCBmdW5jdGlvbi4gRS5nLiwgdGhlIGRlbnNlIHRyaWFkcyBlZmZlY3RzIGNvdW50cyB0aGUgbnVtYmVyIG9mIHRyaXBsZXRzIHdpdGggYXQgbGVhc3QgeHggdGllcywgIHdoZXJlIHh4IGlzIHRoZSBwYXJhbWV0ZXIgb2YgdGhlIGVmZmVjdCwgd2hpY2ggY2FuIGJlIDUgb3IgNiAobm90ZSB0aGF0IDYgaXMgdGhlIG1heGltdW0gbnVtYmVyIG9mIHRpZXMgaW4gYSB0cmlwbGV0KS4gVGhlIGRlZmF1bHQgaXMgNS4gVGhpcyBpcyBjaGFuZ2VkIHRvIDYgYnkgdGhlIGNvbW1hbmQ6ICANCg0KYGBge3IsIGV2YWw9RkFMU0V9DQpteWVmZiA8LSBzZXRFZmZlY3QobXllZmYsIGRlbnNlVHJpYWRzLCBwYXJhbWV0ZXIgPSA2KQ0KbXllZmYNCmBgYA0KDQpUaGUgJ3BhcmFtZXRlcicga2V5d29yZCByZWZlcnMgdG8gdGhlIGVmZmVjdCBwYXJhbWV0ZXIsIGRlc2NyaWJlZCBpbiBTZWN0aW9uIDEyIG9mIHRoZSBtYW51YWwuDQoNCiMjIyAgMi4gQWRkaW5nL3JlbW92aW5nIGVmZmVjdHMgdXNpbmcgYGZpeCgpYCAgDQoNCmBgYHtyLCBldmFsPUZBTFNFfQ0KIyBmaXggY2FsbHMgYSBkYXRhIGVkaXRvciBpbnRlcm5hbCB0byBSLCBzbyB3ZSBjYW4gbWFudWFsbHkgZWRpdCB0aGUgZWZmZWN0cy4NCg0KIyAgICAgICAgZml4KCBteWVmZiApDQoNCiMgSG93IHRvIHVzZSBmaXgoKSBpcyBwcmVzZW50ZWQgbWVyZWx5IGZvciBnZXR0aW5nIHRvIGtub3cgd2hhdCBteWVmZiBpcy4NCiMgSW4gcHJhY3RpY2FsIGFuYWx5c2lzIGl0IGlzIG1vcmUgY29udmVuaWVudA0KIyB0byB1c2Ugcm91dGluZSAiaW5jbHVkZUVmZmVjdHMiIGluc3RlYWQsIGFzIGV4cGxhaW5lZCBhYm92ZS4NCiMgZml4KCkgbWF5IG5vdCBiZSB1c2FibGUgaWYgeW91IGRvIG5vdCBoYXZlIHRjbC90ayBhdmFpbGFibGUhDQojIE5vdGUgdGhhdCB0aGUgdG9wIG9mIHRoZSBkYXRhZnJhbWUgc2hvd3MgdGhlIG5hbWVzIG9mIHRoZSBjb2x1bW5zOg0KIyBuYW1lLCBlZmZlY3ROYW1lLCBldGMuDQojIFlvdSBjYW4gZWRpdCB0aGUgImluY2x1ZGUiIGNvbHVtbiBieSBjaGFuZ2luZyB0aGUgVFJVRSBhbmQgRkFMU0UgdmFsdWVzDQojIGFzIHJlcXVpcmVkOyB3aGVuIHRoZSBlZGl0b3IgaXMgY2xvc2VkLCB0aGUgbmV3IHZhbHVlcyBhcmUgc3RvcmVkLg0KIyBXaGVuIHlvdSBtYWtlIGFuIGVycm9yLCBob3dldmVyLCB0aGUgZWZmZWN0cyBvYmplY3QgbWF5IGJlIGNvcnJ1cHRlZC4NCiMgVGhlcmVmb3JlLCB0aGlzIHdheSBvZiBhZGRpbmcgYW5kIHJlbW92aW5nIGVmZmVjdHMgaXMgbW9yZSByaXNreS4NCmBgYA0KDQojIyMgMy4gQWRkaW5nL3JlbW92aW5nIGVmZmVjdHMgYnkgZGlyZWN0IG1hbmlwdWxhdGlvbiBvZiBgbXllZmZgICANCg0KQWx0ZXJuYXRpdmVseSB3ZSBjYW4gZWRpdCB0aGUgZGF0YWZyYW1lIGRpcmVjdGx5IGJ5IHVzaW5nIFIgZnVuY3Rpb25zLiBZb3UgYXJlIGFkdmlzZWQgdG8gc2tpcCB0aGlzIHBhcnQgKCIzLiIpIGF0IGZpcnN0IGFuZCBzZWNvbmQgcmVhZGluZywgYW5kIHJlYWQgaXQgb25seSBpZiB5b3Ugd2lzaCB0byBnZXQgbW9yZSB1bmRlcnN0YW5kaW5nIG9mIHRoZSBpbnRlcm5hbCBzdHJ1Y3R1cmUgb2YgdGhlIGVmZmVjdHMgb2JqZWN0LiBUaGUgY29tbWFuZHMgYmVsb3cgYXJlIHVzZWQgdG8gc2V0ICJpbmNsdWRlIiB0byBUUlVFIG9yIEZBTFNFLCBhcyBhbiBhbHRlcm5hdGl2ZSB0byB1c2luZyB0aGUgZGF0YSBlZGl0b3IuIFRoZSAiaW5jbHVkZSIgY29sdW1uIHdpdGggdmFsdWVzIFRSVUUgb3IgRkFMU0Ugd2lsbCBhbHdheXMgYmUgbG9jYXRlZCBhdCB0aGUgOXRoIGNvbHVtbiwgYnV0IHRyYW5zaXRpdmUgdHJpcGxldHMgd2lsbCBub3QgYWx3YXlzIGJlIGF0IHRoZSAxNnRoIHJvdyBhcyB0aGlzIGRlcGVuZHMgb24gdGhlIG51bWJlciBvZiBwZXJpb2RzIGFuZCB2YXJpYWJsZXM7IGZ1cnRoZXIsIHRoZSBsaXN0IG9mIGF2YWlsYWJsZSBlZmZlY3RzIGNoYW5nZXMgb3ZlciBkaWZmZXJlbnQgdmVyc2lvbnMgb2YgUlNpZW5hLiAgDQoNClNvbWUgZXhhbXBsZXMgYXJlIHRoZSBmb2xsb3dpbmc6IA0KDQpgYGB7ciwgZXZhbD1GQUxTRX0NCm15ZWZmWzE2LDldIDwtIFRSVUUgICAjdHJhbnNpdGl2ZSB0cmlwbGVzDQpteWVmZlszNCw5XSA8LSBUUlVFICAgIzMgY3ljbGVzDQpteWVmZlszNyw5XSA8LSBUUlVFICAgI3RyYW5zaXRpdmUgdGllcw0KbXllZmZbNzcsOV0gPC0gVFJVRSAgICNpbmRlZ3JlZSBwb3B1bGFyaXR5IChzcXJ0KQ0KbXllZmZbODYsOV0gPC0gVFJVRSAgICNvdXRkZWdyZWUgcG9wdWxhcml0eSAoc3FydCkNCm15ZWZmWzkzLDldIDwtIFRSVUUgICAjaW5kZWdyZWUgYmFzZWQgYWN0aXZpdHkgKHNxcnQpDQpteWVmZlsxMDIsOV0gPC0gVFJVRSAgI291dGRlZ3JlZSBiYXNlZCBhY3Rpdml0eSAoc3FydCkNCm15ZWZmWzE1NSw5XSA8LSBUUlVFICAgI2luZGVncmVlLWluZGVncmVlIGFzc29ydGF0aXZpdHkNCm15ZWZmWzMxOSw5XSA8LSBUUlVFICAgI2FsY29ob2wgYWx0ZXINCm15ZWZmWzMzMSw5XSA8LSBUUlVFICAgI2FsY29ob2wgZWdvDQpteWVmZlszNzAsOV0gPC0gVFJVRSAgICNhbGNvaG9sIHNpbWlsYXJpdHkNCm15ZWZmWzQzOSw5XSA8LSBUUlVFICAgI2FsY29ob2wgZWdvIHggYWxjb2hvbCBhbHRlcg0KYGBgDQoNCkJ1dCBpbiBvdGhlciBjaG9pY2VzIG9mIGRhdGEsIHRoZSBlZmZlY3QgbnVtYmVycyB3aWxsIGNoYW5nZS4gVGhpcyBpcyBhIHJlYXNvbiB3aHkgdGhpcyBpcyBub3QgYSBjb252ZW5pZW50IG1ldGhvZC4NCg0KIyMgU2F2ZSB5b3VyIGRhdGEgaWYgeW91IHdoaXNoLiAgDQpgYGB7ciwgZXZhbD1GQUxTRX0NCg0Kc2F2ZS5pbWFnZSgiV29ya3NwYWNlUnNjcmlwdDAyLlJEYXRhIikNCg0KYGBgDQoNCg0KLS0tIA0KDQpbKipOZXh0OiBTaWVuYVJ1bk1vZGVsIEZPUiBQQVJBTUVURVIgRVNUSU1BVElPTiBCWSBSU0lFTkEqKl0oL3JzY3JpcHQwMy5odG1sKQ0KDQotLS0NCg0KDQo=</div>
+<p>Copyright &copy; 2020 Jochem Tolsma</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("rscript02.rmd");
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

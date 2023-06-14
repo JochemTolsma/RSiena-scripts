@@ -15,6 +15,8 @@ navbar:
       href: rscript03.html
     - text: "Behaviour"
       href: rscript04.html
+    - text: "GOF"
+      href: rscript05.html
   right:
     - icon: fa-github
       href: https://github.com/JochemTolsma/RSiena-scripts
