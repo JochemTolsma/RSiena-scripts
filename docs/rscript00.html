@@ -14,7 +14,7 @@
 
 <title>Descriptives</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -42,8 +42,8 @@
 <link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
 <link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
 <script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -158,11 +158,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -191,8 +195,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -200,16 +204,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -356,6 +353,9 @@ div.tocify {
 <li>
   <a href="rscript04.html">Behaviour</a>
 </li>
+<li>
+  <a href="rscript05.html">GOF</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -386,7 +386,7 @@ div.tocify {
 <h1 class="title toc-ignore">Descriptives</h1>
 <h4 class="author"><a href="https://www.jochemtolsma.nl">Jochem
 Tolsma</a> - Radboud University, the Netherlands</h4>
-<h4 class="date">Last compiled on September, 2022</h4>
+<h4 class="date">Last compiled on juni, 2023</h4>
 
 </div>
 
@@ -494,8 +494,8 @@ script Rscript01DataFormat.R. If you have already ran that script, you
 may load the required workspace:</p>
 <pre class="r test"><code>load(&quot;WorkspaceRscript01.RData&quot;)</code></pre>
 <p>Alternatively, you may run the following code-chunk:</p>
-<pre class="r test"><code>library(RSiena)  #to access the build-in data
-library(network)  #to convert
+<pre class="r test"><code>library(RSiena) #to access the build-in data
+library(network) #to convert
 friend.data.w1 &lt;- s501
 friend.data.w2 &lt;- s502
 friend.data.w3 &lt;- s503
@@ -516,15 +516,15 @@ respect to outdegrees or indegrees, if there are any of such
 outliers.</p>
 <p><strong>sociomatrix net1</strong></p>
 <pre class="r test"><code>require(sna)
-plot.sociomatrix(net1, drawlab = F, diaglab = F, xlab = &quot;friendship t1&quot;)</code></pre>
+plot.sociomatrix( net1, drawlab = F, diaglab = F, xlab = &#39;friendship t1&#39; )</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p><strong>sociomatrix net2</strong></p>
 <pre class="r test"><code>require(sna)
-plot.sociomatrix(net2, drawlab = F, diaglab = F, xlab = &quot;friendship t2&quot;)</code></pre>
+plot.sociomatrix( net2,drawlab = F, diaglab = F, xlab = &#39;friendship t2&#39; )</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p><strong>sociomatrix net3</strong></p>
 <pre class="r test"><code>require(sna)
-plot.sociomatrix(net3, drawlab = F, diaglab = F, xlab = &quot;friendship t3&quot;)</code></pre>
+plot.sociomatrix( net3,drawlab = F, diaglab = F, xlab = &#39;friendship t3&#39; )</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <hr />
 </div>
@@ -537,20 +537,21 @@ special methods associated with it. While
 the first two columns, <code>plot( net1, xlab = 'friendship t1' )</code>
 produces a nice sociogram.</p>
 <pre class="r test"><code># The class,
-class(net1)</code></pre>
+class( net1 )</code></pre>
 <pre class="test2"><code>#&gt; [1] &quot;network&quot;</code></pre>
 <pre class="r test"><code># with attributes
-attributes(net1)</code></pre>
+attributes( net1 )</code></pre>
 <pre class="test2"><code>#&gt; $names
 #&gt; [1] &quot;mel&quot; &quot;gal&quot; &quot;val&quot; &quot;iel&quot; &quot;oel&quot;
 #&gt; 
 #&gt; $class
 #&gt; [1] &quot;network&quot;</code></pre>
-<pre class="r test"><code># has special methods associated with it.  While
-plot(friend.data.w1, main = &quot;plot( friend.data.w1)&quot;)</code></pre>
+<pre class="r test"><code># has special methods associated with it.
+# While  
+plot( friend.data.w1, main=&quot;plot( friend.data.w1)&quot; ) </code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r test"><code># only produces a rather dull plot of the first two columns,
-plot(net1, xlab = &quot;friendship t1&quot;, main = &quot;plot(net1)&quot;)</code></pre>
+plot( net1, xlab = &#39;friendship t1&#39;, main=&quot;plot(net1)&quot; )</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
 <pre class="r test"><code># produces a nice sociogram</code></pre>
 <div id="tweaking-network-plot" class="section level3" number="0.6.1">
@@ -575,26 +576,27 @@ plot</h3>
 <code>plot( net1, vertex.col = "drink", vertex.cex = (deg + 1)/1.5 )</code></p>
 <pre class="r test"><code># add the attribute drink to the network object
 
-net1 %v% &quot;drink&quot; &lt;- drink[, 1]
+net1 %v% &quot;drink&quot; &lt;- drink[ , 1 ]
 
 # color the nodes by drink
 
-plot(net1, vertex.col = &quot;drink&quot;, xlab = &quot;friendship t1&quot;)</code></pre>
+plot( net1, vertex.col = &quot;drink&quot;, xlab = &#39;friendship t1&#39; )</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<pre class="r test"><code># Now let&#39;s color the nodes by drink and scale the vertex by degree of nodes!  First calculate
-# degree:
+<pre class="r test"><code># Now let&#39;s color the nodes by drink and scale the vertex by degree of nodes!
+#
+# First calculate degree:
 
-deg &lt;- rowSums(as.matrix(net1))  # NB:  rowSums() is defined for class matrix
+deg &lt;- rowSums( as.matrix( net1 ) )# NB:  rowSums() is defined for class matrix
 
 # have a look at the degree distribution
 
-table(deg, useNA = &quot;always&quot;)</code></pre>
+table( deg, useNA = &#39;always&#39; )</code></pre>
 <pre class="test2"><code>#&gt; deg
 #&gt;    0    1    2    3    4    5 &lt;NA&gt; 
 #&gt;    4    8   17   15    4    2    0</code></pre>
 <pre class="r test"><code># Now do the desired plot:
 
-plot(net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5)</code></pre>
+plot( net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5 )</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
 <hr />
 </div>
@@ -604,26 +606,26 @@ number="0.7">
 <h2><span class="header-section-number">0.7</span> Plot the three waves
 of data</h2>
 <pre class="r test"><code># Add drink to waves 2 and 3
-net2 %v% &quot;drink&quot; &lt;- drink[, 2]
-net3 %v% &quot;drink&quot; &lt;- drink[, 3]
-deg2 &lt;- rowSums(as.matrix(net2))
-deg3 &lt;- rowSums(as.matrix(net3))
+net2 %v% &quot;drink&quot; &lt;- drink[ , 2 ]
+net3 %v% &quot;drink&quot; &lt;- drink[ , 3 ]
+deg2 &lt;- rowSums( as.matrix( net2 ) )
+deg3 &lt;- rowSums( as.matrix( net3 ) )
 
 # Create a set of panels ( 1 row by 3 columns, or 3 columns by 1 row)
-par(mfrow = c(1, 3))
+par( mfrow = c( 1, 3 ) )
 
 # creating three plots after each other will place them in consecutive panels
-plot(net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5)
-plot(net2, vertex.col = &quot;drink&quot;, vertex.cex = (deg2 + 1)/1.5)
-plot(net3, vertex.col = &quot;drink&quot;, vertex.cex = (deg3 + 1)/1.5)</code></pre>
+plot( net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5 )
+plot( net2, vertex.col = &quot;drink&quot;, vertex.cex = (deg2 + 1)/1.5 )
+plot( net3, vertex.col = &quot;drink&quot;, vertex.cex = (deg3 + 1)/1.5 )</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>Each time we make a plot the coordinates move - because always the
 starting values are random. We can also save coordinates and use them
 for later plotting:</p>
-<pre class="r test"><code>par(mfrow = c(1, 3))
-coordin &lt;- plot(net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg + 1)/1.5)
-plot(net2, coord = coordin, vertex.col = &quot;drink&quot;, vertex.cex = (deg2 + 1)/1.5)
-plot(net3, coord = coordin, vertex.col = &quot;drink&quot;, vertex.cex = (deg3 + 1)/1.5)</code></pre>
+<pre class="r test"><code>par( mfrow = c( 1, 3 ) )
+coordin &lt;-  plot( net1, vertex.col = &quot;drink&quot;, vertex.cex = (deg +1 )/1.5 )
+plot( net2, coord = coordin, vertex.col = &quot;drink&quot;, vertex.cex = (deg2 + 1)/1.5 )
+plot( net3, coord = coordin, vertex.col = &quot;drink&quot;, vertex.cex = (deg3 + 1) /1.5 )</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>To get coordinates based on all three waves:
 <code>coordin &lt;-  plot( net1 + net2 + net3 )</code>.<br />
@@ -641,7 +643,7 @@ descriptions and analyses. The following are examples of some important
 graph level statistics</p>
 <div id="density" class="section level3" number="0.8.1">
 <h3><span class="header-section-number">0.8.1</span> density</h3>
-<pre class="r test"><code>gden(net1)  # density</code></pre>
+<pre class="r test"><code>gden( net1 ) # density</code></pre>
 <pre class="test2"><code>#&gt; [1] 0.04612245</code></pre>
 <hr />
 </div>
@@ -649,17 +651,17 @@ graph level statistics</p>
 number="0.8.2">
 <h3><span class="header-section-number">0.8.2</span> symmetry and
 reciprocity</h3>
-<pre class="r test"><code>grecip(net1)  # proportion of dyads that are symmetric</code></pre>
+<pre class="r test"><code>grecip( net1 ) # proportion of dyads that are symmetric</code></pre>
 <pre class="test2"><code>#&gt;       Mut 
 #&gt; 0.9714286</code></pre>
-<pre class="r test"><code>grecip(net1, measure = &quot;dyadic.nonnull&quot;)  # reciprocity, ignoring the null dyads</code></pre>
+<pre class="r test"><code>grecip( net1, measure = &quot;dyadic.nonnull&quot; ) # reciprocity, ignoring the null dyads</code></pre>
 <pre class="test2"><code>#&gt;      Mut 
 #&gt; 0.527027</code></pre>
 <hr />
 </div>
 <div id="transitivity" class="section level3" number="0.8.3">
 <h3><span class="header-section-number">0.8.3</span> transitivity</h3>
-<pre class="r test"><code>gtrans(net1)  # transitivity</code></pre>
+<pre class="r test"><code>gtrans( net1 ) # transitivity</code></pre>
 <pre class="test2"><code>#&gt; [1] 0.3873874</code></pre>
 <hr />
 </div>
@@ -670,14 +672,14 @@ class="section level2 tabset tabset-fade" number="0.9">
 class="header-section-number">0.9</span> Dyad and triad census</h2>
 <div id="dyad-census" class="section level3" number="0.9.1">
 <h3><span class="header-section-number">0.9.1</span> Dyad census</h3>
-<pre class="r test"><code>dyad.census(net1)</code></pre>
+<pre class="r test"><code>dyad.census( net1 )</code></pre>
 <pre class="test2"><code>#&gt;      Mut Asym Null
 #&gt; [1,]  39   35 1151</code></pre>
 <hr />
 </div>
 <div id="triad-census" class="section level3" number="0.9.2">
 <h3><span class="header-section-number">0.9.2</span> Triad census</h3>
-<pre class="r test"><code>triad.census(net1)</code></pre>
+<pre class="r test"><code>triad.census( net1 )</code></pre>
 <pre class="test2"><code>#&gt;        003  012  102 021D 021U 021C 111D 111U 030T 030C 201 120D 120U 120C 210 300
 #&gt; [1,] 16243 1470 1724    5   18   21   42   30    5    0  15    6    5    2   9   5</code></pre>
 <hr />
@@ -687,13 +689,13 @@ class="header-section-number">0.9</span> Dyad and triad census</h2>
 <h2><span class="header-section-number">0.10</span> (out)degree
 distribution</h2>
 <p>Of course for a symmetric network outdegree=indegree.</p>
-<pre class="r test"><code>outdegree &lt;- degree(net1, cmode = &quot;outdegree&quot;)
-outdegree  #outgoing ties of each note</code></pre>
+<pre class="r test"><code>outdegree &lt;- degree( net1, cmode = &quot;outdegree&quot; )
+outdegree #outgoing ties of each note</code></pre>
 <pre class="test2"><code>#&gt;  [1] 2 2 2 2 1 1 3 1 2 3 3 3 0 3 3 2 5 2 4 0 1 4 1 5 3 3 3 1 3 4 3 4 2 2 1 2 3 2 1 3 2 2 2 2 3 3 0 2
 #&gt; [49] 2 0</code></pre>
-<pre class="r test"><code>hist(outdegree)</code></pre>
+<pre class="r test"><code>hist( outdegree )</code></pre>
 <p><img src="rscript00_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<pre class="r test"><code>quantile(outdegree)</code></pre>
+<pre class="r test"><code>quantile( outdegree )</code></pre>
 <pre class="test2"><code>#&gt;   0%  25%  50%  75% 100% 
 #&gt;    0    2    2    3    5</code></pre>
 <hr />
@@ -774,7 +776,7 @@ head(dist$counts)</code></pre>
 <div id="connectivity" class="section level3" number="0.11.2">
 <h3><span class="header-section-number">0.11.2</span> connectivity</h3>
 <p>Reachability matrix, see <code>?reachability</code>.</p>
-<pre class="r test"><code>reach &lt;- reachability(net1)  # calculate the reachability matrix
+<pre class="r test"><code>reach &lt;- reachability( net1 )  # calculate the reachability matrix
 head(reach)</code></pre>
 <pre class="test2"><code>#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15] [,16] [,17]
 #&gt; [1,]    1    1    0    0    0    0    1    0    0     1     1     0     0     1     1     1     0
@@ -811,23 +813,23 @@ head(reach)</code></pre>
 <h2><span class="header-section-number">0.12</span> Network
 autocorrelation</h2>
 <p>Moran’s autocorrelation for outgoing ties:</p>
-<pre class="r test"><code>nacf(net1, drink[, 1], type = &quot;moran&quot;, neighborhood.type = &quot;out&quot;)[2]</code></pre>
+<pre class="r test"><code>nacf(net1, drink[, 1], type=&quot;moran&quot;, neighborhood.type=&#39;out&#39;)[2]</code></pre>
 <pre class="test2"><code>#&gt;         1 
 #&gt; 0.4331431</code></pre>
-<pre class="r test"><code>nacf(net2, drink[, 2], type = &quot;moran&quot;, neighborhood.type = &quot;out&quot;)[2]</code></pre>
+<pre class="r test"><code>nacf(net2, drink[, 2], type=&quot;moran&quot;, neighborhood.type=&#39;out&#39;)[2]</code></pre>
 <pre class="test2"><code>#&gt;         1 
 #&gt; 0.3977745</code></pre>
-<pre class="r test"><code>nacf(net3, drink[, 3], type = &quot;moran&quot;, neighborhood.type = &quot;out&quot;)[2]</code></pre>
+<pre class="r test"><code>nacf(net3, drink[, 3], type=&quot;moran&quot;, neighborhood.type=&#39;out&#39;)[2]</code></pre>
 <pre class="test2"><code>#&gt;         1 
 #&gt; 0.4258017</code></pre>
 <p>Moran’s autocorrelation for outgoing and incoming ties:</p>
-<pre class="r test"><code>nacf(net1, drink[, 1], type = &quot;moran&quot;, neighborhood.type = &quot;total&quot;)[2]</code></pre>
+<pre class="r test"><code>nacf(net1, drink[, 1], type=&quot;moran&quot;, neighborhood.type=&#39;total&#39;)[2]</code></pre>
 <pre class="test2"><code>#&gt;         1 
 #&gt; 0.3809011</code></pre>
-<pre class="r test"><code>nacf(net2, drink[, 2], type = &quot;moran&quot;, neighborhood.type = &quot;total&quot;)[2]</code></pre>
+<pre class="r test"><code>nacf(net2, drink[, 2], type=&quot;moran&quot;, neighborhood.type=&#39;total&#39;)[2]</code></pre>
 <pre class="test2"><code>#&gt;         1 
 #&gt; 0.3914719</code></pre>
-<pre class="r test"><code>nacf(net3, drink[, 3], type = &quot;moran&quot;, neighborhood.type = &quot;total&quot;)[2]</code></pre>
+<pre class="r test"><code>nacf(net3, drink[, 3], type=&quot;moran&quot;, neighborhood.type=&#39;total&#39;)[2]</code></pre>
 <pre class="test2"><code>#&gt;         1 
 #&gt; 0.4162185</code></pre>
 <hr />
