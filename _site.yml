@@ -17,6 +17,10 @@ navbar:
       href: rscript04.html
     - text: "GOF"
       href: rscript05.html
+    - text: "SienaRI"
+      href: rscript06.html
+    - text: "Agent-based simulation"
+      href: rscript07.html
   right:
     - icon: fa-github
       href: https://github.com/JochemTolsma/RSiena-scripts

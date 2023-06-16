@@ -1,0 +1,294 @@
+
+
+-----------------------------------
+New Analysis started.
+Date and time: 16/06/2023 17:03:08
+New results follow.
+-----------------------------------
+
+RSiena version 1.3.14.1 (05 feb 23)
+
+
+@1
+Simulations.
+============
+
+Current random number seed is 242452.
+Effects object used: mysimeff 
+Model Type:
+ Standard actor-oriented model
+Estimation method: unconditional moment estimation
+.
+
+Time duration for simulations is 1.0.
+Derivatives are estimated with the likelihood ratio method.
+Dolby method (regression on scores) is used.
+Parameter values are 
+  1. rate:  basic rate parameter friends                    3.7598  (fixed) 
+  2. eval:  outdegree (density)                            -0.2494  (fixed) 
+  3. eval:  reciprocity                                     1.2231  (fixed) 
+  4. eval:  transitive triplets                             0.2214  (fixed) 
+  5. eval:  sex alter                                       0.4804  (fixed) 
+  6. eval:  sex ego                                        -0.4062  (fixed) 
+  7. eval:  same sex                                        0.3441  (fixed) 
+  8. eval:  program similarity                              0.7278  (fixed) 
+  9. eval:  smoke similarity                                0.2236  (fixed) 
+
+
+Observed values of target statistics are
+  1. Amount of network change                                            60.0000
+  2. Number of ties                                                     141.0000
+  3. Number of reciprocated ties                                         70.0000
+  4. Number of transitive triplets                                      267.0000
+  5. Sum indegrees x sex                                                  5.7500
+  6. Sum outdegrees x sex                                                -4.2500
+  7. Same values on sex                                                 107.0000
+  8. Similarity on program                                               19.5605
+  9. Similarity on smoke                                                 12.2157
+
+ 9 parameters, 9 statistics
+
+All parameters are fixed.
+Therefore the estimation phase is skipped
+ and the program passes on immediately to phase 3
+ for checking the current parameter values and calculating standard errors.
+Estimation of derivatives by the LR method (type 1).
+
+
+
+
+@2
+Simulation Results.
+-------------------
+
+Regular end of simulation algorithm.
+Total of 1000 iteration steps.
+
+
+@3
+Parameter values
+                
+ 1. rate:  basic rate parameter friends                            3.7598  
+ 2. eval:  outdegree (density)                                    -0.2494  
+ 3. eval:  reciprocity                                             1.2231  
+ 4. eval:  transitive triplets                                     0.2214  
+ 5. eval:  sex alter                                               0.4804  
+ 6. eval:  sex ego                                                -0.4062  
+ 7. eval:  same sex                                                0.3441  
+ 8. eval:  program similarity                                      0.7278  
+ 9. eval:  smoke similarity                                        0.2236  
+
+
+@3
+Simulated statistics
+                    
+Estimated means and standard deviations, standard errors of the mean 
+  1. Amount of network change                                  85.046    9.432   0.1681
+  2. Number of ties                                           189.969    9.662   0.2908
+  3. Number of reciprocated ties                               96.006    8.270   0.2313
+  4. Number of transitive triplets                            502.776   69.428   2.0331
+  5. Sum indegrees x sex                                        9.380    4.391   0.0794
+  6. Sum outdegrees x sex                                       1.268    4.161   0.1243
+  7. Same values on sex                                       133.972    7.454   0.1981
+  8. Similarity on program                                     20.421    3.523   0.0638
+  9. Similarity on smoke                                       14.510    4.604   0.0812
+
+Standard errors of the mean are less than s.d./sqrt(n) 
+because of regression on scores (Dolby option). 
+Total computation time 5.53 seconds.
+
+
+-----------------------------------
+New Analysis started.
+Date and time: 16/06/2023 17:03:14
+New results follow.
+-----------------------------------
+
+RSiena version 1.3.14.1 (05 feb 23)
+
+
+@1
+Simulations.
+============
+
+Current random number seed is 242452.
+Effects object used: mysimeff.nt 
+Model Type:
+ Standard actor-oriented model
+Estimation method: unconditional moment estimation
+.
+
+Time duration for simulations is 1.0.
+Derivatives are estimated with the likelihood ratio method.
+Dolby method (regression on scores) is used.
+Parameter values are 
+  1. rate:  basic rate parameter friends                    3.7598  (fixed) 
+  2. eval:  outdegree (density)                            -0.2494  (fixed) 
+  3. eval:  reciprocity                                     1.2231  (fixed) 
+  4. eval:  transitive triplets                             0.0000  (fixed) 
+  5. eval:  sex alter                                       0.4804  (fixed) 
+  6. eval:  sex ego                                        -0.4062  (fixed) 
+  7. eval:  same sex                                        0.3441  (fixed) 
+  8. eval:  program similarity                              0.7278  (fixed) 
+  9. eval:  smoke similarity                                0.2236  (fixed) 
+
+
+Observed values of target statistics are
+  1. Amount of network change                                            60.0000
+  2. Number of ties                                                     141.0000
+  3. Number of reciprocated ties                                         70.0000
+  4. Number of transitive triplets                                      267.0000
+  5. Sum indegrees x sex                                                  5.7500
+  6. Sum outdegrees x sex                                                -4.2500
+  7. Same values on sex                                                 107.0000
+  8. Similarity on program                                               19.5605
+  9. Similarity on smoke                                                 12.2157
+
+ 9 parameters, 9 statistics
+
+All parameters are fixed.
+Therefore the estimation phase is skipped
+ and the program passes on immediately to phase 3
+ for checking the current parameter values and calculating standard errors.
+Estimation of derivatives by the LR method (type 1).
+
+
+
+
+@2
+Simulation Results.
+-------------------
+
+Regular end of simulation algorithm.
+Total of 1000 iteration steps.
+
+
+@3
+Parameter values
+                
+ 1. rate:  basic rate parameter friends                            3.7598  
+ 2. eval:  outdegree (density)                                    -0.2494  
+ 3. eval:  reciprocity                                             1.2231  
+ 4. eval:  transitive triplets                                     0.0000  
+ 5. eval:  sex alter                                               0.4804  
+ 6. eval:  sex ego                                                -0.4062  
+ 7. eval:  same sex                                                0.3441  
+ 8. eval:  program similarity                                      0.7278  
+ 9. eval:  smoke similarity                                        0.2236  
+
+
+@3
+Simulated statistics
+                    
+Estimated means and standard deviations, standard errors of the mean 
+  1. Amount of network change                                  78.557    8.624   0.1754
+  2. Number of ties                                           175.381    8.859   0.2343
+  3. Number of reciprocated ties                               82.348    7.366   0.1810
+  4. Number of transitive triplets                            337.087   42.166   1.0288
+  5. Sum indegrees x sex                                        7.398    3.745   0.0626
+  6. Sum outdegrees x sex                                      -0.338    3.732   0.0952
+  7. Same values on sex                                       126.770    7.022   0.1724
+  8. Similarity on program                                     20.508    3.197   0.0495
+  9. Similarity on smoke                                       13.860    4.369   0.0724
+
+Standard errors of the mean are less than s.d./sqrt(n) 
+because of regression on scores (Dolby option). 
+Total computation time 5.1 seconds.
+
+
+-----------------------------------
+New Analysis started.
+Date and time: 16/06/2023 17:03:19
+New results follow.
+-----------------------------------
+
+RSiena version 1.3.14.1 (05 feb 23)
+
+
+@1
+Simulations.
+============
+
+Current random number seed is 242452.
+Effects object used: mysimeff.2xt 
+Model Type:
+ Standard actor-oriented model
+Estimation method: unconditional moment estimation
+.
+
+Time duration for simulations is 1.0.
+Derivatives are estimated with the likelihood ratio method.
+Dolby method (regression on scores) is used.
+Parameter values are 
+  1. rate:  basic rate parameter friends                    3.7598  (fixed) 
+  2. eval:  outdegree (density)                            -0.2494  (fixed) 
+  3. eval:  reciprocity                                     1.2231  (fixed) 
+  4. eval:  transitive triplets                             0.4428  (fixed) 
+  5. eval:  sex alter                                       0.4804  (fixed) 
+  6. eval:  sex ego                                        -0.4062  (fixed) 
+  7. eval:  same sex                                        0.3441  (fixed) 
+  8. eval:  program similarity                              0.7278  (fixed) 
+  9. eval:  smoke similarity                                0.2236  (fixed) 
+
+
+Observed values of target statistics are
+  1. Amount of network change                                            60.0000
+  2. Number of ties                                                     141.0000
+  3. Number of reciprocated ties                                         70.0000
+  4. Number of transitive triplets                                      267.0000
+  5. Sum indegrees x sex                                                  5.7500
+  6. Sum outdegrees x sex                                                -4.2500
+  7. Same values on sex                                                 107.0000
+  8. Similarity on program                                               19.5605
+  9. Similarity on smoke                                                 12.2157
+
+ 9 parameters, 9 statistics
+
+All parameters are fixed.
+Therefore the estimation phase is skipped
+ and the program passes on immediately to phase 3
+ for checking the current parameter values and calculating standard errors.
+Estimation of derivatives by the LR method (type 1).
+
+
+
+
+@2
+Simulation Results.
+-------------------
+
+Regular end of simulation algorithm.
+Total of 1000 iteration steps.
+
+
+@3
+Parameter values
+                
+ 1. rate:  basic rate parameter friends                            3.7598  
+ 2. eval:  outdegree (density)                                    -0.2494  
+ 3. eval:  reciprocity                                             1.2231  
+ 4. eval:  transitive triplets                                     0.4428  
+ 5. eval:  sex alter                                               0.4804  
+ 6. eval:  sex ego                                                -0.4062  
+ 7. eval:  same sex                                                0.3441  
+ 8. eval:  program similarity                                      0.7278  
+ 9. eval:  smoke similarity                                        0.2236  
+
+
+@3
+Simulated statistics
+                    
+Estimated means and standard deviations, standard errors of the mean 
+  1. Amount of network change                                  88.278    9.697   0.1542
+  2. Number of ties                                           194.864    9.740   0.3046
+  3. Number of reciprocated ties                              105.703    9.017   0.2585
+  4. Number of transitive triplets                            637.586   90.798   2.7670
+  5. Sum indegrees x sex                                       10.883    5.127   0.1071
+  6. Sum outdegrees x sex                                       2.427    4.429   0.1369
+  7. Same values on sex                                       134.495    7.714   0.2052
+  8. Similarity on program                                     18.567    3.790   0.0790
+  9. Similarity on smoke                                       14.126    4.827   0.1000
+
+Standard errors of the mean are less than s.d./sqrt(n) 
+because of regression on scores (Dolby option). 
+Total computation time 5.58 seconds.
