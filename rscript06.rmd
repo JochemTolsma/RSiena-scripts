@@ -1,0 +1,272 @@
+---
+title: "Relative importance"
+author: 'Rob Franken - Radboud University, the Netherlands'
+bibliography: references.bib
+date: "Last compiled on `r format(Sys.time(), '%B, %Y')`"
+output: 
+  html_document:
+    toc:  true
+    toc_float: true
+    number_sections: false
+    code_folding: show
+    code_download: yes
+---
+
+```{r, globalsettings, echo=FALSE, warning=FALSE}
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=100),tidy=TRUE, warning = FALSE, message = FALSE,comment = "#>", cache=TRUE, class.source=c("test"), class.output=c("test2"))
+options(width = 100)
+rgl::setupKnitr()
+
+
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, 
+      x)
+  } else x
+}
+
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(position = c('top', 'right'))
+#klippy::klippy(color = 'darkred')
+#klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done')
+```
+
+```{css, echo=FALSE}
+pre.test {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 10px;
+}
+
+pre.test2 {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 10px;
+  background-color: white
+}
+
+
+h1, .h1, h2, .h2, h3, .h3 {
+    margin-top: 24px;
+}
+
+
+```
+
+----
+
+This website converted the following original .R scripts into .rmd files. 
+
+- RScriptSNADescriptives.R 
+- Rscript01DataFormat.R  
+- Rscript02SienaVariableFormat.R  
+- Rscript03SienaRunModel.R  
+- Rscript04SienaBehaviour.R
+
+Please visit [GitHub](https://github.com/snlab-nl/rsiena/tree/main/inst/scripts) for the latest .R files. 
+
+----
+
+## Data
+All files (data, scripts, etc.) can also be found on [Github](https://github.com/JochemTolsma/Rsiena-scripts)
+
+----
+
+## Contact
+Specific questions with respect to the .rmd files can be addressed to: [Jochem Tolsma](mailto:j.tolsma@ru.nl).  
+
+For questions on RSiena please visit the designated [GitHub](https://github.com/snlab-nl/rsiena) page. 
+
+----  
+
+
+Here, script are shown that can be used to calculate the expected relative importance of our effects.
+
+Background reading: Indlekofer & Brander [-@indlekofer2013].
+
+
+---
+
+<br>
+
+## Background
+
+Until now, the interpretation of estimated effects in our SIENA models has been limited to testing their statistical significance, which determines whether an effect plays a role in the evolution of the network (using t-statistics). But we do not yet know how these effects fare against each other.
+
+There are four issues when extrapolating the size of estimated parameters to their relative importance in SIENA models:
+
+1. *Explanatory statistics have different scales* (e.g., one micro-step may increase the number of reciprocated ties by at most 1 but may result in up to 2(*N*-2) new transitive triplets).
+
+2. *Explanatory variables are often correlated*, making it difficult to establish causality (e.g., a tie abridging a two-path may yield a new transitive triplet, while at the same time, a reciprocated tie).
+
+3. *Multiple and complex choice sets exist*, where network effects influence the probabilities of several alternative choices, and these effects are themselves influenced by a combination of several effects. This interdependence makes it challenging to assess the individual contribution of each effect to actor decisions.
+
+4. *The data undergoes substantial unobserved changes over time*, and the size of parameter estimates is strongly dependent on the structure of the evolving network data. The absence of certain network configurations can render specific effects irrelevant in decision-making processes at certain points in time (e.g., if an ego has no incoming ties, he has no opportunity to reciprocate a tie, making that the `reciprocity` effect cannot influence his decision).
+
+To compare the relative importance of effects within a model, among different models, or across different datasets, we require a measure that specifically focuses on the extent to which effects influence actor decision probabilities.
+
+This is where the concept of 'Relative Importance' (RI) measures comes into play. This measure reflects the extent that estimated model parameters affect change probabilities in network decision probabilities. They should be interpreted as the influence of effects on network changes relative to one another. The importance of an effect is estimated based on the extent to which network micro-steps would have differed if this effect were to be omitted. Probabilities for tie changes from the perspective of each actor are calculated using the fitted model parameters. Subsequently, each parameter is fixed to 0 and the change probabilities are recalculated. The influence of an effect on network (or: behavior) micro-steps is evaluated based on the magnitude of the difference in the distribution of change probabilities with the particular effect present versus absent. These differences are normalized so that their sum is 1 for each actor, and subsequently averaged across actors. 
+
+
+For more info, we refer to the article by Indlekofer & Brandes [-@indlekofer2013] and the RSiena manual section 13.5.1. 
+
+---
+
+<br>
+
+## application on van de Bunt data
+
+First, download the data, and put it in the 'data' folder. But first make a 'data' folder
+
+
+```{r, eval=FALSE}
+ifelse(!dir.exists("data"), dir.create("data"), FALSE)
+
+download.file("https://www.stats.ox.ac.uk/~snijders/siena/vdBunt_data.zip",
+                                                        destfile='./data/vdb.zip')
+unzip('./data/vdb.zip', exdir='./data/')
+```
+
+<br>
+
+continue with loading the data files. And perform some wrangling.
+
+```{r}
+vdb.w0 <- as.matrix(read.table("./data/VRND32T0.DAT"))
+vdb.w1 <- as.matrix(read.table("./data/VRND32T1.DAT"))
+vdb.w2 <- as.matrix(read.table("./data/VRND32T2.DAT"))
+vdb.w3 <- as.matrix(read.table("./data/VRND32T3.DAT"))
+vdb.w4 <- as.matrix(read.table("./data/VRND32T4.DAT"))
+vdb.w5 <- as.matrix(read.table("./data/VRND32T5.DAT"))
+vdb.w6 <- as.matrix(read.table("./data/VRND32T6.DAT"))
+vdb.attr <- as.matrix(read.table("./data/VARS.DAT"))
+
+# Take account of missing data codes 6 and 9:
+
+vdb.w0[vdb.w0 %in% c(6,9)] <- NA
+vdb.w1[vdb.w1 %in% c(6,9)] <- NA
+vdb.w2[vdb.w2 %in% c(6,9)] <- NA
+vdb.w3[vdb.w3 %in% c(6,9)] <- NA
+vdb.w4[vdb.w4 %in% c(6,9)] <- NA
+vdb.w5[vdb.w5 %in% c(6,9)] <- NA
+vdb.w6[vdb.w6 %in% c(6,9)] <- NA
+
+# Recode 4 (acquaintance) and 5 (difficult) to no tie
+
+vdb.w0[vdb.w0 %in% c(4,5)] <- 0
+vdb.w1[vdb.w1 %in% c(4,5)] <- 0
+vdb.w2[vdb.w2 %in% c(4,5)] <- 0
+vdb.w3[vdb.w3 %in% c(4,5)] <- 0
+vdb.w4[vdb.w4 %in% c(4,5)] <- 0
+vdb.w5[vdb.w5 %in% c(4,5)] <- 0
+vdb.w6[vdb.w6 %in% c(4,5)] <- 0
+
+# Use the "friendly relation" relation by recoding:
+
+vdb.w0[vdb.w0 %in% c(1,2,3)] <- 1
+vdb.w1[vdb.w1 %in% c(1,2,3)] <- 1
+vdb.w2[vdb.w2 %in% c(1,2,3)] <- 1
+vdb.w3[vdb.w3 %in% c(1,2,3)] <- 1
+vdb.w4[vdb.w4 %in% c(1,2,3)] <- 1
+vdb.w5[vdb.w5 %in% c(1,2,3)] <- 1
+vdb.w6[vdb.w6 %in% c(1,2,3)] <- 1
+```
+
+<br>
+
+Construct an RSiena data object and algorithm
+
+```{r}
+library(RSiena)
+
+# Model specification:
+friends <- sienaDependent(array(c(vdb.w1,vdb.w2,vdb.w3,vdb.w4),
+       dim=c(32, 32, 4)))
+
+sex     <- coCovar(vdb.attr[,1])
+program <- coCovar(vdb.attr[,2])
+smoke   <- coCovar(vdb.attr[,3])
+
+(vdb.data <- sienaDataCreate(friends,sex,program,smoke))
+
+vdb.algo <- sienaAlgorithmCreate(projname = 'vdb_1234_f', nsub=3, n3=2000, seed=12321)
+```
+
+<br>
+
+We define a simple model.
+
+```{r}
+vdb.eff <- getEffects(vdb.data)
+#effectsDocumentation(vdb.eff)
+vdb.eff <- includeEffects(vdb.eff,transTrip)
+vdb.eff <- includeEffects(vdb.eff,egoX,altX,sameX,interaction1="sex")
+vdb.eff <- includeEffects(vdb.eff,simX,interaction1="program")
+vdb.eff <- includeEffects(vdb.eff,simX,interaction1="smoke")
+print(vdb.eff)
+```
+<br>
+
+Estimate the model.
+
+```{r}
+ans <- siena07(vdb.algo, 
+                data=vdb.data, 
+                effects=vdb.eff,
+                useCluster=TRUE, nbrNodes=10, initC=TRUE,
+                returnDeps=TRUE) 
+summary(ans)
+```
+
+<br>
+
+Data reveals evidence for all tested effects except for gender similarity.
+
+---
+
+## SienaRI
+
+Now, we can go to applying `sienaRI` to the van de Bunt data.
+
+```{r}
+#get parameters 
+theta.eval <- ans$theta
+#and effects
+myeff.eval <- ans$effects
+
+#use sienaRI()
+RI <- sienaRI(
+  data = vdb.data,
+  theta = theta.eval,
+  algorithm = vdb.algo,
+  effects = myeff.eval
+)
+```
+
+<br>
+
+And plot it.
+
+```{r}
+plot(RI, addPieChart = TRUE )
+```
+<br>
+
+The bar charts display the relative impacts of effects of our model on individual actor decisions for all observations. The last bar chart in each row, as well as the pie chart, display expected relative importances of included effects for the next step, averaged across actors. 
+
+
+
+----
+
+## References
+
+
+----
+

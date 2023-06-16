@@ -1,0 +1,333 @@
+---
+title: "Relative importance"
+author: 'Rob Franken - Radboud University, the Netherlands'
+bibliography: references.bib
+date: "Last compiled on `r format(Sys.time(), '%B, %Y')`"
+output: 
+  html_document:
+    toc:  true
+    toc_float: true
+    number_sections: false
+    code_folding: show
+    code_download: yes
+---
+
+```{r, globalsettings, echo=FALSE, warning=FALSE}
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=100),tidy=TRUE, warning = FALSE, message = FALSE,comment = "#>", cache=TRUE, class.source=c("test"), class.output=c("test2"))
+options(width = 100)
+rgl::setupKnitr()
+
+
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, 
+      x)
+  } else x
+}
+
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(position = c('top', 'right'))
+#klippy::klippy(color = 'darkred')
+#klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done')
+```
+
+```{css, echo=FALSE}
+pre.test {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 10px;
+}
+
+pre.test2 {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 10px;
+  background-color: white
+}
+
+
+h1, .h1, h2, .h2, h3, .h3 {
+    margin-top: 24px;
+}
+
+
+```
+
+----
+
+This website converted the following original .R scripts into .rmd files. 
+
+- RScriptSNADescriptives.R 
+- Rscript01DataFormat.R  
+- Rscript02SienaVariableFormat.R  
+- Rscript03SienaRunModel.R  
+- Rscript04SienaBehaviour.R
+
+Please visit [GitHub](https://github.com/snlab-nl/rsiena/tree/main/inst/scripts) for the latest .R files. 
+
+----
+
+## Data
+All files (data, scripts, etc.) can also be found on [Github](https://github.com/JochemTolsma/Rsiena-scripts)
+
+----
+
+## Contact
+Specific questions with respect to the .rmd files can be addressed to: [Jochem Tolsma](mailto:j.tolsma@ru.nl).  
+
+For questions on RSiena please visit the designated [GitHub](https://github.com/snlab-nl/rsiena) page. 
+
+----  
+
+
+Here, script are shown that can be used to set up an estimated SIENA model as an empirically calibrated agent-based simulation model. 
+
+Background reading: Stadtfeld [-@stadtfeld2018]; Snijders & Steglich [-@snijders2015].
+
+
+---
+
+<br>
+
+## Background
+
+We have tested our effects based on their statistical significance (using t-statistics), which determines whether an effect plays a role in the evolution of networks. We further have constructed measures for the relative importance of effects compared to one another.
+
+A third, an last step, would be to investigate how consequential the studied mechanisms at the micro-level are for certain properties at the macro-level (e.g., clustering, polarization).
+
+To that end, the estimated SIENA model can be utilized as an agent-based simulation model in RSiena.
+
+---
+
+<br>
+
+
+## application on van de Bunt data
+
+First, download the data, and put it in the 'data' folder. But first make a 'data' folder
+
+
+```{r, eval=FALSE}
+ifelse(!dir.exists("data"), dir.create("data"), FALSE)
+
+download.file("https://www.stats.ox.ac.uk/~snijders/siena/vdBunt_data.zip",
+                                                        destfile='./data/vdb.zip')
+unzip('./data/vdb.zip', exdir='./data/')
+```
+
+<br>
+
+continue with loading the data files. And perform some wrangling.
+
+```{r}
+vdb.w0 <- as.matrix(read.table("./data/VRND32T0.DAT"))
+vdb.w1 <- as.matrix(read.table("./data/VRND32T1.DAT"))
+vdb.w2 <- as.matrix(read.table("./data/VRND32T2.DAT"))
+vdb.w3 <- as.matrix(read.table("./data/VRND32T3.DAT"))
+vdb.w4 <- as.matrix(read.table("./data/VRND32T4.DAT"))
+vdb.w5 <- as.matrix(read.table("./data/VRND32T5.DAT"))
+vdb.w6 <- as.matrix(read.table("./data/VRND32T6.DAT"))
+vdb.attr <- as.matrix(read.table("./data/VARS.DAT"))
+
+# Take account of missing data codes 6 and 9:
+
+vdb.w0[vdb.w0 %in% c(6,9)] <- NA
+vdb.w1[vdb.w1 %in% c(6,9)] <- NA
+vdb.w2[vdb.w2 %in% c(6,9)] <- NA
+vdb.w3[vdb.w3 %in% c(6,9)] <- NA
+vdb.w4[vdb.w4 %in% c(6,9)] <- NA
+vdb.w5[vdb.w5 %in% c(6,9)] <- NA
+vdb.w6[vdb.w6 %in% c(6,9)] <- NA
+
+# Recode 4 (acquaintance) and 5 (difficult) to no tie
+
+vdb.w0[vdb.w0 %in% c(4,5)] <- 0
+vdb.w1[vdb.w1 %in% c(4,5)] <- 0
+vdb.w2[vdb.w2 %in% c(4,5)] <- 0
+vdb.w3[vdb.w3 %in% c(4,5)] <- 0
+vdb.w4[vdb.w4 %in% c(4,5)] <- 0
+vdb.w5[vdb.w5 %in% c(4,5)] <- 0
+vdb.w6[vdb.w6 %in% c(4,5)] <- 0
+
+# Use the "friendly relation" relation by recoding:
+
+vdb.w0[vdb.w0 %in% c(1,2,3)] <- 1
+vdb.w1[vdb.w1 %in% c(1,2,3)] <- 1
+vdb.w2[vdb.w2 %in% c(1,2,3)] <- 1
+vdb.w3[vdb.w3 %in% c(1,2,3)] <- 1
+vdb.w4[vdb.w4 %in% c(1,2,3)] <- 1
+vdb.w5[vdb.w5 %in% c(1,2,3)] <- 1
+vdb.w6[vdb.w6 %in% c(1,2,3)] <- 1
+```
+
+<br>
+
+Construct an RSiena data object and algorithm. We take observations 2-3.
+
+```{r}
+library(RSiena)
+
+# Model specification:
+friends <- sienaDependent(array(c(vdb.w2,vdb.w3),
+       dim=c(32, 32, 2)))
+
+sex     <- coCovar(vdb.attr[,1])
+program <- coCovar(vdb.attr[,2])
+smoke   <- coCovar(vdb.attr[,3])
+
+(vdb.data <- sienaDataCreate(friends,sex,program,smoke))
+
+vdb.algo <- sienaAlgorithmCreate(projname = 'vdb_1234_f', nsub=3, n3=2000, seed=12321)
+```
+
+<br>
+
+We define a simple model.
+
+```{r}
+vdb.eff <- getEffects(vdb.data)
+#effectsDocumentation(vdb.eff)
+vdb.eff <- includeEffects(vdb.eff,transTrip)
+vdb.eff <- includeEffects(vdb.eff,egoX,altX,sameX,interaction1="sex")
+vdb.eff <- includeEffects(vdb.eff,simX,interaction1="program")
+vdb.eff <- includeEffects(vdb.eff,simX,interaction1="smoke")
+print(vdb.eff)
+```
+
+Estimate the model.
+
+```{r}
+ans <- siena07(vdb.algo, 
+                data=vdb.data, 
+                effects=vdb.eff,
+                useCluster=TRUE, nbrNodes=10, initC=TRUE,
+                returnDeps=TRUE) 
+summary(ans)
+```
+
+<br>
+
+## SIENA as ABM
+
+We now create a new effects object for our simulation model, and we fix the values of our effects for the simulations based on the estimated model.
+
+```{r}
+mysimeff <- getEffects(vdb.data)
+
+#set rate
+mysimeff$initialValue[1] <- ans$rate
+
+#network selection effects
+mysimeff <- setEffect(mysimeff,recip, initialValue = ans$theta[which(ans$effects$shortName=="recip")], fix = TRUE)
+mysimeff <- setEffect(mysimeff,transTrip, initialValue = ans$theta[which(ans$effects$shortName=="transTrip")], fix = TRUE)
+mysimeff <- setEffect(mysimeff,egoX,interaction1="sex", initialValue = ans$theta[which(ans$effects$shortName=="egoX" & ans$effects$interaction1=="sex")], fix = TRUE)
+mysimeff <- setEffect(mysimeff,altX,interaction1="sex", initialValue = ans$theta[which(ans$effects$shortName=="altX" & ans$effects$interaction1=="sex")], fix = TRUE)
+mysimeff <- setEffect(mysimeff,sameX,interaction1="sex", initialValue = ans$theta[which(ans$effects$shortName=="sameX" & ans$effects$interaction1=="sex")], fix = TRUE)
+mysimeff <- setEffect(mysimeff,simX,interaction1="smoke", initialValue = ans$theta[which(ans$effects$shortName=="simX" & ans$effects$interaction1=="smoke")], fix = TRUE)
+mysimeff <- setEffect(mysimeff,simX,interaction1="program", initialValue = ans$theta[which(ans$effects$shortName=="simX" & ans$effects$interaction1=="program")], fix = TRUE)
+
+mysimeff$fix[mysimeff$include==TRUE] <- TRUE 
+
+print(mysimeff)
+```
+<br>
+
+Let us now move forward with the creation of two additional models: one where transitive triplets do not tend to form (`mysimeff.nt`), and another where this tendency is doubled (`mysimeff.2xt`). Please note that this is merely an example; in practice, the choice should be based on the research question under consideration. In this particular case, our objective is to examine the impact of adjusting the magnitude of transitivity as a micro-level mechanism on transitivity at the macro-level.
+
+```{r}
+mysimeff.nt <- mysimeff.2xt <- mysimeff
+mysimeff.nt <- setEffect(mysimeff.nt, transTrip, initialValue = 0, fix=TRUE)
+mysimeff.2xt <- setEffect(mysimeff.2xt, transTrip, initialValue = ans$theta[which(ans$effects$shortName=="transTrip")]*2, fix=TRUE )
+print(mysimeff.nt)
+print(mysimeff.2xt)
+```
+<br>
+
+For each of the three models, we will run 1000 chains of evolving networks. The simulations will start from the friendship networks observed at t_2. We will then extract the (global) transitivity index, calculated as the ratio of transitive triads to potential transitive triads, at the end of each simulation run. Finally, we will plot the results using a boxplot.
+
+```{r}
+# set up the simulation settings
+nIter <- 1000 # number of iterations
+
+sim_model <- sienaAlgorithmCreate(
+  projname = 'simulation',
+  cond = FALSE,
+  useStdInits = FALSE, nsub = 0,
+  n3 = nIter, 
+  seed=242452, # seed for replication
+  simOnly = TRUE)
+
+#simulation using estimated parameters
+sim_ans <- siena07(sim_model,             # simulation settings
+                   data = vdb.data,       # data
+                   effects = mysimeff,    # defined effects and set parameters
+                   returnDeps = TRUE,     # return simulated networks at the end of period
+                   returnChains = FALSE,  # you may also return sequences of micro-steps
+                   batch = TRUE)
+
+#and of alternative models
+sim_ans_notrans <- siena07(sim_model,     # simulation settings
+                   data = vdb.data,       # data
+                   effects = mysimeff.nt, # defined effects and set parameters
+                   returnDeps = TRUE,     # return simulated networks at the end of period
+                   returnChains = FALSE,  # you may also return sequences of micro-steps
+                   batch = TRUE)
+
+sim_ans_doubletrans <- siena07(sim_model, # simulation settings
+                   data = vdb.data,       # data
+                   effects = mysimeff.2xt,# defined effects and set parameters
+                   returnDeps = TRUE,     # return simulated networks at the end of period
+                   returnChains = FALSE,  # you may also return sequences of micro-steps
+                   batch = TRUE)
+
+
+# extract the transitivity index from the simulation runs
+# make vectors to store them
+gti_main <- gti_notrans <- gti_doubletrans <- rep(0,nIter)
+
+library(igraph)
+
+for (i in 1:nIter) {
+  
+  #?igraph::transitivity
+  
+  gti_main[i] <- transitivity(graph.data.frame(sim_ans$sims[[i]][[1]]$friends$`1`[,c(1,2)]))
+  gti_notrans[i] <- transitivity(graph.data.frame(sim_ans_notrans$sims[[i]][[1]]$friends$`1`[,c(1,2)]))
+  gti_doubletrans[i] <- transitivity(graph.data.frame(sim_ans_doubletrans$sims[[i]][[1]]$friends$`1`[,c(1,2)]))
+  
+  #str(sim_ans$sims[[1]]) # numbering is as follows: nIter, group number, DV, period number
+}
+
+#make data for plotting
+plot_data <- rbind(
+    data.frame(cond="Empirically estimated", clustering_coefficient = gti_main),
+    data.frame(cond="No transitivity", clustering_coefficient = gti_notrans),
+    data.frame(cond="Doubled transitivity", clustering_coefficient = gti_doubletrans))
+
+#get colors for boxplot
+library(RColorBrewer)
+color <- brewer.pal(3, "Set2")
+
+#reorder conditions 
+
+plot_data$cond <- factor(plot_data$cond, levels=c("Empirically estimated", "No transitivity", "Doubled transitivity"))
+
+boxplot(clustering_coefficient ~ cond, data = plot_data, main = paste("Simulation results across", nIter, "iterations"),
+        xlab = "Simulation model", ylab = "Clustering coefficient", col = color)
+  
+```
+<br>
+
+----
+
+## References
+
+
+

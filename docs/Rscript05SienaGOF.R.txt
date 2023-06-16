@@ -1,0 +1,278 @@
+################### sienaGOF_vdB.R #############################################
+#
+# This is an R script for demonstrating sienaGOF
+# using the van de Bunt data (available from the Siena website).
+# R script written by Tom Snijders.
+# Version September 9, 2020.
+################################################################################
+#
+
+# Where are you?
+getwd()
+# If necessary, change your directory.
+
+# We use the van de Bunt data.
+# For meaning and codes, consult the Siena website or the Siena manual.
+# Look at
+# https://www.stats.ox.ac.uk/~snijders/siena/vdBunt_data.htm
+#
+# You may read the data outside of R, but from within R the following may work:
+
+download.file("https://www.stats.ox.ac.uk/~snijders/siena/vdBunt_data.zip",
+                                                        destfile='vdb.zip')
+unzip('vdb.zip')
+
+# Then continue with reading into this R session
+# the files that now were put in your working directory:
+
+vdb.w0 <- as.matrix(read.table("VRND32T0.DAT"))
+vdb.w1 <- as.matrix(read.table("VRND32T1.DAT"))
+vdb.w2 <- as.matrix(read.table("VRND32T2.DAT"))
+vdb.w3 <- as.matrix(read.table("VRND32T3.DAT"))
+vdb.w4 <- as.matrix(read.table("VRND32T4.DAT"))
+vdb.w5 <- as.matrix(read.table("VRND32T5.DAT"))
+vdb.w6 <- as.matrix(read.table("VRND32T6.DAT"))
+vdb.attr <- as.matrix(read.table("VARS.DAT"))
+
+# Take account of missing data codes 6 and 9:
+
+vdb.w0[vdb.w0 %in% c(6,9)] <- NA
+vdb.w1[vdb.w1 %in% c(6,9)] <- NA
+vdb.w2[vdb.w2 %in% c(6,9)] <- NA
+vdb.w3[vdb.w3 %in% c(6,9)] <- NA
+vdb.w4[vdb.w4 %in% c(6,9)] <- NA
+vdb.w5[vdb.w5 %in% c(6,9)] <- NA
+vdb.w6[vdb.w6 %in% c(6,9)] <- NA
+
+# Recode 4 (acquaintance) and 5 (difficult) to no tie
+
+vdb.w0[vdb.w0 %in% c(4,5)] <- 0
+vdb.w1[vdb.w1 %in% c(4,5)] <- 0
+vdb.w2[vdb.w2 %in% c(4,5)] <- 0
+vdb.w3[vdb.w3 %in% c(4,5)] <- 0
+vdb.w4[vdb.w4 %in% c(4,5)] <- 0
+vdb.w5[vdb.w5 %in% c(4,5)] <- 0
+vdb.w6[vdb.w6 %in% c(4,5)] <- 0
+
+# Use the "friendly relation" relation by recoding:
+
+vdb.w0[vdb.w0 %in% c(1,2,3)] <- 1
+vdb.w1[vdb.w1 %in% c(1,2,3)] <- 1
+vdb.w2[vdb.w2 %in% c(1,2,3)] <- 1
+vdb.w3[vdb.w3 %in% c(1,2,3)] <- 1
+vdb.w4[vdb.w4 %in% c(1,2,3)] <- 1
+vdb.w5[vdb.w5 %in% c(1,2,3)] <- 1
+vdb.w6[vdb.w6 %in% c(1,2,3)] <- 1
+
+# Attach RSiena
+library(RSiena)
+
+# Attributes:
+sex     <- coCovar(vdb.attr[,1])
+program <- coCovar(vdb.attr[,2])
+smoke   <- coCovar(vdb.attr[,3])
+
+# waves 2-3-4
+friends234 <- sienaDependent(array(c(vdb.w2,vdb.w3,vdb.w4),
+                            dim=c(32, 32, 3)), allowOnly=FALSE)
+vdb.data234 <- sienaDataCreate(friends234,sex,program,smoke)
+
+# Algorithm creation:
+vdb.algo <- sienaAlgorithmCreate(projname = 'vdb_gof234', seed=123456)
+
+# Define some functions from
+?'sienaGOF-auxiliary'
+# (the quotes are necessary because this name contains a hyphen)
+
+# The geodesic distribution is not available from within RSiena,
+# and therefore is copied from the help page of sienaGOF-auxiliary:
+
+# GeodesicDistribution calculates the distribution of non-directed
+   # geodesic distances; see ?sna::geodist
+   # The default for \code{levls} reflects the usual phenomenon
+   # that geodesic distances larger than 5
+   # do not differ appreciably with respect to interpretation.
+   # Note that the levels of the result are named;
+   # these names are used in the \code{plot} method.
+GeodesicDistribution <- function (i, data, sims, period, groupName,
+   varName, levls=c(1:5,Inf), cumulative=TRUE, ...) {
+     x <- networkExtraction(i, data, sims, period, groupName, varName)
+     require(sna)
+     a <- sna::geodist(symmetrize(x))$gdist
+     if (cumulative)
+     {
+       gdi <- sapply(levls, function(i){ sum(a<=i) })
+     }
+     else
+     {
+       gdi <- sapply(levls, function(i){ sum(a==i) })
+     }
+     names(gdi) <- as.character(levls)
+     gdi
+}
+
+# The following function is taken from the help page for sienaTest
+
+testall <- function(ans){
+    for (i in which(ans$test)){
+    sct <- score.Test(ans,i)
+    cat(ans$requestedEffects$effectName[i], '\n')
+    print(sct)}
+    invisible(score.Test(ans))
+}
+
+################################################################################
+# After having defined these functions, we can now go to applying sienaGOF
+# to the van de Bunt data for waves 2, 3, 4.
+
+# Define a model to decide between three specifications of transitivity.
+# This forward model selection is not recommended in general;
+# it is used here only to demonstrate the use of the sienaGOF function.
+
+vdb.eff234 <- getEffects(vdb.data234)
+vdb.eff234 <- includeEffects(vdb.eff234, transTrip, transTies, gwespFF,
+                    test=TRUE, fix=TRUE)
+vdb.eff234
+
+# This model only estimates parameters for rates, outdegree, and reciprocity.
+# The three transitivity parameters are tested by a score-type test,
+# and not estimated.
+# Note that these models are very inadequate from many points of view!
+
+(ans0 <- siena07(vdb.algo, data=vdb.data234, effects=vdb.eff234,
+                                                    returnDeps=TRUE))
+testall(ans0)
+
+(gofi0 <- sienaGOF(ans0, IndegreeDistribution, verbose=TRUE, join=TRUE,
+     varName="friends234"))
+(gofo0 <- sienaGOF(ans0, OutdegreeDistribution, verbose=TRUE, join=TRUE,
+     levls=c(0:10,15,20),varName="friends234"))
+(gof0.tc <- sienaGOF(ans0, TriadCensus, verbose=TRUE, join=TRUE,
+     varName="friends234"))
+(gof0.gd <- sienaGOF(ans0, GeodesicDistribution, cumulative=FALSE,
+     verbose=TRUE, join=TRUE, varName="friends234"))
+# Fit for indegree distribution is OK;
+# for the other three auxiliary statistics it is not.
+# For example:
+plot(gof0.gd)
+# The model simulates too many geodesic distances 2, and too few distances 5
+descriptives.sienaGOF(gof0.gd)
+
+# What about distances 6 or 7?
+(gof0.gd7 <- sienaGOF(ans0, GeodesicDistribution, cumulative=FALSE,
+            levls=c(1:7,Inf), verbose=TRUE, join=TRUE, varName="friends234"))
+descriptives.sienaGOF(gof0.gd7)
+# No distances 6 are observed, and some are simulated (depending on the random simulations)
+# No distances 7 are observed, and none are simulated:
+descriptives.sienaGOF(gof0.gd7, showAll=TRUE)
+
+# The summaries give the approximate value of the Mahalanobis distance,
+# if the tested & fixed effects would be added:
+summary(gof0.tc)
+summary(gof0.gd)
+# These values are given here as MHD.
+# See Lospinoso & Snijders 2019, at https://doi.org/10.1177/2059799119884282
+# and the help page:
+?sienaGOF
+
+# The summaries for gof0.tc and gof0.gd suggest that the model
+# should be extended by gwespFF or transTrip. We go for gwespFF.
+
+vdb.eff234.a <- includeEffects(vdb.eff234, gwespFF)
+(ansa <- siena07(vdb.algo, data=vdb.data234, effects=vdb.eff234.a,
+                prevAns=ans0, returnDeps=TRUE))
+testall(ansa)
+# The two other transitivity effects now have become non-significant.
+(gofia <- sienaGOF(ansa, IndegreeDistribution, verbose=TRUE, join=TRUE,
+     varName="friends234"))
+(gofoa <- sienaGOF(ansa, OutdegreeDistribution, verbose=TRUE, join=TRUE,
+     levls=c(0:10,15,20),varName="friends234"))
+(gofa.tc <- sienaGOF(ansa, TriadCensus, verbose=TRUE, join=TRUE,
+     varName="friends234"))
+(gofa.gd <- sienaGOF(ansa, GeodesicDistribution, cumulative=FALSE,
+     verbose=TRUE, join=TRUE, varName="friends234"))
+# Now the fit is OK for all four auxiliary statistics.
+plot(gofoa)
+# To get a plot for the triad census, the values should be centered and scaled,
+# because they differ wildly
+plot(gofa.tc)
+plot(gofa.tc, center=TRUE, scale=TRUE)
+# It is helpful to widen the plot.
+# The codes for the triads (003 etc.) are the usual MAN notation;
+# for example, see https://doi.org/10.1371/journal.pone.0197514.g001
+
+# Is the model homogeneous for the two periods?
+sienaTimeTest(ansa)
+# Yes.
+
+###############################################################################
+
+
+# To get an impression of the distribution of the number of components,
+# use the following.
+
+# The components are computed by the function geo.desc, see below.
+# This employs the package igraph; the following function is required.
+# The first function again is taken from the help page for sienaGOF-auxiliary.
+
+# igraphNetworkExtraction extracts simulated and observed networks
+# from the results of a siena07 run.
+# It returns the network as an edge list of class "graph"
+# according to the igraph package.
+# Ties for ordered pairs with a missing value for wave=period or period+1
+# are zeroed;
+# note that this also is done in RSiena for calculation of target statistics.
+# However, changing structurally fixed values are not taken into account.
+igraphNetworkExtraction <- function(i, data, sims, period, groupName, varName) {
+  require(igraph)
+  dimsOfDepVar<- attr(data[[groupName]]$depvars[[varName]], "netdims")
+  missings <- is.na(data[[groupName]]$depvars[[varName]][,,period]) |
+    is.na(data[[groupName]]$depvars[[varName]][,,period+1])
+  if (is.null(i)) {
+    # sienaGOF wants the observation:
+    original <- data[[groupName]]$depvars[[varName]][,,period+1]
+    original[missings] <- 0
+    returnValue <- graph.adjacency(original)
+  }
+  else
+  {
+    missings <- graph.adjacency(missings)
+    #sienaGOF wants the i-th simulation:
+    returnValue <- graph.difference(
+      graph.empty(dimsOfDepVar) +
+            edges(t(sims[[i]][[groupName]][[varName]][[period]][,1:2])),
+      missings)
+  }
+  returnValue
+}
+
+# The following function is not documented in sienaGOF-auxiliary
+# but is meant just as an additional self-defined auxiliary function
+# calculating the size of the largest component,
+# the number of components, and the diameter.
+# It uses igraph to calculate the components.
+geo.desc <- function(i, data, sims, period, groupName, varName){
+    require(igraph)
+    ai <- igraphNetworkExtraction(i, data, sims, period, groupName, varName)
+    n  <- vcount(ai)  # number of nodes
+    # size largest weak component
+    componentList <- clusters(ai,mode="weak")
+    comp1 <- max(componentList$csize)
+    # number of components
+    ncomp <- componentList$no
+    # diameter
+    diam <- diameter(as.undirected(ai), unconnected=TRUE)
+    descr <- c(comp1, ncomp, diam)
+    names(descr) <- c("comp1", "ncomp", "diam")
+    descr
+}
+
+# To get an impression of the distribution of the number of components,
+# use the following.
+# Note that join=FALSE is used here, to get separate calculations
+# for the two periods; join=TRUE will calculate the sum over the periods.
+(gofa.geo <- sienaGOF(ansa, geo.desc, verbose=TRUE, join=FALSE,
+     varName="friends234"))
+descriptives.sienaGOF(gofa.geo, period=1)
+descriptives.sienaGOF(gofa.geo, period=2)
+

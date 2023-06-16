@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rob Franken - Radboud University, the Netherlands" />
+
+
+<title>Relative importance</title>
+
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RSiena-scripts</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ReadMe</a>
+</li>
+<li>
+  <a href="rscript01.html">DataFormat</a>
+</li>
+<li>
+  <a href="rscript00.html">Descriptives</a>
+</li>
+<li>
+  <a href="rscript02.html">VariableFormat</a>
+</li>
+<li>
+  <a href="rscript03.html">RunModel</a>
+</li>
+<li>
+  <a href="rscript04.html">Behaviour</a>
+</li>
+<li>
+  <a href="rscript05.html">GOF</a>
+</li>
+<li>
+  <a href="rscript06.html">SienaRI</a>
+</li>
+<li>
+  <a href="rscript07.html">Agent-based simulation</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/JochemTolsma/RSiena-scripts">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Relative importance</h1>
+<h4 class="author">Rob Franken - Radboud University, the
+Netherlands</h4>
+<h4 class="date">Last compiled on juni, 2023</h4>
+
+</div>
+
+
+<pre><code>## NULL</code></pre>
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
+<style type="text/css">
+pre.test {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 10px;
+}
+
+pre.test2 {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 10px;
+  background-color: white
+}
+
+
+h1, .h1, h2, .h2, h3, .h3 {
+    margin-top: 24px;
+}
+
+
+</style>
+<hr />
+<p>This website converted the following original .R scripts into .rmd
+files.</p>
+<ul>
+<li>RScriptSNADescriptives.R</li>
+<li>Rscript01DataFormat.R<br />
+</li>
+<li>Rscript02SienaVariableFormat.R<br />
+</li>
+<li>Rscript03SienaRunModel.R<br />
+</li>
+<li>Rscript04SienaBehaviour.R</li>
+</ul>
+<p>Please visit <a
+href="https://github.com/snlab-nl/rsiena/tree/main/inst/scripts">GitHub</a>
+for the latest .R files.</p>
+<hr />
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>All files (data, scripts, etc.) can also be found on <a
+href="https://github.com/JochemTolsma/Rsiena-scripts">Github</a></p>
+<hr />
+</div>
+<div id="contact" class="section level2">
+<h2>Contact</h2>
+<p>Specific questions with respect to the .rmd files can be addressed
+to: <a href="mailto:j.tolsma@ru.nl">Jochem Tolsma</a>.</p>
+<p>For questions on RSiena please visit the designated <a
+href="https://github.com/snlab-nl/rsiena">GitHub</a> page.</p>
+<hr />
+<p>Here, script are shown that can be used to set up an estimated SIENA
+model as an empirically calibrated agent-based simulation model.</p>
+<p>Background reading: Stadtfeld <span class="citation">(2018)</span>;
+Snijders &amp; Steglich <span class="citation">(2015)</span>.</p>
+<hr />
+<p><br></p>
+</div>
+<div id="background" class="section level2">
+<h2>Background</h2>
+<p>We have tested our effects based on their statistical significance
+(using t-statistics), which determines whether an effect plays a role in
+the evolution of networks. We further have constructed measures for the
+relative importance of effects compared to one another.</p>
+<p>A third, an last step, would be to investigate how consequential the
+studied mechanisms at the micro-level are for certain properties at the
+macro-level (e.g., clustering, polarization).</p>
+<p>To that end, the estimated SIENA model can be utilized as an
+agent-based simulation model in RSiena.</p>
+<hr />
+<p><br></p>
+</div>
+<div id="application-on-van-de-bunt-data" class="section level2">
+<h2>application on van de Bunt data</h2>
+<p>First, download the data, and put it in the ‘data’ folder. But first
+make a ‘data’ folder</p>
+<pre class="r test"><code>ifelse(!dir.exists(&quot;data&quot;), dir.create(&quot;data&quot;), FALSE)
+
+download.file(&quot;https://www.stats.ox.ac.uk/~snijders/siena/vdBunt_data.zip&quot;,
+                                                        destfile=&#39;./data/vdb.zip&#39;)
+unzip(&#39;./data/vdb.zip&#39;, exdir=&#39;./data/&#39;)</code></pre>
+<p><br></p>
+<p>continue with loading the data files. And perform some wrangling.</p>
+<pre class="r test"><code>vdb.w0 &lt;- as.matrix(read.table(&quot;./data/VRND32T0.DAT&quot;))
+vdb.w1 &lt;- as.matrix(read.table(&quot;./data/VRND32T1.DAT&quot;))
+vdb.w2 &lt;- as.matrix(read.table(&quot;./data/VRND32T2.DAT&quot;))
+vdb.w3 &lt;- as.matrix(read.table(&quot;./data/VRND32T3.DAT&quot;))
+vdb.w4 &lt;- as.matrix(read.table(&quot;./data/VRND32T4.DAT&quot;))
+vdb.w5 &lt;- as.matrix(read.table(&quot;./data/VRND32T5.DAT&quot;))
+vdb.w6 &lt;- as.matrix(read.table(&quot;./data/VRND32T6.DAT&quot;))
+vdb.attr &lt;- as.matrix(read.table(&quot;./data/VARS.DAT&quot;))
+
+# Take account of missing data codes 6 and 9:
+
+vdb.w0[vdb.w0 %in% c(6,9)] &lt;- NA
+vdb.w1[vdb.w1 %in% c(6,9)] &lt;- NA
+vdb.w2[vdb.w2 %in% c(6,9)] &lt;- NA
+vdb.w3[vdb.w3 %in% c(6,9)] &lt;- NA
+vdb.w4[vdb.w4 %in% c(6,9)] &lt;- NA
+vdb.w5[vdb.w5 %in% c(6,9)] &lt;- NA
+vdb.w6[vdb.w6 %in% c(6,9)] &lt;- NA
+
+# Recode 4 (acquaintance) and 5 (difficult) to no tie
+
+vdb.w0[vdb.w0 %in% c(4,5)] &lt;- 0
+vdb.w1[vdb.w1 %in% c(4,5)] &lt;- 0
+vdb.w2[vdb.w2 %in% c(4,5)] &lt;- 0
+vdb.w3[vdb.w3 %in% c(4,5)] &lt;- 0
+vdb.w4[vdb.w4 %in% c(4,5)] &lt;- 0
+vdb.w5[vdb.w5 %in% c(4,5)] &lt;- 0
+vdb.w6[vdb.w6 %in% c(4,5)] &lt;- 0
+
+# Use the &quot;friendly relation&quot; relation by recoding:
+
+vdb.w0[vdb.w0 %in% c(1,2,3)] &lt;- 1
+vdb.w1[vdb.w1 %in% c(1,2,3)] &lt;- 1
+vdb.w2[vdb.w2 %in% c(1,2,3)] &lt;- 1
+vdb.w3[vdb.w3 %in% c(1,2,3)] &lt;- 1
+vdb.w4[vdb.w4 %in% c(1,2,3)] &lt;- 1
+vdb.w5[vdb.w5 %in% c(1,2,3)] &lt;- 1
+vdb.w6[vdb.w6 %in% c(1,2,3)] &lt;- 1</code></pre>
+<p><br></p>
+<p>Construct an RSiena data object and algorithm. We take observations
+2-3.</p>
+<pre class="r test"><code>library(RSiena)
+
+# Model specification:
+friends &lt;- sienaDependent(array(c(vdb.w2,vdb.w3),
+       dim=c(32, 32, 2)))
+
+sex     &lt;- coCovar(vdb.attr[,1])
+program &lt;- coCovar(vdb.attr[,2])
+smoke   &lt;- coCovar(vdb.attr[,3])
+
+(vdb.data &lt;- sienaDataCreate(friends,sex,program,smoke))</code></pre>
+<pre class="test2"><code>#&gt; Dependent variables:  friends 
+#&gt; Number of observations: 2 
+#&gt; 
+#&gt; Nodeset                  Actors 
+#&gt; Number of nodes              32 
+#&gt; 
+#&gt; Dependent variable friends  
+#&gt; Type               oneMode  
+#&gt; Observations       2        
+#&gt; Nodeset            Actors   
+#&gt; Densities          0.14 0.18
+#&gt; 
+#&gt; Constant covariates:  sex, program, smoke</code></pre>
+<pre class="r test"><code>vdb.algo &lt;- sienaAlgorithmCreate(projname = &#39;vdb_1234_f&#39;, nsub=3, n3=2000, seed=12321)</code></pre>
+<pre class="test2"><code>#&gt; If you use this algorithm object, siena07 will create/use an output file vdb_1234_f.txt .</code></pre>
+<p><br></p>
+<p>We define a simple model.</p>
+<pre class="r test"><code>vdb.eff &lt;- getEffects(vdb.data)
+#effectsDocumentation(vdb.eff)
+vdb.eff &lt;- includeEffects(vdb.eff,transTrip)</code></pre>
+<pre class="test2"><code>#&gt;   effectName          include fix   test  initialValue parm
+#&gt; 1 transitive triplets TRUE    FALSE FALSE          0   0</code></pre>
+<pre class="r test"><code>vdb.eff &lt;- includeEffects(vdb.eff,egoX,altX,sameX,interaction1=&quot;sex&quot;)</code></pre>
+<pre class="test2"><code>#&gt;   effectName include fix   test  initialValue parm
+#&gt; 1 sex alter  TRUE    FALSE FALSE          0   0   
+#&gt; 2 sex ego    TRUE    FALSE FALSE          0   0   
+#&gt; 3 same sex   TRUE    FALSE FALSE          0   0</code></pre>
+<pre class="r test"><code>vdb.eff &lt;- includeEffects(vdb.eff,simX,interaction1=&quot;program&quot;)</code></pre>
+<pre class="test2"><code>#&gt;   effectName         include fix   test  initialValue parm
+#&gt; 1 program similarity TRUE    FALSE FALSE          0   0</code></pre>
+<pre class="r test"><code>vdb.eff &lt;- includeEffects(vdb.eff,simX,interaction1=&quot;smoke&quot;)</code></pre>
+<pre class="test2"><code>#&gt;   effectName       include fix   test  initialValue parm
+#&gt; 1 smoke similarity TRUE    FALSE FALSE          0   0</code></pre>
+<pre class="r test"><code>print(vdb.eff)</code></pre>
+<pre class="test2"><code>#&gt;   effectName                   include fix   test  initialValue parm
+#&gt; 1 basic rate parameter friends TRUE    FALSE FALSE    5.16295   0   
+#&gt; 2 outdegree (density)          TRUE    FALSE FALSE   -0.24937   0   
+#&gt; 3 reciprocity                  TRUE    FALSE FALSE    0.00000   0   
+#&gt; 4 transitive triplets          TRUE    FALSE FALSE    0.00000   0   
+#&gt; 5 sex alter                    TRUE    FALSE FALSE    0.00000   0   
+#&gt; 6 sex ego                      TRUE    FALSE FALSE    0.00000   0   
+#&gt; 7 same sex                     TRUE    FALSE FALSE    0.00000   0   
+#&gt; 8 program similarity           TRUE    FALSE FALSE    0.00000   0   
+#&gt; 9 smoke similarity             TRUE    FALSE FALSE    0.00000   0</code></pre>
+<p>Estimate the model.</p>
+<pre class="r test"><code>ans &lt;- siena07(vdb.algo, 
+                data=vdb.data, 
+                effects=vdb.eff,
+                useCluster=TRUE, nbrNodes=10, initC=TRUE,
+                returnDeps=TRUE) 
+summary(ans)</code></pre>
+<pre class="test2"><code>#&gt; Estimates, standard errors and convergence t-ratios
+#&gt; 
+#&gt;                               Estimate   Standard   Convergence 
+#&gt;                                            Error      t-ratio   
+#&gt; 
+#&gt; Rate parameters: 
+#&gt;   0       Rate parameter       3.7598  ( 0.5918   )             
+#&gt; 
+#&gt; Other parameters: 
+#&gt;   1. eval outdegree (density) -1.6124  ( 0.2846   )   -0.0368   
+#&gt;   2. eval reciprocity          1.2231  ( 0.3462   )   -0.0363   
+#&gt;   3. eval transitive triplets  0.2214  ( 0.0651   )   -0.0075   
+#&gt;   4. eval sex alter            0.4804  ( 0.2884   )    0.0148   
+#&gt;   5. eval sex ego             -0.4062  ( 0.3235   )    0.0567   
+#&gt;   6. eval same sex             0.3441  ( 0.2859   )   -0.0676   
+#&gt;   7. eval program similarity   0.7278  ( 0.3294   )   -0.0436   
+#&gt;   8. eval smoke similarity     0.2236  ( 0.2458   )   -0.0384   
+#&gt; 
+#&gt; Overall maximum convergence ratio:    0.1133 
+#&gt; 
+#&gt; 
+#&gt; Total of 2428 iteration steps.
+#&gt; 
+#&gt; Covariance matrix of estimates (correlations below diagonal)
+#&gt; 
+#&gt;        0.081       -0.015       -0.009       -0.030       -0.020       -0.052       -0.002       -0.002
+#&gt;       -0.151        0.120       -0.005        0.014       -0.031       -0.009       -0.011       -0.005
+#&gt;       -0.506       -0.243        0.004        0.000        0.002        0.001        0.002        0.001
+#&gt;       -0.362        0.137        0.021        0.083       -0.001        0.030        0.009        0.006
+#&gt;       -0.221       -0.281        0.092       -0.016        0.105        0.027        0.007       -0.002
+#&gt;       -0.635       -0.090        0.044        0.364        0.287        0.082       -0.007       -0.002
+#&gt;       -0.023       -0.093        0.110        0.097        0.061       -0.073        0.108        0.004
+#&gt;       -0.033       -0.060        0.048        0.090       -0.023       -0.034        0.051        0.060
+#&gt; 
+#&gt; Derivative matrix of expected statistics X by parameters:
+#&gt; 
+#&gt;       49.748       25.268      179.920        4.532        4.594       29.340        0.583        3.152
+#&gt;       18.073       26.751       84.525       -0.536        2.999       12.212        1.142        1.876
+#&gt;      139.607      101.945      856.566       10.222        6.763       82.524        0.558        5.343
+#&gt;        3.498       -1.211        2.438       14.620        2.763       -5.096       -1.964       -1.237
+#&gt;        3.117        5.183        4.550        2.833       11.533       -2.380       -0.935        0.158
+#&gt;       30.817       18.471      123.059       -3.952       -1.586       34.023        2.602        3.315
+#&gt;        2.740        3.117       16.943       -2.064       -1.290        4.168        9.223       -0.616
+#&gt;        3.147        2.078        8.398       -1.301       -0.330        3.522       -0.496       15.924
+#&gt; 
+#&gt; Covariance matrix of X (correlations below diagonal):
+#&gt; 
+#&gt;       50.737       32.648      214.891        3.629        2.444       32.021        2.575        3.721
+#&gt;        0.636       51.989      184.843       -0.688        3.401       23.887        3.488        2.383
+#&gt;        0.806        0.685     1402.018        4.400       -3.490      147.764       20.636        9.746
+#&gt;        0.136       -0.025        0.031       14.005        3.796       -5.209       -2.239       -0.979
+#&gt;        0.101        0.139       -0.028        0.300       11.457       -3.224       -1.529       -0.612
+#&gt;        0.751        0.554        0.660       -0.233       -0.159       35.795        4.421        4.086
+#&gt;        0.122        0.163        0.186       -0.202       -0.152        0.249        8.795       -0.818
+#&gt;        0.135        0.086        0.067       -0.068       -0.047        0.177       -0.071       14.942</code></pre>
+<p><br></p>
+</div>
+<div id="siena-as-abm" class="section level2">
+<h2>SIENA as ABM</h2>
+<p>We now create a new effects object for our simulation model, and we
+fix the values of our effects for the simulations based on the estimated
+model.</p>
+<pre class="r test"><code>mysimeff &lt;- getEffects(vdb.data)
+
+#set rate
+mysimeff$initialValue[1] &lt;- ans$rate
+
+#network selection effects
+mysimeff &lt;- setEffect(mysimeff,recip, initialValue = ans$theta[which(ans$effects$shortName==&quot;recip&quot;)], fix = TRUE)</code></pre>
+<pre class="test2"><code>#&gt;   effectName  include fix  test  initialValue parm
+#&gt; 1 reciprocity TRUE    TRUE FALSE    1.22307   0</code></pre>
+<pre class="r test"><code>mysimeff &lt;- setEffect(mysimeff,transTrip, initialValue = ans$theta[which(ans$effects$shortName==&quot;transTrip&quot;)], fix = TRUE)</code></pre>
+<pre class="test2"><code>#&gt;   effectName          include fix  test  initialValue parm
+#&gt; 1 transitive triplets TRUE    TRUE FALSE    0.22138   0</code></pre>
+<pre class="r test"><code>mysimeff &lt;- setEffect(mysimeff,egoX,interaction1=&quot;sex&quot;, initialValue = ans$theta[which(ans$effects$shortName==&quot;egoX&quot; &amp; ans$effects$interaction1==&quot;sex&quot;)], fix = TRUE)</code></pre>
+<pre class="test2"><code>#&gt;   effectName include fix  test  initialValue parm
+#&gt; 1 sex ego    TRUE    TRUE FALSE   -0.40619   0</code></pre>
+<pre class="r test"><code>mysimeff &lt;- setEffect(mysimeff,altX,interaction1=&quot;sex&quot;, initialValue = ans$theta[which(ans$effects$shortName==&quot;altX&quot; &amp; ans$effects$interaction1==&quot;sex&quot;)], fix = TRUE)</code></pre>
+<pre class="test2"><code>#&gt;   effectName include fix  test  initialValue parm
+#&gt; 1 sex alter  TRUE    TRUE FALSE    0.48041   0</code></pre>
+<pre class="r test"><code>mysimeff &lt;- setEffect(mysimeff,sameX,interaction1=&quot;sex&quot;, initialValue = ans$theta[which(ans$effects$shortName==&quot;sameX&quot; &amp; ans$effects$interaction1==&quot;sex&quot;)], fix = TRUE)</code></pre>
+<pre class="test2"><code>#&gt;   effectName include fix  test  initialValue parm
+#&gt; 1 same sex   TRUE    TRUE FALSE    0.34409   0</code></pre>
+<pre class="r test"><code>mysimeff &lt;- setEffect(mysimeff,simX,interaction1=&quot;smoke&quot;, initialValue = ans$theta[which(ans$effects$shortName==&quot;simX&quot; &amp; ans$effects$interaction1==&quot;smoke&quot;)], fix = TRUE)</code></pre>
+<pre class="test2"><code>#&gt;   effectName       include fix  test  initialValue parm
+#&gt; 1 smoke similarity TRUE    TRUE FALSE    0.22357   0</code></pre>
+<pre class="r test"><code>mysimeff &lt;- setEffect(mysimeff,simX,interaction1=&quot;program&quot;, initialValue = ans$theta[which(ans$effects$shortName==&quot;simX&quot; &amp; ans$effects$interaction1==&quot;program&quot;)], fix = TRUE)</code></pre>
+<pre class="test2"><code>#&gt;   effectName         include fix  test  initialValue parm
+#&gt; 1 program similarity TRUE    TRUE FALSE     0.7278   0</code></pre>
+<pre class="r test"><code>mysimeff$fix[mysimeff$include==TRUE] &lt;- TRUE 
+
+print(mysimeff)</code></pre>
+<pre class="test2"><code>#&gt;   effectName                   include fix  test  initialValue parm
+#&gt; 1 basic rate parameter friends TRUE    TRUE FALSE    3.75977   0   
+#&gt; 2 outdegree (density)          TRUE    TRUE FALSE   -0.24937   0   
+#&gt; 3 reciprocity                  TRUE    TRUE FALSE    1.22307   0   
+#&gt; 4 transitive triplets          TRUE    TRUE FALSE    0.22138   0   
+#&gt; 5 sex alter                    TRUE    TRUE FALSE    0.48041   0   
+#&gt; 6 sex ego                      TRUE    TRUE FALSE   -0.40619   0   
+#&gt; 7 same sex                     TRUE    TRUE FALSE    0.34409   0   
+#&gt; 8 program similarity           TRUE    TRUE FALSE    0.72780   0   
+#&gt; 9 smoke similarity             TRUE    TRUE FALSE    0.22357   0</code></pre>
+<p><br></p>
+<p>Let us now move forward with the creation of two additional models:
+one where transitive triplets do not tend to form
+(<code>mysimeff.nt</code>), and another where this tendency is doubled
+(<code>mysimeff.2xt</code>). Please note that this is merely an example;
+in practice, the choice should be based on the research question under
+consideration. In this particular case, our objective is to examine the
+impact of adjusting the magnitude of transitivity as a micro-level
+mechanism on transitivity at the macro-level.</p>
+<pre class="r test"><code>mysimeff.nt &lt;- mysimeff.2xt &lt;- mysimeff
+mysimeff.nt &lt;- setEffect(mysimeff.nt, transTrip, initialValue = 0, fix=TRUE)</code></pre>
+<pre class="test2"><code>#&gt;   effectName          include fix  test  initialValue parm
+#&gt; 1 transitive triplets TRUE    TRUE FALSE          0   0</code></pre>
+<pre class="r test"><code>mysimeff.2xt &lt;- setEffect(mysimeff.2xt, transTrip, initialValue = ans$theta[which(ans$effects$shortName==&quot;transTrip&quot;)]*2, fix=TRUE )</code></pre>
+<pre class="test2"><code>#&gt;   effectName          include fix  test  initialValue parm
+#&gt; 1 transitive triplets TRUE    TRUE FALSE    0.44277   0</code></pre>
+<pre class="r test"><code>print(mysimeff.nt)</code></pre>
+<pre class="test2"><code>#&gt;   effectName                   include fix  test  initialValue parm
+#&gt; 1 basic rate parameter friends TRUE    TRUE FALSE    3.75977   0   
+#&gt; 2 outdegree (density)          TRUE    TRUE FALSE   -0.24937   0   
+#&gt; 3 reciprocity                  TRUE    TRUE FALSE    1.22307   0   
+#&gt; 4 transitive triplets          TRUE    TRUE FALSE    0.00000   0   
+#&gt; 5 sex alter                    TRUE    TRUE FALSE    0.48041   0   
+#&gt; 6 sex ego                      TRUE    TRUE FALSE   -0.40619   0   
+#&gt; 7 same sex                     TRUE    TRUE FALSE    0.34409   0   
+#&gt; 8 program similarity           TRUE    TRUE FALSE    0.72780   0   
+#&gt; 9 smoke similarity             TRUE    TRUE FALSE    0.22357   0</code></pre>
+<pre class="r test"><code>print(mysimeff.2xt)</code></pre>
+<pre class="test2"><code>#&gt;   effectName                   include fix  test  initialValue parm
+#&gt; 1 basic rate parameter friends TRUE    TRUE FALSE    3.75977   0   
+#&gt; 2 outdegree (density)          TRUE    TRUE FALSE   -0.24937   0   
+#&gt; 3 reciprocity                  TRUE    TRUE FALSE    1.22307   0   
+#&gt; 4 transitive triplets          TRUE    TRUE FALSE    0.44277   0   
+#&gt; 5 sex alter                    TRUE    TRUE FALSE    0.48041   0   
+#&gt; 6 sex ego                      TRUE    TRUE FALSE   -0.40619   0   
+#&gt; 7 same sex                     TRUE    TRUE FALSE    0.34409   0   
+#&gt; 8 program similarity           TRUE    TRUE FALSE    0.72780   0   
+#&gt; 9 smoke similarity             TRUE    TRUE FALSE    0.22357   0</code></pre>
+<p><br></p>
+<p>For each of the three models, we will run 1000 chains of evolving
+networks. The simulations will start from the friendship networks
+observed at t_2. We will then extract the (global) transitivity index,
+calculated as the ratio of transitive triads to potential transitive
+triads, at the end of each simulation run. Finally, we will plot the
+results using a boxplot.</p>
+<pre class="r test"><code># set up the simulation settings
+nIter &lt;- 1000 # number of iterations
+
+sim_model &lt;- sienaAlgorithmCreate(
+  projname = &#39;simulation&#39;,
+  cond = FALSE,
+  useStdInits = FALSE, nsub = 0,
+  n3 = nIter, 
+  seed=242452, # seed for replication
+  simOnly = TRUE)</code></pre>
+<pre class="test2"><code>#&gt; If you use this algorithm object, siena07 will create/use an output file simulation.txt .</code></pre>
+<pre class="r test"><code>#simulation using estimated parameters
+sim_ans &lt;- siena07(sim_model,             # simulation settings
+                   data = vdb.data,       # data
+                   effects = mysimeff,    # defined effects and set parameters
+                   returnDeps = TRUE,     # return simulated networks at the end of period
+                   returnChains = FALSE,  # you may also return sequences of micro-steps
+                   batch = TRUE)</code></pre>
+<pre class="test2"><code>#&gt; 
+#&gt; Start phase 0 
+#&gt; theta:  3.760 -0.249  1.223  0.221  0.480 -0.406  0.344  0.728  0.224 
+#&gt; 
+#&gt; Start phase 3 
+#&gt; Phase 3 Iteration 500 Progress 50%
+#&gt; Phase 3 Iteration 1000 Progress 100%</code></pre>
+<pre class="r test"><code>#and of alternative models
+sim_ans_notrans &lt;- siena07(sim_model,     # simulation settings
+                   data = vdb.data,       # data
+                   effects = mysimeff.nt, # defined effects and set parameters
+                   returnDeps = TRUE,     # return simulated networks at the end of period
+                   returnChains = FALSE,  # you may also return sequences of micro-steps
+                   batch = TRUE)</code></pre>
+<pre class="test2"><code>#&gt; 
+#&gt; Start phase 0 
+#&gt; theta:  3.760 -0.249  1.223  0.000  0.480 -0.406  0.344  0.728  0.224 
+#&gt; 
+#&gt; Start phase 3 
+#&gt; Phase 3 Iteration 500 Progress 50%
+#&gt; Phase 3 Iteration 1000 Progress 100%</code></pre>
+<pre class="r test"><code>sim_ans_doubletrans &lt;- siena07(sim_model, # simulation settings
+                   data = vdb.data,       # data
+                   effects = mysimeff.2xt,# defined effects and set parameters
+                   returnDeps = TRUE,     # return simulated networks at the end of period
+                   returnChains = FALSE,  # you may also return sequences of micro-steps
+                   batch = TRUE)</code></pre>
+<pre class="test2"><code>#&gt; 
+#&gt; Start phase 0 
+#&gt; theta:  3.760 -0.249  1.223  0.443  0.480 -0.406  0.344  0.728  0.224 
+#&gt; 
+#&gt; Start phase 3 
+#&gt; Phase 3 Iteration 500 Progress 50%
+#&gt; Phase 3 Iteration 1000 Progress 100%</code></pre>
+<pre class="r test"><code># extract the transitivity index from the simulation runs
+# make vectors to store them
+gti_main &lt;- gti_notrans &lt;- gti_doubletrans &lt;- rep(0,nIter)
+
+library(igraph)
+
+for (i in 1:nIter) {
+  
+  #?igraph::transitivity
+  
+  gti_main[i] &lt;- transitivity(graph.data.frame(sim_ans$sims[[i]][[1]]$friends$`1`[,c(1,2)]))
+  gti_notrans[i] &lt;- transitivity(graph.data.frame(sim_ans_notrans$sims[[i]][[1]]$friends$`1`[,c(1,2)]))
+  gti_doubletrans[i] &lt;- transitivity(graph.data.frame(sim_ans_doubletrans$sims[[i]][[1]]$friends$`1`[,c(1,2)]))
+  
+  #str(sim_ans$sims[[1]]) # numbering is as follows: nIter, group number, DV, period number
+}
+
+#make data for plotting
+plot_data &lt;- rbind(
+    data.frame(cond=&quot;Empirically estimated&quot;, clustering_coefficient = gti_main),
+    data.frame(cond=&quot;No transitivity&quot;, clustering_coefficient = gti_notrans),
+    data.frame(cond=&quot;Doubled transitivity&quot;, clustering_coefficient = gti_doubletrans))
+
+#get colors for boxplot
+library(RColorBrewer)
+color &lt;- brewer.pal(3, &quot;Set2&quot;)
+
+#reorder conditions 
+
+plot_data$cond &lt;- factor(plot_data$cond, levels=c(&quot;Empirically estimated&quot;, &quot;No transitivity&quot;, &quot;Doubled transitivity&quot;))
+
+boxplot(clustering_coefficient ~ cond, data = plot_data, main = paste(&quot;Simulation results across&quot;, nIter, &quot;iterations&quot;),
+        xlab = &quot;Simulation model&quot;, ylab = &quot;Clustering coefficient&quot;, col = color)</code></pre>
+<p><img src="rscript07_files/figure-html/unnamed-chunk-9-1.png" width="672" />
+<br></p>
+<hr />
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-snijders2015" class="csl-entry">
+Snijders, Tom, and Christian Steglich. 2015. <span>“Representing
+Micro–Macro Linkages by Actor-Based Dynamic Network Models.”</span>
+<em>Sociological Methods &amp; Research</em> 2 (44): 222–71. <a
+href="https://10.1177/0049124113494573">10.1177/0049124113494573</a>.
+</div>
+<div id="ref-stadtfeld2018" class="csl-entry">
+Stadtfeld, Christoph. 2018. <span>“The Micro-Macro Link in Social
+Networks.”</span> <em>Emerging Trends in the Social and Behavioral
+Sciences</em>, 1–15. <a
+href="https://doi.org/10.1002/9781118900772.etrds0463">https://doi.org/10.1002/9781118900772.etrds0463</a>.
+</div>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlJlbGF0aXZlIGltcG9ydGFuY2UiDQphdXRob3I6ICdSb2IgRnJhbmtlbiAtIFJhZGJvdWQgVW5pdmVyc2l0eSwgdGhlIE5ldGhlcmxhbmRzJw0KYmlibGlvZ3JhcGh5OiByZWZlcmVuY2VzLmJpYg0KZGF0ZTogIkxhc3QgY29tcGlsZWQgb24gYHIgZm9ybWF0KFN5cy50aW1lKCksICclQiwgJVknKWAiDQpvdXRwdXQ6IA0KICBodG1sX2RvY3VtZW50Og0KICAgIHRvYzogIHRydWUNCiAgICB0b2NfZmxvYXQ6IHRydWUNCiAgICBudW1iZXJfc2VjdGlvbnM6IGZhbHNlDQogICAgY29kZV9mb2xkaW5nOiBzaG93DQogICAgY29kZV9kb3dubG9hZDogeWVzDQotLS0NCg0KYGBge3IsIGdsb2JhbHNldHRpbmdzLCBlY2hvPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQ0KbGlicmFyeShrbml0cikNCm9wdHNfY2h1bmskc2V0KHRpZHkub3B0cz1saXN0KHdpZHRoLmN1dG9mZj0xMDApLHRpZHk9VFJVRSwgd2FybmluZyA9IEZBTFNFLCBtZXNzYWdlID0gRkFMU0UsY29tbWVudCA9ICIjPiIsIGNhY2hlPVRSVUUsIGNsYXNzLnNvdXJjZT1jKCJ0ZXN0IiksIGNsYXNzLm91dHB1dD1jKCJ0ZXN0MiIpKQ0Kb3B0aW9ucyh3aWR0aCA9IDEwMCkNCnJnbDo6c2V0dXBLbml0cigpDQoNCg0KY29sb3JpemUgPC0gZnVuY3Rpb24oeCwgY29sb3IpIHsNCiAgaWYgKGtuaXRyOjppc19sYXRleF9vdXRwdXQoKSkgew0KICAgIHNwcmludGYoIlxcdGV4dGNvbG9yeyVzfXslc30iLCBjb2xvciwgeCkNCiAgfSBlbHNlIGlmIChrbml0cjo6aXNfaHRtbF9vdXRwdXQoKSkgew0KICAgIHNwcmludGYoIjxzcGFuIHN0eWxlPSdjb2xvcjogJXM7Jz4lczwvc3Bhbj4iLCBjb2xvciwgDQogICAgICB4KQ0KICB9IGVsc2UgeA0KfQ0KDQpgYGANCg0KYGBge3Iga2xpcHB5LCBlY2hvPUZBTFNFLCBpbmNsdWRlPVRSVUV9DQprbGlwcHk6OmtsaXBweShwb3NpdGlvbiA9IGMoJ3RvcCcsICdyaWdodCcpKQ0KI2tsaXBweTo6a2xpcHB5KGNvbG9yID0gJ2RhcmtyZWQnKQ0KI2tsaXBweTo6a2xpcHB5KHRvb2x0aXBfbWVzc2FnZSA9ICdDbGljayB0byBjb3B5JywgdG9vbHRpcF9zdWNjZXNzID0gJ0RvbmUnKQ0KYGBgDQoNCmBgYHtjc3MsIGVjaG89RkFMU0V9DQpwcmUudGVzdCB7DQogIG1heC1oZWlnaHQ6IDMwMHB4Ow0KICBvdmVyZmxvdy15OiBhdXRvOw0KICBvdmVyZmxvdy14OiBhdXRvOw0KICBtYXJnaW46IDEwcHg7DQp9DQoNCnByZS50ZXN0MiB7DQogIG1heC1oZWlnaHQ6IDMwMHB4Ow0KICBvdmVyZmxvdy15OiBhdXRvOw0KICBvdmVyZmxvdy14OiBhdXRvOw0KICBtYXJnaW46IDEwcHg7DQogIGJhY2tncm91bmQtY29sb3I6IHdoaXRlDQp9DQoNCg0KaDEsIC5oMSwgaDIsIC5oMiwgaDMsIC5oMyB7DQogICAgbWFyZ2luLXRvcDogMjRweDsNCn0NCg0KDQpgYGANCg0KLS0tLQ0KDQpUaGlzIHdlYnNpdGUgY29udmVydGVkIHRoZSBmb2xsb3dpbmcgb3JpZ2luYWwgLlIgc2NyaXB0cyBpbnRvIC5ybWQgZmlsZXMuIA0KDQotIFJTY3JpcHRTTkFEZXNjcmlwdGl2ZXMuUiANCi0gUnNjcmlwdDAxRGF0YUZvcm1hdC5SICANCi0gUnNjcmlwdDAyU2llbmFWYXJpYWJsZUZvcm1hdC5SICANCi0gUnNjcmlwdDAzU2llbmFSdW5Nb2RlbC5SICANCi0gUnNjcmlwdDA0U2llbmFCZWhhdmlvdXIuUg0KDQpQbGVhc2UgdmlzaXQgW0dpdEh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL3NubGFiLW5sL3JzaWVuYS90cmVlL21haW4vaW5zdC9zY3JpcHRzKSBmb3IgdGhlIGxhdGVzdCAuUiBmaWxlcy4gDQoNCi0tLS0NCg0KIyMgRGF0YQ0KQWxsIGZpbGVzIChkYXRhLCBzY3JpcHRzLCBldGMuKSBjYW4gYWxzbyBiZSBmb3VuZCBvbiBbR2l0aHViXShodHRwczovL2dpdGh1Yi5jb20vSm9jaGVtVG9sc21hL1JzaWVuYS1zY3JpcHRzKQ0KDQotLS0tDQoNCiMjIENvbnRhY3QNClNwZWNpZmljIHF1ZXN0aW9ucyB3aXRoIHJlc3BlY3QgdG8gdGhlIC5ybWQgZmlsZXMgY2FuIGJlIGFkZHJlc3NlZCB0bzogW0pvY2hlbSBUb2xzbWFdKG1haWx0bzpqLnRvbHNtYUBydS5ubCkuICANCg0KRm9yIHF1ZXN0aW9ucyBvbiBSU2llbmEgcGxlYXNlIHZpc2l0IHRoZSBkZXNpZ25hdGVkIFtHaXRIdWJdKGh0dHBzOi8vZ2l0aHViLmNvbS9zbmxhYi1ubC9yc2llbmEpIHBhZ2UuIA0KDQotLS0tICANCg0KDQpIZXJlLCBzY3JpcHQgYXJlIHNob3duIHRoYXQgY2FuIGJlIHVzZWQgdG8gc2V0IHVwIGFuIGVzdGltYXRlZCBTSUVOQSBtb2RlbCBhcyBhbiBlbXBpcmljYWxseSBjYWxpYnJhdGVkIGFnZW50LWJhc2VkIHNpbXVsYXRpb24gbW9kZWwuIA0KDQpCYWNrZ3JvdW5kIHJlYWRpbmc6IFN0YWR0ZmVsZCBbLUBzdGFkdGZlbGQyMDE4XTsgU25pamRlcnMgJiBTdGVnbGljaCBbLUBzbmlqZGVyczIwMTVdLg0KDQoNCi0tLQ0KDQo8YnI+DQoNCiMjIEJhY2tncm91bmQNCg0KV2UgaGF2ZSB0ZXN0ZWQgb3VyIGVmZmVjdHMgYmFzZWQgb24gdGhlaXIgc3RhdGlzdGljYWwgc2lnbmlmaWNhbmNlICh1c2luZyB0LXN0YXRpc3RpY3MpLCB3aGljaCBkZXRlcm1pbmVzIHdoZXRoZXIgYW4gZWZmZWN0IHBsYXlzIGEgcm9sZSBpbiB0aGUgZXZvbHV0aW9uIG9mIG5ldHdvcmtzLiBXZSBmdXJ0aGVyIGhhdmUgY29uc3RydWN0ZWQgbWVhc3VyZXMgZm9yIHRoZSByZWxhdGl2ZSBpbXBvcnRhbmNlIG9mIGVmZmVjdHMgY29tcGFyZWQgdG8gb25lIGFub3RoZXIuDQoNCkEgdGhpcmQsIGFuIGxhc3Qgc3RlcCwgd291bGQgYmUgdG8gaW52ZXN0aWdhdGUgaG93IGNvbnNlcXVlbnRpYWwgdGhlIHN0dWRpZWQgbWVjaGFuaXNtcyBhdCB0aGUgbWljcm8tbGV2ZWwgYXJlIGZvciBjZXJ0YWluIHByb3BlcnRpZXMgYXQgdGhlIG1hY3JvLWxldmVsIChlLmcuLCBjbHVzdGVyaW5nLCBwb2xhcml6YXRpb24pLg0KDQpUbyB0aGF0IGVuZCwgdGhlIGVzdGltYXRlZCBTSUVOQSBtb2RlbCBjYW4gYmUgdXRpbGl6ZWQgYXMgYW4gYWdlbnQtYmFzZWQgc2ltdWxhdGlvbiBtb2RlbCBpbiBSU2llbmEuDQoNCi0tLQ0KDQo8YnI+DQoNCg0KIyMgYXBwbGljYXRpb24gb24gdmFuIGRlIEJ1bnQgZGF0YQ0KDQpGaXJzdCwgZG93bmxvYWQgdGhlIGRhdGEsIGFuZCBwdXQgaXQgaW4gdGhlICdkYXRhJyBmb2xkZXIuIEJ1dCBmaXJzdCBtYWtlIGEgJ2RhdGEnIGZvbGRlcg0KDQoNCmBgYHtyLCBldmFsPUZBTFNFfQ0KaWZlbHNlKCFkaXIuZXhpc3RzKCJkYXRhIiksIGRpci5jcmVhdGUoImRhdGEiKSwgRkFMU0UpDQoNCmRvd25sb2FkLmZpbGUoImh0dHBzOi8vd3d3LnN0YXRzLm94LmFjLnVrL35zbmlqZGVycy9zaWVuYS92ZEJ1bnRfZGF0YS56aXAiLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBkZXN0ZmlsZT0nLi9kYXRhL3ZkYi56aXAnKQ0KdW56aXAoJy4vZGF0YS92ZGIuemlwJywgZXhkaXI9Jy4vZGF0YS8nKQ0KYGBgDQoNCjxicj4NCg0KY29udGludWUgd2l0aCBsb2FkaW5nIHRoZSBkYXRhIGZpbGVzLiBBbmQgcGVyZm9ybSBzb21lIHdyYW5nbGluZy4NCg0KYGBge3J9DQp2ZGIudzAgPC0gYXMubWF0cml4KHJlYWQudGFibGUoIi4vZGF0YS9WUk5EMzJUMC5EQVQiKSkNCnZkYi53MSA8LSBhcy5tYXRyaXgocmVhZC50YWJsZSgiLi9kYXRhL1ZSTkQzMlQxLkRBVCIpKQ0KdmRiLncyIDwtIGFzLm1hdHJpeChyZWFkLnRhYmxlKCIuL2RhdGEvVlJORDMyVDIuREFUIikpDQp2ZGIudzMgPC0gYXMubWF0cml4KHJlYWQudGFibGUoIi4vZGF0YS9WUk5EMzJUMy5EQVQiKSkNCnZkYi53NCA8LSBhcy5tYXRyaXgocmVhZC50YWJsZSgiLi9kYXRhL1ZSTkQzMlQ0LkRBVCIpKQ0KdmRiLnc1IDwtIGFzLm1hdHJpeChyZWFkLnRhYmxlKCIuL2RhdGEvVlJORDMyVDUuREFUIikpDQp2ZGIudzYgPC0gYXMubWF0cml4KHJlYWQudGFibGUoIi4vZGF0YS9WUk5EMzJUNi5EQVQiKSkNCnZkYi5hdHRyIDwtIGFzLm1hdHJpeChyZWFkLnRhYmxlKCIuL2RhdGEvVkFSUy5EQVQiKSkNCg0KIyBUYWtlIGFjY291bnQgb2YgbWlzc2luZyBkYXRhIGNvZGVzIDYgYW5kIDk6DQoNCnZkYi53MFt2ZGIudzAgJWluJSBjKDYsOSldIDwtIE5BDQp2ZGIudzFbdmRiLncxICVpbiUgYyg2LDkpXSA8LSBOQQ0KdmRiLncyW3ZkYi53MiAlaW4lIGMoNiw5KV0gPC0gTkENCnZkYi53M1t2ZGIudzMgJWluJSBjKDYsOSldIDwtIE5BDQp2ZGIudzRbdmRiLnc0ICVpbiUgYyg2LDkpXSA8LSBOQQ0KdmRiLnc1W3ZkYi53NSAlaW4lIGMoNiw5KV0gPC0gTkENCnZkYi53Nlt2ZGIudzYgJWluJSBjKDYsOSldIDwtIE5BDQoNCiMgUmVjb2RlIDQgKGFjcXVhaW50YW5jZSkgYW5kIDUgKGRpZmZpY3VsdCkgdG8gbm8gdGllDQoNCnZkYi53MFt2ZGIudzAgJWluJSBjKDQsNSldIDwtIDANCnZkYi53MVt2ZGIudzEgJWluJSBjKDQsNSldIDwtIDANCnZkYi53Mlt2ZGIudzIgJWluJSBjKDQsNSldIDwtIDANCnZkYi53M1t2ZGIudzMgJWluJSBjKDQsNSldIDwtIDANCnZkYi53NFt2ZGIudzQgJWluJSBjKDQsNSldIDwtIDANCnZkYi53NVt2ZGIudzUgJWluJSBjKDQsNSldIDwtIDANCnZkYi53Nlt2ZGIudzYgJWluJSBjKDQsNSldIDwtIDANCg0KIyBVc2UgdGhlICJmcmllbmRseSByZWxhdGlvbiIgcmVsYXRpb24gYnkgcmVjb2Rpbmc6DQoNCnZkYi53MFt2ZGIudzAgJWluJSBjKDEsMiwzKV0gPC0gMQ0KdmRiLncxW3ZkYi53MSAlaW4lIGMoMSwyLDMpXSA8LSAxDQp2ZGIudzJbdmRiLncyICVpbiUgYygxLDIsMyldIDwtIDENCnZkYi53M1t2ZGIudzMgJWluJSBjKDEsMiwzKV0gPC0gMQ0KdmRiLnc0W3ZkYi53NCAlaW4lIGMoMSwyLDMpXSA8LSAxDQp2ZGIudzVbdmRiLnc1ICVpbiUgYygxLDIsMyldIDwtIDENCnZkYi53Nlt2ZGIudzYgJWluJSBjKDEsMiwzKV0gPC0gMQ0KYGBgDQoNCjxicj4NCg0KQ29uc3RydWN0IGFuIFJTaWVuYSBkYXRhIG9iamVjdCBhbmQgYWxnb3JpdGhtLiBXZSB0YWtlIG9ic2VydmF0aW9ucyAyLTMuDQoNCmBgYHtyfQ0KbGlicmFyeShSU2llbmEpDQoNCiMgTW9kZWwgc3BlY2lmaWNhdGlvbjoNCmZyaWVuZHMgPC0gc2llbmFEZXBlbmRlbnQoYXJyYXkoYyh2ZGIudzIsdmRiLnczKSwNCiAgICAgICBkaW09YygzMiwgMzIsIDIpKSkNCg0Kc2V4ICAgICA8LSBjb0NvdmFyKHZkYi5hdHRyWywxXSkNCnByb2dyYW0gPC0gY29Db3Zhcih2ZGIuYXR0clssMl0pDQpzbW9rZSAgIDwtIGNvQ292YXIodmRiLmF0dHJbLDNdKQ0KDQoodmRiLmRhdGEgPC0gc2llbmFEYXRhQ3JlYXRlKGZyaWVuZHMsc2V4LHByb2dyYW0sc21va2UpKQ0KDQp2ZGIuYWxnbyA8LSBzaWVuYUFsZ29yaXRobUNyZWF0ZShwcm9qbmFtZSA9ICd2ZGJfMTIzNF9mJywgbnN1Yj0zLCBuMz0yMDAwLCBzZWVkPTEyMzIxKQ0KYGBgDQoNCjxicj4NCg0KV2UgZGVmaW5lIGEgc2ltcGxlIG1vZGVsLg0KDQpgYGB7cn0NCnZkYi5lZmYgPC0gZ2V0RWZmZWN0cyh2ZGIuZGF0YSkNCiNlZmZlY3RzRG9jdW1lbnRhdGlvbih2ZGIuZWZmKQ0KdmRiLmVmZiA8LSBpbmNsdWRlRWZmZWN0cyh2ZGIuZWZmLHRyYW5zVHJpcCkNCnZkYi5lZmYgPC0gaW5jbHVkZUVmZmVjdHModmRiLmVmZixlZ29YLGFsdFgsc2FtZVgsaW50ZXJhY3Rpb24xPSJzZXgiKQ0KdmRiLmVmZiA8LSBpbmNsdWRlRWZmZWN0cyh2ZGIuZWZmLHNpbVgsaW50ZXJhY3Rpb24xPSJwcm9ncmFtIikNCnZkYi5lZmYgPC0gaW5jbHVkZUVmZmVjdHModmRiLmVmZixzaW1YLGludGVyYWN0aW9uMT0ic21va2UiKQ0KcHJpbnQodmRiLmVmZikNCmBgYA0KDQpFc3RpbWF0ZSB0aGUgbW9kZWwuDQoNCmBgYHtyfQ0KYW5zIDwtIHNpZW5hMDcodmRiLmFsZ28sIA0KICAgICAgICAgICAgICAgIGRhdGE9dmRiLmRhdGEsIA0KICAgICAgICAgICAgICAgIGVmZmVjdHM9dmRiLmVmZiwNCiAgICAgICAgICAgICAgICB1c2VDbHVzdGVyPVRSVUUsIG5ick5vZGVzPTEwLCBpbml0Qz1UUlVFLA0KICAgICAgICAgICAgICAgIHJldHVybkRlcHM9VFJVRSkgDQpzdW1tYXJ5KGFucykNCmBgYA0KDQo8YnI+DQoNCiMjIFNJRU5BIGFzIEFCTQ0KDQpXZSBub3cgY3JlYXRlIGEgbmV3IGVmZmVjdHMgb2JqZWN0IGZvciBvdXIgc2ltdWxhdGlvbiBtb2RlbCwgYW5kIHdlIGZpeCB0aGUgdmFsdWVzIG9mIG91ciBlZmZlY3RzIGZvciB0aGUgc2ltdWxhdGlvbnMgYmFzZWQgb24gdGhlIGVzdGltYXRlZCBtb2RlbC4NCg0KYGBge3J9DQpteXNpbWVmZiA8LSBnZXRFZmZlY3RzKHZkYi5kYXRhKQ0KDQojc2V0IHJhdGUNCm15c2ltZWZmJGluaXRpYWxWYWx1ZVsxXSA8LSBhbnMkcmF0ZQ0KDQojbmV0d29yayBzZWxlY3Rpb24gZWZmZWN0cw0KbXlzaW1lZmYgPC0gc2V0RWZmZWN0KG15c2ltZWZmLHJlY2lwLCBpbml0aWFsVmFsdWUgPSBhbnMkdGhldGFbd2hpY2goYW5zJGVmZmVjdHMkc2hvcnROYW1lPT0icmVjaXAiKV0sIGZpeCA9IFRSVUUpDQpteXNpbWVmZiA8LSBzZXRFZmZlY3QobXlzaW1lZmYsdHJhbnNUcmlwLCBpbml0aWFsVmFsdWUgPSBhbnMkdGhldGFbd2hpY2goYW5zJGVmZmVjdHMkc2hvcnROYW1lPT0idHJhbnNUcmlwIildLCBmaXggPSBUUlVFKQ0KbXlzaW1lZmYgPC0gc2V0RWZmZWN0KG15c2ltZWZmLGVnb1gsaW50ZXJhY3Rpb24xPSJzZXgiLCBpbml0aWFsVmFsdWUgPSBhbnMkdGhldGFbd2hpY2goYW5zJGVmZmVjdHMkc2hvcnROYW1lPT0iZWdvWCIgJiBhbnMkZWZmZWN0cyRpbnRlcmFjdGlvbjE9PSJzZXgiKV0sIGZpeCA9IFRSVUUpDQpteXNpbWVmZiA8LSBzZXRFZmZlY3QobXlzaW1lZmYsYWx0WCxpbnRlcmFjdGlvbjE9InNleCIsIGluaXRpYWxWYWx1ZSA9IGFucyR0aGV0YVt3aGljaChhbnMkZWZmZWN0cyRzaG9ydE5hbWU9PSJhbHRYIiAmIGFucyRlZmZlY3RzJGludGVyYWN0aW9uMT09InNleCIpXSwgZml4ID0gVFJVRSkNCm15c2ltZWZmIDwtIHNldEVmZmVjdChteXNpbWVmZixzYW1lWCxpbnRlcmFjdGlvbjE9InNleCIsIGluaXRpYWxWYWx1ZSA9IGFucyR0aGV0YVt3aGljaChhbnMkZWZmZWN0cyRzaG9ydE5hbWU9PSJzYW1lWCIgJiBhbnMkZWZmZWN0cyRpbnRlcmFjdGlvbjE9PSJzZXgiKV0sIGZpeCA9IFRSVUUpDQpteXNpbWVmZiA8LSBzZXRFZmZlY3QobXlzaW1lZmYsc2ltWCxpbnRlcmFjdGlvbjE9InNtb2tlIiwgaW5pdGlhbFZhbHVlID0gYW5zJHRoZXRhW3doaWNoKGFucyRlZmZlY3RzJHNob3J0TmFtZT09InNpbVgiICYgYW5zJGVmZmVjdHMkaW50ZXJhY3Rpb24xPT0ic21va2UiKV0sIGZpeCA9IFRSVUUpDQpteXNpbWVmZiA8LSBzZXRFZmZlY3QobXlzaW1lZmYsc2ltWCxpbnRlcmFjdGlvbjE9InByb2dyYW0iLCBpbml0aWFsVmFsdWUgPSBhbnMkdGhldGFbd2hpY2goYW5zJGVmZmVjdHMkc2hvcnROYW1lPT0ic2ltWCIgJiBhbnMkZWZmZWN0cyRpbnRlcmFjdGlvbjE9PSJwcm9ncmFtIildLCBmaXggPSBUUlVFKQ0KDQpteXNpbWVmZiRmaXhbbXlzaW1lZmYkaW5jbHVkZT09VFJVRV0gPC0gVFJVRSANCg0KcHJpbnQobXlzaW1lZmYpDQpgYGANCjxicj4NCg0KTGV0IHVzIG5vdyBtb3ZlIGZvcndhcmQgd2l0aCB0aGUgY3JlYXRpb24gb2YgdHdvIGFkZGl0aW9uYWwgbW9kZWxzOiBvbmUgd2hlcmUgdHJhbnNpdGl2ZSB0cmlwbGV0cyBkbyBub3QgdGVuZCB0byBmb3JtIChgbXlzaW1lZmYubnRgKSwgYW5kIGFub3RoZXIgd2hlcmUgdGhpcyB0ZW5kZW5jeSBpcyBkb3VibGVkIChgbXlzaW1lZmYuMnh0YCkuIFBsZWFzZSBub3RlIHRoYXQgdGhpcyBpcyBtZXJlbHkgYW4gZXhhbXBsZTsgaW4gcHJhY3RpY2UsIHRoZSBjaG9pY2Ugc2hvdWxkIGJlIGJhc2VkIG9uIHRoZSByZXNlYXJjaCBxdWVzdGlvbiB1bmRlciBjb25zaWRlcmF0aW9uLiBJbiB0aGlzIHBhcnRpY3VsYXIgY2FzZSwgb3VyIG9iamVjdGl2ZSBpcyB0byBleGFtaW5lIHRoZSBpbXBhY3Qgb2YgYWRqdXN0aW5nIHRoZSBtYWduaXR1ZGUgb2YgdHJhbnNpdGl2aXR5IGFzIGEgbWljcm8tbGV2ZWwgbWVjaGFuaXNtIG9uIHRyYW5zaXRpdml0eSBhdCB0aGUgbWFjcm8tbGV2ZWwuDQoNCmBgYHtyfQ0KbXlzaW1lZmYubnQgPC0gbXlzaW1lZmYuMnh0IDwtIG15c2ltZWZmDQpteXNpbWVmZi5udCA8LSBzZXRFZmZlY3QobXlzaW1lZmYubnQsIHRyYW5zVHJpcCwgaW5pdGlhbFZhbHVlID0gMCwgZml4PVRSVUUpDQpteXNpbWVmZi4yeHQgPC0gc2V0RWZmZWN0KG15c2ltZWZmLjJ4dCwgdHJhbnNUcmlwLCBpbml0aWFsVmFsdWUgPSBhbnMkdGhldGFbd2hpY2goYW5zJGVmZmVjdHMkc2hvcnROYW1lPT0idHJhbnNUcmlwIildKjIsIGZpeD1UUlVFICkNCnByaW50KG15c2ltZWZmLm50KQ0KcHJpbnQobXlzaW1lZmYuMnh0KQ0KYGBgDQo8YnI+DQoNCkZvciBlYWNoIG9mIHRoZSB0aHJlZSBtb2RlbHMsIHdlIHdpbGwgcnVuIDEwMDAgY2hhaW5zIG9mIGV2b2x2aW5nIG5ldHdvcmtzLiBUaGUgc2ltdWxhdGlvbnMgd2lsbCBzdGFydCBmcm9tIHRoZSBmcmllbmRzaGlwIG5ldHdvcmtzIG9ic2VydmVkIGF0IHRfMi4gV2Ugd2lsbCB0aGVuIGV4dHJhY3QgdGhlIChnbG9iYWwpIHRyYW5zaXRpdml0eSBpbmRleCwgY2FsY3VsYXRlZCBhcyB0aGUgcmF0aW8gb2YgdHJhbnNpdGl2ZSB0cmlhZHMgdG8gcG90ZW50aWFsIHRyYW5zaXRpdmUgdHJpYWRzLCBhdCB0aGUgZW5kIG9mIGVhY2ggc2ltdWxhdGlvbiBydW4uIEZpbmFsbHksIHdlIHdpbGwgcGxvdCB0aGUgcmVzdWx0cyB1c2luZyBhIGJveHBsb3QuDQoNCmBgYHtyfQ0KIyBzZXQgdXAgdGhlIHNpbXVsYXRpb24gc2V0dGluZ3MNCm5JdGVyIDwtIDEwMDAgIyBudW1iZXIgb2YgaXRlcmF0aW9ucw0KDQpzaW1fbW9kZWwgPC0gc2llbmFBbGdvcml0aG1DcmVhdGUoDQogIHByb2puYW1lID0gJ3NpbXVsYXRpb24nLA0KICBjb25kID0gRkFMU0UsDQogIHVzZVN0ZEluaXRzID0gRkFMU0UsIG5zdWIgPSAwLA0KICBuMyA9IG5JdGVyLCANCiAgc2VlZD0yNDI0NTIsICMgc2VlZCBmb3IgcmVwbGljYXRpb24NCiAgc2ltT25seSA9IFRSVUUpDQoNCiNzaW11bGF0aW9uIHVzaW5nIGVzdGltYXRlZCBwYXJhbWV0ZXJzDQpzaW1fYW5zIDwtIHNpZW5hMDcoc2ltX21vZGVsLCAgICAgICAgICAgICAjIHNpbXVsYXRpb24gc2V0dGluZ3MNCiAgICAgICAgICAgICAgICAgICBkYXRhID0gdmRiLmRhdGEsICAgICAgICMgZGF0YQ0KICAgICAgICAgICAgICAgICAgIGVmZmVjdHMgPSBteXNpbWVmZiwgICAgIyBkZWZpbmVkIGVmZmVjdHMgYW5kIHNldCBwYXJhbWV0ZXJzDQogICAgICAgICAgICAgICAgICAgcmV0dXJuRGVwcyA9IFRSVUUsICAgICAjIHJldHVybiBzaW11bGF0ZWQgbmV0d29ya3MgYXQgdGhlIGVuZCBvZiBwZXJpb2QNCiAgICAgICAgICAgICAgICAgICByZXR1cm5DaGFpbnMgPSBGQUxTRSwgICMgeW91IG1heSBhbHNvIHJldHVybiBzZXF1ZW5jZXMgb2YgbWljcm8tc3RlcHMNCiAgICAgICAgICAgICAgICAgICBiYXRjaCA9IFRSVUUpDQoNCiNhbmQgb2YgYWx0ZXJuYXRpdmUgbW9kZWxzDQpzaW1fYW5zX25vdHJhbnMgPC0gc2llbmEwNyhzaW1fbW9kZWwsICAgICAjIHNpbXVsYXRpb24gc2V0dGluZ3MNCiAgICAgICAgICAgICAgICAgICBkYXRhID0gdmRiLmRhdGEsICAgICAgICMgZGF0YQ0KICAgICAgICAgICAgICAgICAgIGVmZmVjdHMgPSBteXNpbWVmZi5udCwgIyBkZWZpbmVkIGVmZmVjdHMgYW5kIHNldCBwYXJhbWV0ZXJzDQogICAgICAgICAgICAgICAgICAgcmV0dXJuRGVwcyA9IFRSVUUsICAgICAjIHJldHVybiBzaW11bGF0ZWQgbmV0d29ya3MgYXQgdGhlIGVuZCBvZiBwZXJpb2QNCiAgICAgICAgICAgICAgICAgICByZXR1cm5DaGFpbnMgPSBGQUxTRSwgICMgeW91IG1heSBhbHNvIHJldHVybiBzZXF1ZW5jZXMgb2YgbWljcm8tc3RlcHMNCiAgICAgICAgICAgICAgICAgICBiYXRjaCA9IFRSVUUpDQoNCnNpbV9hbnNfZG91YmxldHJhbnMgPC0gc2llbmEwNyhzaW1fbW9kZWwsICMgc2ltdWxhdGlvbiBzZXR0aW5ncw0KICAgICAgICAgICAgICAgICAgIGRhdGEgPSB2ZGIuZGF0YSwgICAgICAgIyBkYXRhDQogICAgICAgICAgICAgICAgICAgZWZmZWN0cyA9IG15c2ltZWZmLjJ4dCwjIGRlZmluZWQgZWZmZWN0cyBhbmQgc2V0IHBhcmFtZXRlcnMNCiAgICAgICAgICAgICAgICAgICByZXR1cm5EZXBzID0gVFJVRSwgICAgICMgcmV0dXJuIHNpbXVsYXRlZCBuZXR3b3JrcyBhdCB0aGUgZW5kIG9mIHBlcmlvZA0KICAgICAgICAgICAgICAgICAgIHJldHVybkNoYWlucyA9IEZBTFNFLCAgIyB5b3UgbWF5IGFsc28gcmV0dXJuIHNlcXVlbmNlcyBvZiBtaWNyby1zdGVwcw0KICAgICAgICAgICAgICAgICAgIGJhdGNoID0gVFJVRSkNCg0KDQojIGV4dHJhY3QgdGhlIHRyYW5zaXRpdml0eSBpbmRleCBmcm9tIHRoZSBzaW11bGF0aW9uIHJ1bnMNCiMgbWFrZSB2ZWN0b3JzIHRvIHN0b3JlIHRoZW0NCmd0aV9tYWluIDwtIGd0aV9ub3RyYW5zIDwtIGd0aV9kb3VibGV0cmFucyA8LSByZXAoMCxuSXRlcikNCg0KbGlicmFyeShpZ3JhcGgpDQoNCmZvciAoaSBpbiAxOm5JdGVyKSB7DQogIA0KICAjP2lncmFwaDo6dHJhbnNpdGl2aXR5DQogIA0KICBndGlfbWFpbltpXSA8LSB0cmFuc2l0aXZpdHkoZ3JhcGguZGF0YS5mcmFtZShzaW1fYW5zJHNpbXNbW2ldXVtbMV1dJGZyaWVuZHMkYDFgWyxjKDEsMildKSkNCiAgZ3RpX25vdHJhbnNbaV0gPC0gdHJhbnNpdGl2aXR5KGdyYXBoLmRhdGEuZnJhbWUoc2ltX2Fuc19ub3RyYW5zJHNpbXNbW2ldXVtbMV1dJGZyaWVuZHMkYDFgWyxjKDEsMildKSkNCiAgZ3RpX2RvdWJsZXRyYW5zW2ldIDwtIHRyYW5zaXRpdml0eShncmFwaC5kYXRhLmZyYW1lKHNpbV9hbnNfZG91YmxldHJhbnMkc2ltc1tbaV1dW1sxXV0kZnJpZW5kcyRgMWBbLGMoMSwyKV0pKQ0KICANCiAgI3N0cihzaW1fYW5zJHNpbXNbWzFdXSkgIyBudW1iZXJpbmcgaXMgYXMgZm9sbG93czogbkl0ZXIsIGdyb3VwIG51bWJlciwgRFYsIHBlcmlvZCBudW1iZXINCn0NCg0KI21ha2UgZGF0YSBmb3IgcGxvdHRpbmcNCnBsb3RfZGF0YSA8LSByYmluZCgNCiAgICBkYXRhLmZyYW1lKGNvbmQ9IkVtcGlyaWNhbGx5IGVzdGltYXRlZCIsIGNsdXN0ZXJpbmdfY29lZmZpY2llbnQgPSBndGlfbWFpbiksDQogICAgZGF0YS5mcmFtZShjb25kPSJObyB0cmFuc2l0aXZpdHkiLCBjbHVzdGVyaW5nX2NvZWZmaWNpZW50ID0gZ3RpX25vdHJhbnMpLA0KICAgIGRhdGEuZnJhbWUoY29uZD0iRG91YmxlZCB0cmFuc2l0aXZpdHkiLCBjbHVzdGVyaW5nX2NvZWZmaWNpZW50ID0gZ3RpX2RvdWJsZXRyYW5zKSkNCg0KI2dldCBjb2xvcnMgZm9yIGJveHBsb3QNCmxpYnJhcnkoUkNvbG9yQnJld2VyKQ0KY29sb3IgPC0gYnJld2VyLnBhbCgzLCAiU2V0MiIpDQoNCiNyZW9yZGVyIGNvbmRpdGlvbnMgDQoNCnBsb3RfZGF0YSRjb25kIDwtIGZhY3RvcihwbG90X2RhdGEkY29uZCwgbGV2ZWxzPWMoIkVtcGlyaWNhbGx5IGVzdGltYXRlZCIsICJObyB0cmFuc2l0aXZpdHkiLCAiRG91YmxlZCB0cmFuc2l0aXZpdHkiKSkNCg0KYm94cGxvdChjbHVzdGVyaW5nX2NvZWZmaWNpZW50IH4gY29uZCwgZGF0YSA9IHBsb3RfZGF0YSwgbWFpbiA9IHBhc3RlKCJTaW11bGF0aW9uIHJlc3VsdHMgYWNyb3NzIiwgbkl0ZXIsICJpdGVyYXRpb25zIiksDQogICAgICAgIHhsYWIgPSAiU2ltdWxhdGlvbiBtb2RlbCIsIHlsYWIgPSAiQ2x1c3RlcmluZyBjb2VmZmljaWVudCIsIGNvbCA9IGNvbG9yKQ0KICANCmBgYA0KPGJyPg0KDQotLS0tDQoNCiMjIFJlZmVyZW5jZXMNCg0KDQoNCg==</div>
+<p>Copyright &copy; 2020 Jochem Tolsma</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("rscript07.Rmd");
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -14,7 +14,7 @@
 
 <title>Behaviour</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -42,8 +42,8 @@
 <link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
 <link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
 <script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -158,11 +158,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -191,8 +195,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -200,16 +204,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -356,6 +353,15 @@ div.tocify {
 <li>
   <a href="rscript04.html">Behaviour</a>
 </li>
+<li>
+  <a href="rscript05.html">GOF</a>
+</li>
+<li>
+  <a href="rscript06.html">SienaRI</a>
+</li>
+<li>
+  <a href="rscript07.html">Agent-based simulation</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -386,7 +392,7 @@ div.tocify {
 <h1 class="title toc-ignore">Behaviour</h1>
 <h4 class="author"><a href="https://www.jochemtolsma.nl">Jochem
 Tolsma</a> - Radboud University, the Netherlands</h4>
-<h4 class="date">Last compiled on September, 2022</h4>
+<h4 class="date">Last compiled on juni, 2023</h4>
 
 </div>
 
@@ -450,61 +456,43 @@ to: <a href="mailto:j.tolsma@ru.nl">Jochem Tolsma</a>.</p>
 href="https://github.com/snlab-nl/rsiena">GitHub</a> page.</p>
 <hr />
 <p>to do: conver to .rmd</p>
-<pre class="r test"><code>################################################################################ ----
-################################################################################ Rscript04SienaBehaviour.R:
-################################################################################ a script for the
-################################################################################ introduction to
-################################################################################ RSiena ----
-################################################################################ version September
-################################################################################ 8, 2020 The
-################################################################################ introductory
-################################################################################ script is divided
-################################################################################ into the following
-################################################################################ script files:
-################################################################################ Rscript01DataFormat.R,
-################################################################################ followed by
-################################################################################ RScriptSNADescriptives.R,
-################################################################################ code for
-################################################################################ descriptive
-################################################################################ analysis of the
-################################################################################ data, and
-################################################################################ Rscript02SienaVariableFormat.R,
-################################################################################ that formats data
-################################################################################ and specifies the
-################################################################################ model, and
-################################################################################ Rscript03SienaRunModel.R,
-################################################################################ that runs the
-################################################################################ model and
-################################################################################ estimates
-################################################################################ parameters
-################################################################################ Rscript04SienaBehaviour.R,
-################################################################################ that illustrates
-################################################################################ an example of
-################################################################################ analysing the
-################################################################################ coevolution of
-################################################################################ networks and
-################################################################################ behaviour Written
-################################################################################ with contributions
-################################################################################ by Robin Gauthier,
-################################################################################ Tom Snijders, Ruth
-################################################################################ Ripley, and Johan
-################################################################################ Koskinen.
+<pre class="r test"><code>################################################################################
+###
+### ---- Rscript04SienaBehaviour.R: a script for the introduction to RSiena ----
+###
+###                         version September 8, 2020
+################################################################################
+#
+# The introductory script is divided into the following script files:
+# Rscript01DataFormat.R, followed by
+# RScriptSNADescriptives.R, code for descriptive analysis of the data, and
+# Rscript02SienaVariableFormat.R, that formats data and specifies the model, and
+# Rscript03SienaRunModel.R, that runs the model and estimates parameters
+# Rscript04SienaBehaviour.R, that illustrates an example of analysing the
+# coevolution of networks and behaviour
+# Written with contributions by Robin Gauthier, Tom Snijders, Ruth Ripley,
+# and Johan Koskinen.
+#
 
-# Here is a short script for analysing the co-evolution of the friendship network and drinking
-# behaviour for the 50 girls in the Teenage Friends and Lifestyle Study data
+# Here is a short script for analysing the co-evolution of the
+# friendship network and drinking behaviour for the 50 girls in the
+# Teenage Friends and Lifestyle Study data
 # (http://www.stats.ox.ac.uk/~snijders/siena/s50_data.zip), described in
 # http://www.stats.ox.ac.uk/~snijders/siena/s50_data.htm
 
-# Read in the adjacency matrices, covariates and dependent behavioural variable assuming data are
-# in current working directory
+# Read in the adjacency matrices, covariates and dependent behavioural variable
+# assuming data are in current working directory
 
-# \t\tfriend.data.w1 &lt;- as.matrix(read.table(&#39;s50-network1.dat&#39;)) # network \t\tfriend.data.w2 &lt;-
-# as.matrix(read.table(&#39;s50-network2.dat&#39;)) \t\tfriend.data.w3 &lt;-
-# as.matrix(read.table(&#39;s50-network3.dat&#39;)) \t\tdrink &lt;- as.matrix(read.table(&#39;s50-alcohol.dat&#39;)) #
-# behaviour \t\tsmoke &lt;- as.matrix(read.table(&#39;s50-smoke.dat&#39;)) # covariate
+#       friend.data.w1 &lt;- as.matrix(read.table(&quot;s50-network1.dat&quot;)) # network
+#       friend.data.w2 &lt;- as.matrix(read.table(&quot;s50-network2.dat&quot;))
+#       friend.data.w3 &lt;- as.matrix(read.table(&quot;s50-network3.dat&quot;))
+#       drink &lt;- as.matrix(read.table(&quot;s50-alcohol.dat&quot;)) # behaviour
+#       smoke &lt;- as.matrix(read.table(&quot;s50-smoke.dat&quot;)) # covariate
 
-# If you wish to make it easier, you can use this data set as included in the package - but the
-# above is included to show you how to use data from files.  To use the internal data set:
+# If you wish to make it easier, you can use this data set as included
+# in the package - but the above is included to show you
+# how to use data from files.
+# To use the internal data set:
 
 friend.data.w1 &lt;- s501
 friend.data.w2 &lt;- s502
@@ -512,54 +500,66 @@ friend.data.w3 &lt;- s503
 drink &lt;- s50a
 smoke &lt;- s50s
 
-# At this point it is a good idea to use the sna package to plot the networks and the behavioural
-# variable. Descriptive measures of the similarity of &#39;friends&#39; with respect to behaviour (like
-# Moran&#39;s I) are given by the function nacf() in the sna package. See the script
-# RscriptSNADescriptives.R.
+# At this point it is a good idea to use the sna package to plot the networks
+# and the behavioural variable. Descriptive measures of the similarity of
+# &quot;friends&quot; with respect to behaviour (like Moran&#39;s I) are given by the function
+# nacf() in the sna package. See the script RscriptSNADescriptives.R.
 
-# Tell RSiena that the adjacency matrices are network data and in what order they should be treated
+# Tell RSiena that the adjacency matrices are network data and in what order
+# they should be treated
 
-friendship &lt;- sienaDependent(array(c(friend.data.w1, friend.data.w2, friend.data.w3), dim = c(50, 50,
-    3)))  # create dependent variable
+friendship &lt;- sienaDependent( array( c( friend.data.w1, friend.data.w2,
+                                        friend.data.w3 ),
+                                     dim = c( 50, 50, 3 ) ) )# create dependent variable
 
-# Tell RSiena that the variable &#39;drink&#39; should be treated as a dependent variable
+# Tell RSiena that the variable &quot;drink&quot; should be treated
+# as a dependent variable
 
-drinkingbeh &lt;- sienaDependent(drink, type = &quot;behavior&quot;)
-smoke1 &lt;- coCovar(smoke[, 1])
+drinkingbeh &lt;- sienaDependent( drink, type = &quot;behavior&quot; )
+smoke1 &lt;- coCovar( smoke[ , 1 ] )
 
 # Define the data set and obtain the basic effects object
-myCoEvolutionData &lt;- sienaDataCreate(friendship, smoke1, drinkingbeh)
-myCoEvolutionEff &lt;- getEffects(myCoEvolutionData)
+myCoEvolutionData &lt;- sienaDataCreate( friendship, smoke1, drinkingbeh )
+myCoEvolutionEff &lt;- getEffects( myCoEvolutionData )
 
-# Run reports to check that data is properly formated and to get some basic descriptives
+# Run reports to check that data is properly formated and
+# to get some basic descriptives
 
-print01Report(myCoEvolutionData, modelname = &quot;s50_3_CoEvinit&quot;)
+print01Report( myCoEvolutionData, modelname = &#39;s50_3_CoEvinit&#39; )
 
-# Define the effects to include in the coevolution model Start with some structural effects (use
-# the shortnames that you find in effectsDocumentation(myCoEvolutionEff) )
+# Define the effects to include in the coevolution model
+# Start with some structural effects (use the shortnames that you find in
+# effectsDocumentation(myCoEvolutionEff) )
 
-myCoEvolutionEff &lt;- includeEffects(myCoEvolutionEff, transTrip, cycle3)</code></pre>
+myCoEvolutionEff &lt;- includeEffects( myCoEvolutionEff, transTrip, cycle3)</code></pre>
 <pre class="test2"><code>#&gt;   effectName          include fix   test  initialValue parm
 #&gt; 1 transitive triplets TRUE    FALSE FALSE          0   0   
 #&gt; 2 3-cycles            TRUE    FALSE FALSE          0   0</code></pre>
 <pre class="r test"><code># Include a homophily effect for the constant covariate smoking
 
-myCoEvolutionEff &lt;- includeEffects(myCoEvolutionEff, simX, interaction1 = &quot;smoke1&quot;)</code></pre>
+myCoEvolutionEff &lt;- includeEffects( myCoEvolutionEff, simX,
+                                    interaction1 = &quot;smoke1&quot; )</code></pre>
 <pre class="test2"><code>#&gt;   effectName        include fix   test  initialValue parm
 #&gt; 1 smoke1 similarity TRUE    FALSE FALSE          0   0</code></pre>
-<pre class="r test"><code># If we want to parse out whether there is a selection or influence (or both) effect for drinking
-# behaviour, we need to also include sender, receiver and homophily effects of drinking for
-# friendship formation:
+<pre class="r test"><code># If we want to parse out whether there is a selection or influence (or both)
+# effect for drinking behaviour,
+# we need to also include sender, receiver and homophily effects
+# of drinking for friendship formation:
 
-myCoEvolutionEff &lt;- includeEffects(myCoEvolutionEff, egoX, altX, simX, interaction1 = &quot;drinkingbeh&quot;)</code></pre>
+myCoEvolutionEff &lt;- includeEffects(myCoEvolutionEff, egoX, altX, simX,
+                                   interaction1 = &quot;drinkingbeh&quot; )</code></pre>
 <pre class="test2"><code>#&gt;   effectName             include fix   test  initialValue parm
 #&gt; 1 drinkingbeh alter      TRUE    FALSE FALSE          0   0   
 #&gt; 2 drinkingbeh ego        TRUE    FALSE FALSE          0   0   
 #&gt; 3 drinkingbeh similarity TRUE    FALSE FALSE          0   0</code></pre>
-<pre class="r test"><code># For the influence part, i.e. the effect of the network on behaviour, we specify the following
-# effects: indegree, outdegree and assimilation effects for drinking
+<pre class="r test"><code># For the influence part, i.e. the effect of the network on behaviour,
+# we specify the following effects:
+# indegree, outdegree and assimilation effects for drinking
 
-myCoEvolutionEff &lt;- includeEffects(myCoEvolutionEff, name = &quot;drinkingbeh&quot;, avAlt, indeg, outdeg, interaction1 = &quot;friendship&quot;)</code></pre>
+myCoEvolutionEff &lt;- includeEffects( myCoEvolutionEff,
+                                    name = &quot;drinkingbeh&quot;,
+                                    avAlt,indeg, outdeg,
+                                    interaction1 = &quot;friendship&quot; )</code></pre>
 <pre class="test2"><code>#&gt;   effectName                include fix   test  initialValue parm
 #&gt; 1 drinkingbeh indegree      TRUE    FALSE FALSE          0   0   
 #&gt; 2 drinkingbeh outdegree     TRUE    FALSE FALSE          0   0   
@@ -585,199 +585,217 @@ myCoEvolutionEff</code></pre>
 #&gt; 15 drinkingbeh drinkingbeh indegree                TRUE    FALSE FALSE    0.00000   0   
 #&gt; 16 drinkingbeh drinkingbeh outdegree               TRUE    FALSE FALSE    0.00000   0   
 #&gt; 17 drinkingbeh drinkingbeh average alter           TRUE    FALSE FALSE    0.00000   0</code></pre>
-<pre class="r test"><code># Now we have to define the algorithm settings.  The defaults are adequate. You only have to
-# specify the filename that will receive the results in text format.
+<pre class="r test"><code>#
+# Now we have to define the algorithm settings.
+# The defaults are adequate. You only have to specify the filename
+# that will receive the results in text format.
 
-myCoEvAlgorithm &lt;- sienaAlgorithmCreate(projname = &quot;s50CoEv_3&quot;)</code></pre>
+myCoEvAlgorithm &lt;- sienaAlgorithmCreate( projname = &#39;s50CoEv_3&#39; )</code></pre>
 <pre class="test2"><code>#&gt; If you use this algorithm object, siena07 will create/use an output file s50CoEv_3.txt .</code></pre>
-<pre class="r test"><code># Finally, estimate the model; the whole command is put in parentheses to have the results printed
-# directly to the screen.
+<pre class="r test"><code># Finally, estimate the model; the whole command is put in parentheses
+# to have the results printed directly to the screen.
 
-(ans &lt;- siena07(myCoEvAlgorithm, data = myCoEvolutionData, effects = myCoEvolutionEff))</code></pre>
+(ans &lt;- siena07( myCoEvAlgorithm, data = myCoEvolutionData,
+                 effects = myCoEvolutionEff ))</code></pre>
 <pre class="test2"><code>#&gt; Estimates, standard errors and convergence t-ratios
 #&gt; 
 #&gt;                                                Estimate   Standard   Convergence 
 #&gt;                                                             Error      t-ratio   
 #&gt; Network Dynamics 
-#&gt;    1. rate constant friendship rate (period 1)  6.4800  ( 1.2439   )   -0.0641   
-#&gt;    2. rate constant friendship rate (period 2)  5.1314  ( 0.8404   )    0.0138   
-#&gt;    3. eval outdegree (density)                 -2.7681  ( 0.1556   )    0.0127   
-#&gt;    4. eval reciprocity                          2.3747  ( 0.2222   )   -0.0011   
-#&gt;    5. eval transitive triplets                  0.6483  ( 0.1344   )    0.0402   
-#&gt;    6. eval 3-cycles                            -0.0730  ( 0.2837   )    0.0360   
-#&gt;    7. eval smoke1 similarity                    0.1858  ( 0.2230   )    0.0932   
-#&gt;    8. eval drinkingbeh alter                   -0.0383  ( 0.1164   )   -0.0521   
-#&gt;    9. eval drinkingbeh ego                      0.0720  ( 0.1265   )   -0.0709   
-#&gt;   10. eval drinkingbeh similarity               1.3180  ( 0.6331   )    0.0602   
+#&gt;    1. rate constant friendship rate (period 1)  6.5870  (  1.7496  )   -0.0124   
+#&gt;    2. rate constant friendship rate (period 2)  5.1286  (  1.3880  )    0.0077   
+#&gt;    3. eval outdegree (density)                 -2.7678  (  0.1867  )    0.0243   
+#&gt;    4. eval reciprocity                          2.3785  (  0.2092  )    0.0280   
+#&gt;    5. eval transitive triplets                  0.6446  (  0.1927  )    0.0188   
+#&gt;    6. eval 3-cycles                            -0.0660  (  0.2893  )    0.0236   
+#&gt;    7. eval smoke1 similarity                    0.1870  (  0.2309  )    0.0616   
+#&gt;    8. eval drinkingbeh alter                   -0.0377  (  0.1174  )    0.0224   
+#&gt;    9. eval drinkingbeh ego                      0.0724  (  0.1369  )    0.0039   
+#&gt;   10. eval drinkingbeh similarity               1.3308  (  0.9573  )    0.0652   
 #&gt; 
 #&gt; Behavior Dynamics
-#&gt;   11. rate rate drinkingbeh (period 1)          1.2443  ( 0.3677   )    0.0144   
-#&gt;   12. rate rate drinkingbeh (period 2)          1.6758  ( 0.4256   )   -0.1003   
-#&gt;   13. eval drinkingbeh linear shape            -0.8497  ( 2.2964   )    0.0008   
-#&gt;   14. eval drinkingbeh quadratic shape         -1.7646  ( 3.7417   )   -0.0192   
-#&gt;   15. eval drinkingbeh indegree                -0.9942  ( 2.8822   )    0.0246   
-#&gt;   16. eval drinkingbeh outdegree                1.7308  ( 4.3426   )    0.0272   
-#&gt;   17. eval drinkingbeh average alter            3.8412  ( 8.6979   )    0.0023   
+#&gt;   11. rate rate drinkingbeh (period 1)          1.2407  (  0.4757  )   -0.0448   
+#&gt;   12. rate rate drinkingbeh (period 2)          1.7101  (  0.5573  )   -0.0533   
+#&gt;   13. eval drinkingbeh linear shape            -0.8880  (  5.6422  )    0.0087   
+#&gt;   14. eval drinkingbeh quadratic shape         -1.8983  (  8.8098  )    0.0192   
+#&gt;   15. eval drinkingbeh indegree                -1.0979  (  6.7587  )    0.0175   
+#&gt;   16. eval drinkingbeh outdegree                1.8709  ( 10.8697  )    0.0076   
+#&gt;   17. eval drinkingbeh average alter            4.1418  ( 19.7220  )    0.0626   
 #&gt; 
-#&gt; Overall maximum convergence ratio:    0.2272 
+#&gt; Overall maximum convergence ratio:    0.1497 
 #&gt; 
 #&gt; 
-#&gt; Total of 3406 iteration steps.</code></pre>
+#&gt; Total of 3470 iteration steps.</code></pre>
 <pre class="r test"><code># THE RESULTS
 
-# Note that the &#39;convergence t-ratio&#39; is the t-ratio for convergence checking, not the t statistic
-# for testing the significance of this effect.  (See Section 6.1.2 of the manual.)  For good
-# convergence, the t-ratios for convergence all should be less than .1 in absolute value, and the
-# overall maximum convergence ratio should be less than 0.25.  If this is not yet the case, you
-# should try again, starting from the last estimate as the &#39;previous answer&#39;:
+# Note that the &quot;convergence t-ratio&quot; is the t-ratio for convergence checking,
+# not the t statistic for testing the significance of this effect.
+# (See Section 6.1.2 of the manual.)
+# For good convergence, the t-ratios for convergence
+# all should be less than .1 in absolute value,
+# and the overall maximum convergence ratio should be less than 0.25.
+# If this is not yet the case, you should try again, starting from the
+# last estimate as the &quot;previous answer&quot;:
 
-(ans1 &lt;- siena07(myCoEvAlgorithm, data = myCoEvolutionData, effects = myCoEvolutionEff, prevAns = ans))</code></pre>
+(ans1 &lt;- siena07( myCoEvAlgorithm, data = myCoEvolutionData,
+                  effects = myCoEvolutionEff, prevAns = ans ))</code></pre>
 <pre class="test2"><code>#&gt; Estimates, standard errors and convergence t-ratios
 #&gt; 
 #&gt;                                                Estimate   Standard   Convergence 
 #&gt;                                                             Error      t-ratio   
 #&gt; Network Dynamics 
-#&gt;    1. rate constant friendship rate (period 1)  6.5731  ( 1.3339   )    0.0203   
-#&gt;    2. rate constant friendship rate (period 2)  5.1349  ( 1.0727   )   -0.0655   
-#&gt;    3. eval outdegree (density)                 -2.7726  ( 0.1761   )   -0.0059   
-#&gt;    4. eval reciprocity                          2.3789  ( 0.2463   )   -0.0020   
-#&gt;    5. eval transitive triplets                  0.6245  ( 0.1544   )   -0.0103   
-#&gt;    6. eval 3-cycles                            -0.0286  ( 0.3158   )    0.0065   
-#&gt;    7. eval smoke1 similarity                    0.1797  ( 0.2613   )    0.0466   
-#&gt;    8. eval drinkingbeh alter                   -0.0378  ( 0.1149   )    0.0249   
-#&gt;    9. eval drinkingbeh ego                      0.0744  ( 0.1153   )    0.0125   
-#&gt;   10. eval drinkingbeh similarity               1.3572  ( 0.8138   )    0.0581   
+#&gt;    1. rate constant friendship rate (period 1)  6.5194  ( 1.0869   )    0.0017   
+#&gt;    2. rate constant friendship rate (period 2)  5.1639  ( 0.8895   )    0.0372   
+#&gt;    3. eval outdegree (density)                 -2.7724  ( 0.1516   )   -0.0131   
+#&gt;    4. eval reciprocity                          2.3906  ( 0.2272   )   -0.0307   
+#&gt;    5. eval transitive triplets                  0.6621  ( 0.1361   )   -0.0042   
+#&gt;    6. eval 3-cycles                            -0.1058  ( 0.2694   )   -0.0212   
+#&gt;    7. eval smoke1 similarity                    0.1792  ( 0.2200   )   -0.0240   
+#&gt;    8. eval drinkingbeh alter                   -0.0431  ( 0.1158   )   -0.0341   
+#&gt;    9. eval drinkingbeh ego                      0.0738  ( 0.1108   )    0.0098   
+#&gt;   10. eval drinkingbeh similarity               1.3329  ( 0.6482   )    0.0100   
 #&gt; 
 #&gt; Behavior Dynamics
-#&gt;   11. rate rate drinkingbeh (period 1)          1.2365  ( 0.3339   )    0.0308   
-#&gt;   12. rate rate drinkingbeh (period 2)          1.7081  ( 0.4566   )    0.0222   
-#&gt;   13. eval drinkingbeh linear shape            -0.9161  ( 2.0818   )   -0.0003   
-#&gt;   14. eval drinkingbeh quadratic shape         -1.7939  ( 2.8311   )   -0.0061   
-#&gt;   15. eval drinkingbeh indegree                -1.0705  ( 2.4082   )    0.0511   
-#&gt;   16. eval drinkingbeh outdegree                1.8347  ( 3.6174   )    0.0336   
-#&gt;   17. eval drinkingbeh average alter            3.8696  ( 6.2498   )   -0.0410   
+#&gt;   11. rate rate drinkingbeh (period 1)          1.2473  ( 0.3222   )    0.0327   
+#&gt;   12. rate rate drinkingbeh (period 2)          1.7113  ( 0.5763   )   -0.0564   
+#&gt;   13. eval drinkingbeh linear shape            -0.7078  ( 1.8118   )   -0.0097   
+#&gt;   14. eval drinkingbeh quadratic shape         -1.6362  ( 2.6130   )    0.0118   
+#&gt;   15. eval drinkingbeh indegree                -0.9225  ( 1.8993   )    0.0030   
+#&gt;   16. eval drinkingbeh outdegree                1.5799  ( 2.8709   )   -0.0012   
+#&gt;   17. eval drinkingbeh average alter            3.5425  ( 5.8928   )   -0.0003   
 #&gt; 
-#&gt; Overall maximum convergence ratio:    0.2656 
+#&gt; Overall maximum convergence ratio:    0.1884 
 #&gt; 
 #&gt; 
-#&gt; Total of 3348 iteration steps.</code></pre>
+#&gt; Total of 3148 iteration steps.</code></pre>
 <pre class="r test"><code># which can be repeated if necessary.
 
-# For this small data set, the model for behavior dynamics is over-specified, leading to some very
-# large standard errors.  For this data set it is better to drop the degree effects on behaviour,
+# For this small data set, the model for behavior dynamics is over-specified,
+# leading to some very large standard errors.
+# For this data set it is better to drop the degree effects on behaviour,
 # because the data does not contain enough information to estimate them.
 
-myCoEvolutionEff2 &lt;- includeEffects(myCoEvolutionEff, name = &quot;drinkingbeh&quot;, indeg, outdeg, interaction1 = &quot;friendship&quot;,
-    include = FALSE)</code></pre>
+myCoEvolutionEff2 &lt;- includeEffects( myCoEvolutionEff,
+                                     name = &quot;drinkingbeh&quot;, indeg, outdeg,
+                                     interaction1 = &quot;friendship&quot;, include = FALSE)</code></pre>
 <pre class="test2"><code>#&gt; [1] effectName   include      fix          test         initialValue parm        
 #&gt; &lt;0 rows&gt; (or 0-length row.names)</code></pre>
-<pre class="r test"><code>(ans2 &lt;- siena07(myCoEvAlgorithm, data = myCoEvolutionData, effects = myCoEvolutionEff2))</code></pre>
+<pre class="r test"><code>(ans2 &lt;- siena07( myCoEvAlgorithm, data = myCoEvolutionData,
+                  effects = myCoEvolutionEff2 ))</code></pre>
 <pre class="test2"><code>#&gt; Estimates, standard errors and convergence t-ratios
 #&gt; 
 #&gt;                                                Estimate   Standard   Convergence 
 #&gt;                                                             Error      t-ratio   
 #&gt; Network Dynamics 
-#&gt;    1. rate constant friendship rate (period 1)  6.5490  ( 1.1566   )   -0.0211   
-#&gt;    2. rate constant friendship rate (period 2)  5.1581  ( 0.9815   )    0.0637   
-#&gt;    3. eval outdegree (density)                 -2.7601  ( 0.1450   )    0.0188   
-#&gt;    4. eval reciprocity                          2.3730  ( 0.2064   )    0.0096   
-#&gt;    5. eval transitive triplets                  0.6382  ( 0.1406   )    0.0062   
-#&gt;    6. eval 3-cycles                            -0.0604  ( 0.2859   )    0.0116   
-#&gt;    7. eval smoke1 similarity                    0.1764  ( 0.2209   )    0.0110   
-#&gt;    8. eval drinkingbeh alter                   -0.0436  ( 0.1213   )   -0.0188   
-#&gt;    9. eval drinkingbeh ego                      0.0717  ( 0.1337   )   -0.0115   
-#&gt;   10. eval drinkingbeh similarity               1.3418  ( 0.6484   )   -0.0177   
+#&gt;    1. rate constant friendship rate (period 1)  6.5279  ( 1.0029   )    0.0286   
+#&gt;    2. rate constant friendship rate (period 2)  5.1654  ( 0.8384   )    0.0762   
+#&gt;    3. eval outdegree (density)                 -2.7592  ( 0.1411   )    0.0409   
+#&gt;    4. eval reciprocity                          2.3773  ( 0.2298   )    0.0291   
+#&gt;    5. eval transitive triplets                  0.6445  ( 0.1374   )    0.0547   
+#&gt;    6. eval 3-cycles                            -0.0697  ( 0.2766   )    0.0506   
+#&gt;    7. eval smoke1 similarity                    0.1751  ( 0.2070   )    0.0298   
+#&gt;    8. eval drinkingbeh alter                   -0.0415  ( 0.1013   )   -0.0345   
+#&gt;    9. eval drinkingbeh ego                      0.0700  ( 0.1074   )   -0.0173   
+#&gt;   10. eval drinkingbeh similarity               1.3077  ( 0.6306   )   -0.0369   
 #&gt; 
 #&gt; Behavior Dynamics
-#&gt;   11. rate rate drinkingbeh (period 1)          1.3194  ( 0.3736   )   -0.0149   
-#&gt;   12. rate rate drinkingbeh (period 2)          1.7806  ( 0.5254   )   -0.0173   
-#&gt;   13. eval drinkingbeh linear shape             0.4179  ( 0.2382   )   -0.0202   
-#&gt;   14. eval drinkingbeh quadratic shape         -0.5948  ( 0.3620   )    0.0038   
-#&gt;   15. eval drinkingbeh average alter            1.3014  ( 0.9056   )   -0.0222   
+#&gt;   11. rate rate drinkingbeh (period 1)          1.3212  ( 0.3559   )   -0.0007   
+#&gt;   12. rate rate drinkingbeh (period 2)          1.7953  ( 0.5035   )    0.0084   
+#&gt;   13. eval drinkingbeh linear shape             0.4146  ( 0.2133   )    0.0246   
+#&gt;   14. eval drinkingbeh quadratic shape         -0.5718  ( 0.2970   )    0.0294   
+#&gt;   15. eval drinkingbeh average alter            1.2535  ( 0.7207   )   -0.0483   
 #&gt; 
-#&gt; Overall maximum convergence ratio:    0.1123 
+#&gt; Overall maximum convergence ratio:    0.1703 
 #&gt; 
 #&gt; 
-#&gt; Total of 3252 iteration steps.</code></pre>
-<pre class="r test"><code>############################################################################### Some other effects
-############################################################################### ## The set of
-############################################################################### available effects
-############################################################################### for this data set
-############################################################################### can be obtained by
-############################################################################### requesting
-effectsDocumentation(myCoEvolutionEff)
-# See the manual, Chapter 12, for the meaning of these effects.  To study the direct effect of the
-# actor covariate smoking on the dependent variable drinking, use the effFrom effect:
+#&gt; Total of 3149 iteration steps.</code></pre>
+<pre class="r test"><code>###############################################################################
+##                              Some other effects                           ##
+###############################################################################
+#
+# The set of available effects for this data set can be obtained by requesting
+effectsDocumentation(  myCoEvolutionEff )
+# See the manual, Chapter 12, for the meaning of these effects.
+# To study the direct effect of the actor covariate smoking on the dependent
+# variable drinking, use the effFrom effect:
 
-myCoEvolutionEff3 &lt;- includeEffects(myCoEvolutionEff2, name = &quot;drinkingbeh&quot;, effFrom, interaction1 = &quot;smoke1&quot;)</code></pre>
+myCoEvolutionEff3 &lt;- includeEffects( myCoEvolutionEff2,
+                                     name = &quot;drinkingbeh&quot;, effFrom,
+                                     interaction1 = &quot;smoke1&quot;)</code></pre>
 <pre class="test2"><code>#&gt;   effectName                      include fix   test  initialValue parm
 #&gt; 1 drinkingbeh: effect from smoke1 TRUE    FALSE FALSE          0   0</code></pre>
-<pre class="r test"><code># Since we already have a good result for a simpler model, it is helpful to start estimating from
-# these estimates as starting values:
+<pre class="r test"><code># Since we already have a good result for a simpler model,
+# it is helpful to start estimating from these estimates
+# as starting values:
 
-(ans3 &lt;- siena07(myCoEvAlgorithm, data = myCoEvolutionData, effects = myCoEvolutionEff3, prevAns = ans2))</code></pre>
+(ans3 &lt;- siena07( myCoEvAlgorithm, data = myCoEvolutionData,
+                  effects = myCoEvolutionEff3, prevAns = ans2 ))</code></pre>
 <pre class="test2"><code>#&gt; Estimates, standard errors and convergence t-ratios
 #&gt; 
 #&gt;                                                Estimate   Standard   Convergence 
 #&gt;                                                             Error      t-ratio   
 #&gt; Network Dynamics 
-#&gt;    1. rate constant friendship rate (period 1)  6.5686  ( 1.2079   )   -0.0390   
-#&gt;    2. rate constant friendship rate (period 2)  5.1513  ( 0.8772   )   -0.0364   
-#&gt;    3. eval outdegree (density)                 -2.7731  ( 0.1439   )   -0.0535   
-#&gt;    4. eval reciprocity                          2.3938  ( 0.2113   )   -0.0156   
-#&gt;    5. eval transitive triplets                  0.6305  ( 0.1458   )   -0.0261   
-#&gt;    6. eval 3-cycles                            -0.0424  ( 0.2785   )   -0.0062   
-#&gt;    7. eval smoke1 similarity                    0.1868  ( 0.2309   )    0.0027   
-#&gt;    8. eval drinkingbeh alter                   -0.0394  ( 0.1231   )   -0.0175   
-#&gt;    9. eval drinkingbeh ego                      0.0679  ( 0.1239   )   -0.0448   
-#&gt;   10. eval drinkingbeh similarity               1.3310  ( 0.6729   )    0.0033   
+#&gt;    1. rate constant friendship rate (period 1)  6.5166  ( 1.2825   )   -0.0849   
+#&gt;    2. rate constant friendship rate (period 2)  5.1569  ( 0.8020   )   -0.0124   
+#&gt;    3. eval outdegree (density)                 -2.7561  ( 0.1585   )   -0.0615   
+#&gt;    4. eval reciprocity                          2.3727  ( 0.2165   )   -0.0587   
+#&gt;    5. eval transitive triplets                  0.6538  ( 0.1553   )   -0.0263   
+#&gt;    6. eval 3-cycles                            -0.0925  ( 0.2995   )   -0.0324   
+#&gt;    7. eval smoke1 similarity                    0.1860  ( 0.2116   )   -0.0196   
+#&gt;    8. eval drinkingbeh alter                   -0.0363  ( 0.1136   )   -0.0175   
+#&gt;    9. eval drinkingbeh ego                      0.0648  ( 0.1145   )   -0.0308   
+#&gt;   10. eval drinkingbeh similarity               1.2889  ( 0.7096   )   -0.0736   
 #&gt; 
 #&gt; Behavior Dynamics
-#&gt;   11. rate rate drinkingbeh (period 1)          1.2809  ( 0.3422   )   -0.0173   
-#&gt;   12. rate rate drinkingbeh (period 2)          1.7066  ( 0.4539   )    0.0096   
-#&gt;   13. eval drinkingbeh linear shape             0.4345  ( 0.2945   )   -0.0118   
-#&gt;   14. eval drinkingbeh quadratic shape         -0.6347  ( 0.4529   )    0.0359   
-#&gt;   15. eval drinkingbeh average alter            1.5132  ( 1.1349   )    0.0848   
-#&gt;   16. eval drinkingbeh: effect from smoke1     -0.2412  ( 0.3955   )   -0.0025   
+#&gt;   11. rate rate drinkingbeh (period 1)          1.2585  ( 0.3717   )   -0.0035   
+#&gt;   12. rate rate drinkingbeh (period 2)          1.6712  ( 0.4928   )   -0.0135   
+#&gt;   13. eval drinkingbeh linear shape             0.4534  ( 0.2781   )    0.0278   
+#&gt;   14. eval drinkingbeh quadratic shape         -0.6362  ( 0.5024   )    0.0229   
+#&gt;   15. eval drinkingbeh average alter            1.5248  ( 1.4129   )    0.0302   
+#&gt;   16. eval drinkingbeh: effect from smoke1     -0.2471  ( 0.5348   )   -0.0278   
 #&gt; 
-#&gt; Overall maximum convergence ratio:    0.2508 
+#&gt; Overall maximum convergence ratio:    0.1659 
 #&gt; 
 #&gt; 
 #&gt; Total of 3322 iteration steps.</code></pre>
 <pre class="r test"><code># In my case, convergence was not good enough:
-(ans3 &lt;- siena07(myCoEvAlgorithm, data = myCoEvolutionData, effects = myCoEvolutionEff3, prevAns = ans3))</code></pre>
+(ans3 &lt;- siena07( myCoEvAlgorithm, data = myCoEvolutionData,
+                  effects = myCoEvolutionEff3, prevAns = ans3 ))</code></pre>
 <pre class="test2"><code>#&gt; Estimates, standard errors and convergence t-ratios
 #&gt; 
 #&gt;                                                Estimate   Standard   Convergence 
 #&gt;                                                             Error      t-ratio   
 #&gt; Network Dynamics 
-#&gt;    1. rate constant friendship rate (period 1)  6.5114  ( 1.0970   )   -0.0251   
-#&gt;    2. rate constant friendship rate (period 2)  5.2016  ( 0.8726   )    0.0756   
-#&gt;    3. eval outdegree (density)                 -2.7703  ( 0.1311   )   -0.0072   
-#&gt;    4. eval reciprocity                          2.3784  ( 0.2060   )    0.0108   
-#&gt;    5. eval transitive triplets                  0.6279  ( 0.1449   )    0.0256   
-#&gt;    6. eval 3-cycles                            -0.0341  ( 0.2875   )    0.0401   
-#&gt;    7. eval smoke1 similarity                    0.1822  ( 0.2057   )   -0.0191   
-#&gt;    8. eval drinkingbeh alter                   -0.0414  ( 0.1202   )    0.0656   
-#&gt;    9. eval drinkingbeh ego                      0.0744  ( 0.1268   )    0.0304   
-#&gt;   10. eval drinkingbeh similarity               1.3608  ( 0.6272   )    0.0243   
+#&gt;    1. rate constant friendship rate (period 1)  6.4992  ( 1.1223   )   -0.0339   
+#&gt;    2. rate constant friendship rate (period 2)  5.1534  ( 0.8482   )    0.0035   
+#&gt;    3. eval outdegree (density)                 -2.7654  ( 0.1512   )   -0.0057   
+#&gt;    4. eval reciprocity                          2.3703  ( 0.2080   )    0.0017   
+#&gt;    5. eval transitive triplets                  0.6242  ( 0.1322   )   -0.0066   
+#&gt;    6. eval 3-cycles                            -0.0236  ( 0.2598   )    0.0114   
+#&gt;    7. eval smoke1 similarity                    0.1816  ( 0.2155   )   -0.0494   
+#&gt;    8. eval drinkingbeh alter                   -0.0464  ( 0.1097   )    0.0359   
+#&gt;    9. eval drinkingbeh ego                      0.0775  ( 0.1170   )    0.0605   
+#&gt;   10. eval drinkingbeh similarity               1.3532  ( 0.6482   )    0.0025   
 #&gt; 
 #&gt; Behavior Dynamics
-#&gt;   11. rate rate drinkingbeh (period 1)          1.2897  ( 0.3725   )    0.0816   
-#&gt;   12. rate rate drinkingbeh (period 2)          1.7271  ( 0.4554   )    0.0116   
-#&gt;   13. eval drinkingbeh linear shape             0.4472  ( 0.2380   )    0.0261   
-#&gt;   14. eval drinkingbeh quadratic shape         -0.6494  ( 0.3851   )   -0.0409   
-#&gt;   15. eval drinkingbeh average alter            1.5168  ( 0.9566   )    0.0366   
-#&gt;   16. eval drinkingbeh: effect from smoke1     -0.2083  ( 0.3921   )    0.0309   
+#&gt;   11. rate rate drinkingbeh (period 1)          1.2873  ( 0.3715   )   -0.0165   
+#&gt;   12. rate rate drinkingbeh (period 2)          1.6950  ( 0.4594   )   -0.0583   
+#&gt;   13. eval drinkingbeh linear shape             0.4391  ( 0.2726   )   -0.0391   
+#&gt;   14. eval drinkingbeh quadratic shape         -0.6329  ( 0.4253   )    0.0159   
+#&gt;   15. eval drinkingbeh average alter            1.4797  ( 1.1228   )    0.0160   
+#&gt;   16. eval drinkingbeh: effect from smoke1     -0.2195  ( 0.3666   )    0.0298   
 #&gt; 
-#&gt; Overall maximum convergence ratio:    0.2431 
+#&gt; Overall maximum convergence ratio:    0.2073 
 #&gt; 
 #&gt; 
 #&gt; Total of 3267 iteration steps.</code></pre>
-<pre class="r test"><code># You can get a nicer presentation of the results in a file in your working directory in LaTeX by
-siena.table(ans3)
-# and in html (can be imported into MS-Word) by
-siena.table(ans3, type = &quot;html&quot;)</code></pre>
+<pre class="r test"><code># You can get a nicer presentation of the results in a file
+# in your working directory in LaTeX by
+siena.table(ans3)</code></pre>
+<pre class="test2"><code>#&gt; Results for ans3 written to ans3.tex .</code></pre>
+<pre class="r test"><code># and in html (can be imported into MS-Word) by
+siena.table(ans3, type=&quot;html&quot;)</code></pre>
+<pre class="test2"><code>#&gt; Results for ans3 written to ans3.html .</code></pre>
 </div>
 
 <div id="rmd-source-code">LS0tDQp0aXRsZTogIkJlaGF2aW91ciINCmF1dGhvcjogJ1tKb2NoZW0gVG9sc21hXShodHRwczovL3d3dy5qb2NoZW10b2xzbWEubmwpIC0gUmFkYm91ZCBVbml2ZXJzaXR5LCB0aGUgTmV0aGVybGFuZHMnDQpiaWJsaW9ncmFwaHk6IHJlZmVyZW5jZXMuYmliDQpkYXRlOiAiTGFzdCBjb21waWxlZCBvbiBgciBmb3JtYXQoU3lzLnRpbWUoKSwgJyVCLCAlWScpYCINCm91dHB1dDogDQogIGh0bWxfZG9jdW1lbnQ6DQogICAgdG9jOiAgdHJ1ZQ0KICAgIHRvY19mbG9hdDogdHJ1ZQ0KICAgIG51bWJlcl9zZWN0aW9uczogZmFsc2UNCiAgICBjb2RlX2ZvbGRpbmc6IHNob3cNCiAgICBjb2RlX2Rvd25sb2FkOiB5ZXMNCi0tLQ0KDQpgYGB7ciwgZ2xvYmFsc2V0dGluZ3MsIGVjaG89RkFMU0UsIHdhcm5pbmc9RkFMU0V9DQpsaWJyYXJ5KGtuaXRyKQ0Kb3B0c19jaHVuayRzZXQodGlkeS5vcHRzPWxpc3Qod2lkdGguY3V0b2ZmPTEwMCksdGlkeT1UUlVFLCB3YXJuaW5nID0gRkFMU0UsIG1lc3NhZ2UgPSBGQUxTRSxjb21tZW50ID0gIiM+IiwgY2FjaGU9VFJVRSwgY2xhc3Muc291cmNlPWMoInRlc3QiKSwgY2xhc3Mub3V0cHV0PWMoInRlc3QyIikpDQpvcHRpb25zKHdpZHRoID0gMTAwKQ0KcmdsOjpzZXR1cEtuaXRyKCkNCg0KDQpjb2xvcml6ZSA8LSBmdW5jdGlvbih4LCBjb2xvcikgew0KICBpZiAoa25pdHI6OmlzX2xhdGV4X291dHB1dCgpKSB7DQogICAgc3ByaW50ZigiXFx0ZXh0Y29sb3J7JXN9eyVzfSIsIGNvbG9yLCB4KQ0KICB9IGVsc2UgaWYgKGtuaXRyOjppc19odG1sX291dHB1dCgpKSB7DQogICAgc3ByaW50ZigiPHNwYW4gc3R5bGU9J2NvbG9yOiAlczsnPiVzPC9zcGFuPiIsIGNvbG9yLCANCiAgICAgIHgpDQogIH0gZWxzZSB4DQp9DQoNCmBgYA0KDQpgYGB7ciBrbGlwcHksIGVjaG89RkFMU0UsIGluY2x1ZGU9VFJVRX0NCmtsaXBweTo6a2xpcHB5KHBvc2l0aW9uID0gYygndG9wJywgJ3JpZ2h0JykpDQoja2xpcHB5OjprbGlwcHkoY29sb3IgPSAnZGFya3JlZCcpDQoja2xpcHB5OjprbGlwcHkodG9vbHRpcF9tZXNzYWdlID0gJ0NsaWNrIHRvIGNvcHknLCB0b29sdGlwX3N1Y2Nlc3MgPSAnRG9uZScpDQpgYGANCg0KYGBge2NzcywgZWNobz1GQUxTRX0NCnByZS50ZXN0IHsNCiAgbWF4LWhlaWdodDogMzAwcHg7DQogIG92ZXJmbG93LXk6IGF1dG87DQogIG92ZXJmbG93LXg6IGF1dG87DQogIG1hcmdpbjogMTBweDsNCn0NCg0KcHJlLnRlc3QyIHsNCiAgbWF4LWhlaWdodDogMzAwcHg7DQogIG92ZXJmbG93LXk6IGF1dG87DQogIG92ZXJmbG93LXg6IGF1dG87DQogIG1hcmdpbjogMTBweDsNCiAgYmFja2dyb3VuZC1jb2xvcjogd2hpdGUNCn0NCg0KDQpoMSwgLmgxLCBoMiwgLmgyLCBoMywgLmgzIHsNCiAgICBtYXJnaW4tdG9wOiAyNHB4Ow0KfQ0KDQoNCmBgYA0KDQotLS0tDQoNClRoaXMgd2Vic2l0ZSBjb252ZXJ0ZWQgdGhlIGZvbGxvd2luZyBvcmlnaW5hbCAuUiBzY3JpcHRzIGludG8gLnJtZCBmaWxlcy4gDQoNCi0gUlNjcmlwdFNOQURlc2NyaXB0aXZlcy5SIA0KLSBSc2NyaXB0MDFEYXRhRm9ybWF0LlIgIA0KLSBSc2NyaXB0MDJTaWVuYVZhcmlhYmxlRm9ybWF0LlIgIA0KLSBSc2NyaXB0MDNTaWVuYVJ1bk1vZGVsLlIgIA0KLSBSc2NyaXB0MDRTaWVuYUJlaGF2aW91ci5SDQoNClBsZWFzZSB2aXNpdCBbR2l0SHViXShodHRwczovL2dpdGh1Yi5jb20vc25sYWItbmwvcnNpZW5hL3RyZWUvbWFpbi9pbnN0L3NjcmlwdHMpIGZvciB0aGUgbGF0ZXN0IC5SIGZpbGVzLiANCg0KLS0tLQ0KDQojIyBEYXRhDQpBbGwgZmlsZXMgKGRhdGEsIHNjcmlwdHMsIGV0Yy4pIGNhbiBhbHNvIGJlIGZvdW5kIG9uIFtHaXRodWJdKGh0dHBzOi8vZ2l0aHViLmNvbS9Kb2NoZW1Ub2xzbWEvUnNpZW5hLXNjcmlwdHMpDQoNCi0tLS0NCg0KIyMgQ29udGFjdA0KU3BlY2lmaWMgcXVlc3Rpb25zIHdpdGggcmVzcGVjdCB0byB0aGUgLnJtZCBmaWxlcyBjYW4gYmUgYWRkcmVzc2VkIHRvOiBbSm9jaGVtIFRvbHNtYV0obWFpbHRvOmoudG9sc21hQHJ1Lm5sKS4gIA0KDQpGb3IgcXVlc3Rpb25zIG9uIFJTaWVuYSBwbGVhc2UgdmlzaXQgdGhlIGRlc2lnbmF0ZWQgW0dpdEh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL3NubGFiLW5sL3JzaWVuYSkgcGFnZS4gDQoNCi0tLS0gIA0KDQp0byBkbzogY29udmVyIHRvIC5ybWQNCg0KYGBge3J9DQojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KIyMjDQojIyMgLS0tLSBSc2NyaXB0MDRTaWVuYUJlaGF2aW91ci5SOiBhIHNjcmlwdCBmb3IgdGhlIGludHJvZHVjdGlvbiB0byBSU2llbmEgLS0tLQ0KIyMjDQojIyMgICAgICAgICAgICAgICAgICAgICAgICAgdmVyc2lvbiBTZXB0ZW1iZXIgOCwgMjAyMA0KIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiMNCiMgVGhlIGludHJvZHVjdG9yeSBzY3JpcHQgaXMgZGl2aWRlZCBpbnRvIHRoZSBmb2xsb3dpbmcgc2NyaXB0IGZpbGVzOg0KIyBSc2NyaXB0MDFEYXRhRm9ybWF0LlIsIGZvbGxvd2VkIGJ5DQojIFJTY3JpcHRTTkFEZXNjcmlwdGl2ZXMuUiwgY29kZSBmb3IgZGVzY3JpcHRpdmUgYW5hbHlzaXMgb2YgdGhlIGRhdGEsIGFuZA0KIyBSc2NyaXB0MDJTaWVuYVZhcmlhYmxlRm9ybWF0LlIsIHRoYXQgZm9ybWF0cyBkYXRhIGFuZCBzcGVjaWZpZXMgdGhlIG1vZGVsLCBhbmQNCiMgUnNjcmlwdDAzU2llbmFSdW5Nb2RlbC5SLCB0aGF0IHJ1bnMgdGhlIG1vZGVsIGFuZCBlc3RpbWF0ZXMgcGFyYW1ldGVycw0KIyBSc2NyaXB0MDRTaWVuYUJlaGF2aW91ci5SLCB0aGF0IGlsbHVzdHJhdGVzIGFuIGV4YW1wbGUgb2YgYW5hbHlzaW5nIHRoZQ0KIyBjb2V2b2x1dGlvbiBvZiBuZXR3b3JrcyBhbmQgYmVoYXZpb3VyDQojIFdyaXR0ZW4gd2l0aCBjb250cmlidXRpb25zIGJ5IFJvYmluIEdhdXRoaWVyLCBUb20gU25pamRlcnMsIFJ1dGggUmlwbGV5LA0KIyBhbmQgSm9oYW4gS29za2luZW4uDQojDQoNCiMgSGVyZSBpcyBhIHNob3J0IHNjcmlwdCBmb3IgYW5hbHlzaW5nIHRoZSBjby1ldm9sdXRpb24gb2YgdGhlDQojIGZyaWVuZHNoaXAgbmV0d29yayBhbmQgZHJpbmtpbmcgYmVoYXZpb3VyIGZvciB0aGUgNTAgZ2lybHMgaW4gdGhlDQojIFRlZW5hZ2UgRnJpZW5kcyBhbmQgTGlmZXN0eWxlIFN0dWR5IGRhdGENCiMgKGh0dHA6Ly93d3cuc3RhdHMub3guYWMudWsvfnNuaWpkZXJzL3NpZW5hL3M1MF9kYXRhLnppcCksIGRlc2NyaWJlZCBpbg0KIyBodHRwOi8vd3d3LnN0YXRzLm94LmFjLnVrL35zbmlqZGVycy9zaWVuYS9zNTBfZGF0YS5odG0NCg0KIyBSZWFkIGluIHRoZSBhZGphY2VuY3kgbWF0cmljZXMsIGNvdmFyaWF0ZXMgYW5kIGRlcGVuZGVudCBiZWhhdmlvdXJhbCB2YXJpYWJsZQ0KIyBhc3N1bWluZyBkYXRhIGFyZSBpbiBjdXJyZW50IHdvcmtpbmcgZGlyZWN0b3J5DQoNCiMJCWZyaWVuZC5kYXRhLncxIDwtIGFzLm1hdHJpeChyZWFkLnRhYmxlKCJzNTAtbmV0d29yazEuZGF0IikpICMgbmV0d29yaw0KIwkJZnJpZW5kLmRhdGEudzIgPC0gYXMubWF0cml4KHJlYWQudGFibGUoInM1MC1uZXR3b3JrMi5kYXQiKSkNCiMJCWZyaWVuZC5kYXRhLnczIDwtIGFzLm1hdHJpeChyZWFkLnRhYmxlKCJzNTAtbmV0d29yazMuZGF0IikpDQojCQlkcmluayA8LSBhcy5tYXRyaXgocmVhZC50YWJsZSgiczUwLWFsY29ob2wuZGF0IikpICMgYmVoYXZpb3VyDQojCQlzbW9rZSA8LSBhcy5tYXRyaXgocmVhZC50YWJsZSgiczUwLXNtb2tlLmRhdCIpKSAjIGNvdmFyaWF0ZQ0KDQojIElmIHlvdSB3aXNoIHRvIG1ha2UgaXQgZWFzaWVyLCB5b3UgY2FuIHVzZSB0aGlzIGRhdGEgc2V0IGFzIGluY2x1ZGVkDQojIGluIHRoZSBwYWNrYWdlIC0gYnV0IHRoZSBhYm92ZSBpcyBpbmNsdWRlZCB0byBzaG93IHlvdQ0KIyBob3cgdG8gdXNlIGRhdGEgZnJvbSBmaWxlcy4NCiMgVG8gdXNlIHRoZSBpbnRlcm5hbCBkYXRhIHNldDoNCg0KZnJpZW5kLmRhdGEudzEgPC0gczUwMQ0KZnJpZW5kLmRhdGEudzIgPC0gczUwMg0KZnJpZW5kLmRhdGEudzMgPC0gczUwMw0KZHJpbmsgPC0gczUwYQ0Kc21va2UgPC0gczUwcw0KDQojIEF0IHRoaXMgcG9pbnQgaXQgaXMgYSBnb29kIGlkZWEgdG8gdXNlIHRoZSBzbmEgcGFja2FnZSB0byBwbG90IHRoZSBuZXR3b3Jrcw0KIyBhbmQgdGhlIGJlaGF2aW91cmFsIHZhcmlhYmxlLiBEZXNjcmlwdGl2ZSBtZWFzdXJlcyBvZiB0aGUgc2ltaWxhcml0eSBvZg0KIyAiZnJpZW5kcyIgd2l0aCByZXNwZWN0IHRvIGJlaGF2aW91ciAobGlrZSBNb3JhbidzIEkpIGFyZSBnaXZlbiBieSB0aGUgZnVuY3Rpb24NCiMgbmFjZigpIGluIHRoZSBzbmEgcGFja2FnZS4gU2VlIHRoZSBzY3JpcHQgUnNjcmlwdFNOQURlc2NyaXB0aXZlcy5SLg0KDQojIFRlbGwgUlNpZW5hIHRoYXQgdGhlIGFkamFjZW5jeSBtYXRyaWNlcyBhcmUgbmV0d29yayBkYXRhIGFuZCBpbiB3aGF0IG9yZGVyDQojIHRoZXkgc2hvdWxkIGJlIHRyZWF0ZWQNCg0KZnJpZW5kc2hpcCA8LSBzaWVuYURlcGVuZGVudCggYXJyYXkoIGMoIGZyaWVuZC5kYXRhLncxLCBmcmllbmQuZGF0YS53MiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmcmllbmQuZGF0YS53MyApLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRpbSA9IGMoIDUwLCA1MCwgMyApICkgKSMgY3JlYXRlIGRlcGVuZGVudCB2YXJpYWJsZQ0KDQojIFRlbGwgUlNpZW5hIHRoYXQgdGhlIHZhcmlhYmxlICJkcmluayIgc2hvdWxkIGJlIHRyZWF0ZWQNCiMgYXMgYSBkZXBlbmRlbnQgdmFyaWFibGUNCg0KZHJpbmtpbmdiZWggPC0gc2llbmFEZXBlbmRlbnQoIGRyaW5rLCB0eXBlID0gImJlaGF2aW9yIiApDQpzbW9rZTEgPC0gY29Db3Zhciggc21va2VbICwgMSBdICkNCg0KIyBEZWZpbmUgdGhlIGRhdGEgc2V0IGFuZCBvYnRhaW4gdGhlIGJhc2ljIGVmZmVjdHMgb2JqZWN0DQpteUNvRXZvbHV0aW9uRGF0YSA8LSBzaWVuYURhdGFDcmVhdGUoIGZyaWVuZHNoaXAsIHNtb2tlMSwgZHJpbmtpbmdiZWggKQ0KbXlDb0V2b2x1dGlvbkVmZiA8LSBnZXRFZmZlY3RzKCBteUNvRXZvbHV0aW9uRGF0YSApDQoNCiMgUnVuIHJlcG9ydHMgdG8gY2hlY2sgdGhhdCBkYXRhIGlzIHByb3Blcmx5IGZvcm1hdGVkIGFuZA0KIyB0byBnZXQgc29tZSBiYXNpYyBkZXNjcmlwdGl2ZXMNCg0KcHJpbnQwMVJlcG9ydCggbXlDb0V2b2x1dGlvbkRhdGEsIG1vZGVsbmFtZSA9ICdzNTBfM19Db0V2aW5pdCcgKQ0KDQojIERlZmluZSB0aGUgZWZmZWN0cyB0byBpbmNsdWRlIGluIHRoZSBjb2V2b2x1dGlvbiBtb2RlbA0KIyBTdGFydCB3aXRoIHNvbWUgc3RydWN0dXJhbCBlZmZlY3RzICh1c2UgdGhlIHNob3J0bmFtZXMgdGhhdCB5b3UgZmluZCBpbg0KIyBlZmZlY3RzRG9jdW1lbnRhdGlvbihteUNvRXZvbHV0aW9uRWZmKSApDQoNCm15Q29Fdm9sdXRpb25FZmYgPC0gaW5jbHVkZUVmZmVjdHMoIG15Q29Fdm9sdXRpb25FZmYsIHRyYW5zVHJpcCwgY3ljbGUzKQ0KDQojIEluY2x1ZGUgYSBob21vcGhpbHkgZWZmZWN0IGZvciB0aGUgY29uc3RhbnQgY292YXJpYXRlIHNtb2tpbmcNCg0KbXlDb0V2b2x1dGlvbkVmZiA8LSBpbmNsdWRlRWZmZWN0cyggbXlDb0V2b2x1dGlvbkVmZiwgc2ltWCwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGludGVyYWN0aW9uMSA9ICJzbW9rZTEiICkNCg0KIyBJZiB3ZSB3YW50IHRvIHBhcnNlIG91dCB3aGV0aGVyIHRoZXJlIGlzIGEgc2VsZWN0aW9uIG9yIGluZmx1ZW5jZSAob3IgYm90aCkNCiMgZWZmZWN0IGZvciBkcmlua2luZyBiZWhhdmlvdXIsDQojIHdlIG5lZWQgdG8gYWxzbyBpbmNsdWRlIHNlbmRlciwgcmVjZWl2ZXIgYW5kIGhvbW9waGlseSBlZmZlY3RzDQojIG9mIGRyaW5raW5nIGZvciBmcmllbmRzaGlwIGZvcm1hdGlvbjoNCg0KbXlDb0V2b2x1dGlvbkVmZiA8LSBpbmNsdWRlRWZmZWN0cyhteUNvRXZvbHV0aW9uRWZmLCBlZ29YLCBhbHRYLCBzaW1YLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnRlcmFjdGlvbjEgPSAiZHJpbmtpbmdiZWgiICkNCg0KIyBGb3IgdGhlIGluZmx1ZW5jZSBwYXJ0LCBpLmUuIHRoZSBlZmZlY3Qgb2YgdGhlIG5ldHdvcmsgb24gYmVoYXZpb3VyLA0KIyB3ZSBzcGVjaWZ5IHRoZSBmb2xsb3dpbmcgZWZmZWN0czoNCiMgaW5kZWdyZWUsIG91dGRlZ3JlZSBhbmQgYXNzaW1pbGF0aW9uIGVmZmVjdHMgZm9yIGRyaW5raW5nDQoNCm15Q29Fdm9sdXRpb25FZmYgPC0gaW5jbHVkZUVmZmVjdHMoIG15Q29Fdm9sdXRpb25FZmYsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBuYW1lID0gImRyaW5raW5nYmVoIiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGF2QWx0LGluZGVnLCBvdXRkZWcsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnRlcmFjdGlvbjEgPSAiZnJpZW5kc2hpcCIgKQ0KDQojIENoZWNrIHdoYXQgZWZmZWN0cyB5b3UgaGF2ZSBkZWNpZGVkIHRvIGluY2x1ZGU6DQoNCm15Q29Fdm9sdXRpb25FZmYNCg0KIw0KIyBOb3cgd2UgaGF2ZSB0byBkZWZpbmUgdGhlIGFsZ29yaXRobSBzZXR0aW5ncy4NCiMgVGhlIGRlZmF1bHRzIGFyZSBhZGVxdWF0ZS4gWW91IG9ubHkgaGF2ZSB0byBzcGVjaWZ5IHRoZSBmaWxlbmFtZQ0KIyB0aGF0IHdpbGwgcmVjZWl2ZSB0aGUgcmVzdWx0cyBpbiB0ZXh0IGZvcm1hdC4NCg0KbXlDb0V2QWxnb3JpdGhtIDwtIHNpZW5hQWxnb3JpdGhtQ3JlYXRlKCBwcm9qbmFtZSA9ICdzNTBDb0V2XzMnICkNCg0KIyBGaW5hbGx5LCBlc3RpbWF0ZSB0aGUgbW9kZWw7IHRoZSB3aG9sZSBjb21tYW5kIGlzIHB1dCBpbiBwYXJlbnRoZXNlcw0KIyB0byBoYXZlIHRoZSByZXN1bHRzIHByaW50ZWQgZGlyZWN0bHkgdG8gdGhlIHNjcmVlbi4NCg0KKGFucyA8LSBzaWVuYTA3KCBteUNvRXZBbGdvcml0aG0sIGRhdGEgPSBteUNvRXZvbHV0aW9uRGF0YSwNCiAgICAgICAgICAgICAgICAgZWZmZWN0cyA9IG15Q29Fdm9sdXRpb25FZmYgKSkNCg0KIyBUSEUgUkVTVUxUUw0KDQojIE5vdGUgdGhhdCB0aGUgImNvbnZlcmdlbmNlIHQtcmF0aW8iIGlzIHRoZSB0LXJhdGlvIGZvciBjb252ZXJnZW5jZSBjaGVja2luZywNCiMgbm90IHRoZSB0IHN0YXRpc3RpYyBmb3IgdGVzdGluZyB0aGUgc2lnbmlmaWNhbmNlIG9mIHRoaXMgZWZmZWN0Lg0KIyAoU2VlIFNlY3Rpb24gNi4xLjIgb2YgdGhlIG1hbnVhbC4pDQojIEZvciBnb29kIGNvbnZlcmdlbmNlLCB0aGUgdC1yYXRpb3MgZm9yIGNvbnZlcmdlbmNlDQojIGFsbCBzaG91bGQgYmUgbGVzcyB0aGFuIC4xIGluIGFic29sdXRlIHZhbHVlLA0KIyBhbmQgdGhlIG92ZXJhbGwgbWF4aW11bSBjb252ZXJnZW5jZSByYXRpbyBzaG91bGQgYmUgbGVzcyB0aGFuIDAuMjUuDQojIElmIHRoaXMgaXMgbm90IHlldCB0aGUgY2FzZSwgeW91IHNob3VsZCB0cnkgYWdhaW4sIHN0YXJ0aW5nIGZyb20gdGhlDQojIGxhc3QgZXN0aW1hdGUgYXMgdGhlICJwcmV2aW91cyBhbnN3ZXIiOg0KDQooYW5zMSA8LSBzaWVuYTA3KCBteUNvRXZBbGdvcml0aG0sIGRhdGEgPSBteUNvRXZvbHV0aW9uRGF0YSwNCiAgICAgICAgICAgICAgICAgIGVmZmVjdHMgPSBteUNvRXZvbHV0aW9uRWZmLCBwcmV2QW5zID0gYW5zICkpDQoNCiMgd2hpY2ggY2FuIGJlIHJlcGVhdGVkIGlmIG5lY2Vzc2FyeS4NCg0KIyBGb3IgdGhpcyBzbWFsbCBkYXRhIHNldCwgdGhlIG1vZGVsIGZvciBiZWhhdmlvciBkeW5hbWljcyBpcyBvdmVyLXNwZWNpZmllZCwNCiMgbGVhZGluZyB0byBzb21lIHZlcnkgbGFyZ2Ugc3RhbmRhcmQgZXJyb3JzLg0KIyBGb3IgdGhpcyBkYXRhIHNldCBpdCBpcyBiZXR0ZXIgdG8gZHJvcCB0aGUgZGVncmVlIGVmZmVjdHMgb24gYmVoYXZpb3VyLA0KIyBiZWNhdXNlIHRoZSBkYXRhIGRvZXMgbm90IGNvbnRhaW4gZW5vdWdoIGluZm9ybWF0aW9uIHRvIGVzdGltYXRlIHRoZW0uDQoNCm15Q29Fdm9sdXRpb25FZmYyIDwtIGluY2x1ZGVFZmZlY3RzKCBteUNvRXZvbHV0aW9uRWZmLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG5hbWUgPSAiZHJpbmtpbmdiZWgiLCBpbmRlZywgb3V0ZGVnLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGludGVyYWN0aW9uMSA9ICJmcmllbmRzaGlwIiwgaW5jbHVkZSA9IEZBTFNFKQ0KDQooYW5zMiA8LSBzaWVuYTA3KCBteUNvRXZBbGdvcml0aG0sIGRhdGEgPSBteUNvRXZvbHV0aW9uRGF0YSwNCiAgICAgICAgICAgICAgICAgIGVmZmVjdHMgPSBteUNvRXZvbHV0aW9uRWZmMiApKQ0KDQojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQojIyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFNvbWUgb3RoZXIgZWZmZWN0cyAgICAgICAgICAgICAgICAgICAgICAgICAgICMjDQojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQojDQojIFRoZSBzZXQgb2YgYXZhaWxhYmxlIGVmZmVjdHMgZm9yIHRoaXMgZGF0YSBzZXQgY2FuIGJlIG9idGFpbmVkIGJ5IHJlcXVlc3RpbmcNCmVmZmVjdHNEb2N1bWVudGF0aW9uKCAgbXlDb0V2b2x1dGlvbkVmZiApDQojIFNlZSB0aGUgbWFudWFsLCBDaGFwdGVyIDEyLCBmb3IgdGhlIG1lYW5pbmcgb2YgdGhlc2UgZWZmZWN0cy4NCiMgVG8gc3R1ZHkgdGhlIGRpcmVjdCBlZmZlY3Qgb2YgdGhlIGFjdG9yIGNvdmFyaWF0ZSBzbW9raW5nIG9uIHRoZSBkZXBlbmRlbnQNCiMgdmFyaWFibGUgZHJpbmtpbmcsIHVzZSB0aGUgZWZmRnJvbSBlZmZlY3Q6DQoNCm15Q29Fdm9sdXRpb25FZmYzIDwtIGluY2x1ZGVFZmZlY3RzKCBteUNvRXZvbHV0aW9uRWZmMiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBuYW1lID0gImRyaW5raW5nYmVoIiwgZWZmRnJvbSwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnRlcmFjdGlvbjEgPSAic21va2UxIikNCg0KIyBTaW5jZSB3ZSBhbHJlYWR5IGhhdmUgYSBnb29kIHJlc3VsdCBmb3IgYSBzaW1wbGVyIG1vZGVsLA0KIyBpdCBpcyBoZWxwZnVsIHRvIHN0YXJ0IGVzdGltYXRpbmcgZnJvbSB0aGVzZSBlc3RpbWF0ZXMNCiMgYXMgc3RhcnRpbmcgdmFsdWVzOg0KDQooYW5zMyA8LSBzaWVuYTA3KCBteUNvRXZBbGdvcml0aG0sIGRhdGEgPSBteUNvRXZvbHV0aW9uRGF0YSwNCiAgICAgICAgICAgICAgICAgIGVmZmVjdHMgPSBteUNvRXZvbHV0aW9uRWZmMywgcHJldkFucyA9IGFuczIgKSkNCiMgSW4gbXkgY2FzZSwgY29udmVyZ2VuY2Ugd2FzIG5vdCBnb29kIGVub3VnaDoNCihhbnMzIDwtIHNpZW5hMDcoIG15Q29FdkFsZ29yaXRobSwgZGF0YSA9IG15Q29Fdm9sdXRpb25EYXRhLA0KICAgICAgICAgICAgICAgICAgZWZmZWN0cyA9IG15Q29Fdm9sdXRpb25FZmYzLCBwcmV2QW5zID0gYW5zMyApKQ0KIyBZb3UgY2FuIGdldCBhIG5pY2VyIHByZXNlbnRhdGlvbiBvZiB0aGUgcmVzdWx0cyBpbiBhIGZpbGUNCiMgaW4geW91ciB3b3JraW5nIGRpcmVjdG9yeSBpbiBMYVRlWCBieQ0Kc2llbmEudGFibGUoYW5zMykNCiMgYW5kIGluIGh0bWwgKGNhbiBiZSBpbXBvcnRlZCBpbnRvIE1TLVdvcmQpIGJ5DQpzaWVuYS50YWJsZShhbnMzLCB0eXBlPSJodG1sIikNCg0KYGBgDQoNCg==</div>

@@ -14,7 +14,7 @@
 
 <title>RunModel</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -42,8 +42,8 @@
 <link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
 <link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
 <script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -158,11 +158,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -191,8 +195,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -200,16 +204,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -356,6 +353,15 @@ div.tocify {
 <li>
   <a href="rscript04.html">Behaviour</a>
 </li>
+<li>
+  <a href="rscript05.html">GOF</a>
+</li>
+<li>
+  <a href="rscript06.html">SienaRI</a>
+</li>
+<li>
+  <a href="rscript07.html">Agent-based simulation</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -386,7 +392,7 @@ div.tocify {
 <h1 class="title toc-ignore">RunModel</h1>
 <h4 class="author"><a href="https://www.jochemtolsma.nl">Jochem
 Tolsma</a> - Radboud University, the Netherlands</h4>
-<h4 class="date">Last compiled on September, 2022</h4>
+<h4 class="date">Last compiled on juni, 2023</h4>
 
 </div>
 
@@ -461,11 +467,12 @@ friend.data.w2 &lt;- s502
 friend.data.w3 &lt;- s503
 drink &lt;- s50a
 smoke &lt;- s50s
-friendship &lt;- sienaDependent(array(c(friend.data.w1, friend.data.w2, friend.data.w3), dim = c(50, 50,
-    3)))
-smoke1 &lt;- coCovar(smoke[, 1])
-alcohol &lt;- varCovar(drink)
-mydata &lt;- sienaDataCreate(friendship, smoke1, alcohol)
+friendship &lt;- sienaDependent(
+  array( c( friend.data.w1, friend.data.w2, friend.data.w3 ),
+         dim = c( 50, 50, 3 ) ) )
+smoke1 &lt;- coCovar( smoke[ , 1 ] )
+alcohol &lt;- varCovar( drink )
+mydata &lt;- sienaDataCreate( friendship, smoke1, alcohol )
 # and request
 mydata
 # to see what you have produced.</code></pre>
@@ -500,14 +507,15 @@ it. A new call to print01Report will overwrite it!</p>
 </div>
 <div id="define-algorithm" class="section level2">
 <h2>Define algorithm</h2>
-<pre class="r test"><code>myalgorithm &lt;- sienaAlgorithmCreate(projname = &quot;s50_3&quot;)</code></pre>
+<pre class="r test"><code>myalgorithm &lt;- sienaAlgorithmCreate(projname = &#39;s50_3&#39;)</code></pre>
 <pre class="test2"><code>#&gt; If you use this algorithm object, siena07 will create/use an output file s50_3.txt .</code></pre>
 <p>Let us first redefine the model, to obtain a simpler specification
 that will serve as an illustration here.</p>
-<pre class="r test"><code>myeff &lt;- getEffects(mydata)
-myeff &lt;- includeEffects(myeff, transTrip, cycle3)
-myeff &lt;- includeEffects(myeff, egoX, altX, egoXaltX, interaction1 = &quot;alcohol&quot;)
-myeff &lt;- includeEffects(myeff, simX, interaction1 = &quot;smoke1&quot;)
+<pre class="r test"><code>myeff &lt;- getEffects( mydata )
+myeff &lt;- includeEffects( myeff, transTrip, cycle3 )
+myeff &lt;- includeEffects( myeff, egoX, altX, egoXaltX,
+                         interaction1 = &quot;alcohol&quot; )
+myeff &lt;- includeEffects( myeff, simX, interaction1 = &quot;smoke1&quot; )
 myeff</code></pre>
 <pre class="test2"><code>#&gt;   effectName          include fix   test  initialValue parm
 #&gt; 1 transitive triplets TRUE    FALSE FALSE          0   0   
@@ -535,7 +543,7 @@ myeff</code></pre>
 <p>The function <code>siena07()</code> actually fits the specified model
 to the data. If you wish the pretty picture of Siena on the screen as
 information about the progress of the algorithm, type:</p>
-<pre class="r test"><code>ans &lt;- siena07(myalgorithm, data = mydata, effects = myeff)</code></pre>
+<pre class="r test"><code>ans &lt;- siena07( myalgorithm, data = mydata, effects = myeff)</code></pre>
 <p>(ans for “answer”).</p>
 <p>If however you do not want the pretty picture, or if this leads to
 difficulties (which may happen e.g. on a Mac), then type
@@ -597,56 +605,56 @@ could be something like the following.</p>
 #&gt;                                                     Error      t-ratio   
 #&gt; 
 #&gt; Rate parameters: 
-#&gt;   0.1      Rate parameter period 1      6.6750  ( 1.1897   )             
-#&gt;   0.2      Rate parameter period 2      5.1921  ( 0.8558   )             
+#&gt;   0.1      Rate parameter period 1      6.6716  ( 1.1063   )             
+#&gt;   0.2      Rate parameter period 2      5.2175  ( 0.8756   )             
 #&gt; 
 #&gt; Other parameters: 
-#&gt;   1.  eval outdegree (density)         -2.7333  ( 0.1305   )   -0.0212   
-#&gt;   2.  eval reciprocity                  2.4437  ( 0.2310   )   -0.0208   
-#&gt;   3.  eval transitive triplets          0.6614  ( 0.1495   )    0.0253   
-#&gt;   4.  eval 3-cycles                    -0.1110  ( 0.3053   )    0.0208   
-#&gt;   5.  eval smoke1 similarity            0.2667  ( 0.1960   )    0.0301   
-#&gt;   6.  eval alcohol alter               -0.0277  ( 0.0661   )    0.0325   
-#&gt;   7.  eval alcohol ego                  0.0425  ( 0.0790   )    0.0586   
-#&gt;   8.  eval alcohol ego x alcohol alter  0.1276  ( 0.0533   )   -0.0078   
+#&gt;   1.  eval outdegree (density)         -2.7241  ( 0.1299   )   -0.0200   
+#&gt;   2.  eval reciprocity                  2.4322  ( 0.2218   )    0.0011   
+#&gt;   3.  eval transitive triplets          0.6478  ( 0.1533   )   -0.0099   
+#&gt;   4.  eval 3-cycles                    -0.0888  ( 0.3053   )   -0.0010   
+#&gt;   5.  eval smoke1 similarity            0.2601  ( 0.2062   )   -0.0006   
+#&gt;   6.  eval alcohol alter               -0.0183  ( 0.0694   )    0.0542   
+#&gt;   7.  eval alcohol ego                  0.0329  ( 0.0823   )   -0.0099   
+#&gt;   8.  eval alcohol ego x alcohol alter  0.1272  ( 0.0524   )    0.0238   
 #&gt; 
-#&gt; Overall maximum convergence ratio:    0.1326 
+#&gt; Overall maximum convergence ratio:    0.1410 
 #&gt; 
 #&gt; 
-#&gt; Total of 2315 iteration steps.
+#&gt; Total of 2448 iteration steps.
 #&gt; 
 #&gt; Covariance matrix of estimates (correlations below diagonal)
 #&gt; 
-#&gt;        0.017       -0.020       -0.010        0.014       -0.003        0.000        0.000        0.000
-#&gt;       -0.680        0.053        0.014       -0.035        0.000        0.000        0.000       -0.002
-#&gt;       -0.491        0.418        0.022       -0.041       -0.001        0.000       -0.002       -0.001
-#&gt;        0.343       -0.497       -0.890        0.093        0.001       -0.001        0.004        0.002
-#&gt;       -0.119        0.010       -0.020        0.014        0.038        0.003        0.004        0.000
-#&gt;       -0.002       -0.025        0.003       -0.047        0.209        0.004       -0.002        0.000
-#&gt;        0.026       -0.001       -0.209        0.181        0.249       -0.408        0.006        0.000
-#&gt;       -0.056       -0.142       -0.128        0.109       -0.001        0.015       -0.069        0.003
+#&gt;        0.017       -0.019       -0.008        0.009       -0.004        0.000       -0.001       -0.001
+#&gt;       -0.653        0.049        0.009       -0.025        0.000        0.000        0.001        0.000
+#&gt;       -0.384        0.255        0.024       -0.041       -0.001        0.000       -0.001       -0.001
+#&gt;        0.223       -0.368       -0.865        0.093        0.001       -0.002        0.002        0.001
+#&gt;       -0.144        0.008       -0.039        0.020        0.043        0.003        0.004       -0.001
+#&gt;        0.040        0.009        0.029       -0.083        0.200        0.005       -0.003        0.000
+#&gt;       -0.087        0.052       -0.103        0.099        0.254       -0.461        0.007        0.000
+#&gt;       -0.113       -0.006       -0.117        0.071       -0.066       -0.088       -0.110        0.003
 #&gt; 
 #&gt; Derivative matrix of expected statistics X by parameters:
 #&gt; 
-#&gt;      278.700      220.775      469.028      146.529       24.579       17.119       27.944      149.380
-#&gt;      127.185      138.885      253.605       84.518       10.893       11.617       11.939       76.299
-#&gt;      343.766      312.470     1183.846      376.491       27.263       77.978       84.579      208.177
-#&gt;      154.974      154.885      547.270      184.084       13.968       28.358       26.380       83.932
-#&gt;       21.931       17.690       35.523       10.906       37.163      -50.547      -47.707        2.093
-#&gt;       27.465       30.505       91.528       31.205      -51.280      380.434      253.012       73.797
-#&gt;       23.851       15.869       70.514       20.088      -47.004      237.976      322.445       85.576
-#&gt;      144.467      134.532      303.711       98.943        2.944       53.536       54.717      555.211
+#&gt;      287.113      226.342      490.217      154.184       26.562       28.422       38.773      139.356
+#&gt;      128.112      136.126      247.564       81.290       13.043       10.202       10.002       69.127
+#&gt;      354.356      322.905     1172.742      373.094       34.328       76.117       74.884      216.170
+#&gt;      162.880      157.309      545.549      181.885       15.257       32.110       26.133       93.087
+#&gt;       29.118       25.466       52.316       16.536       37.043      -49.814      -46.005        3.499
+#&gt;       30.168       33.346      134.721       46.378      -45.261      380.379      254.891      113.460
+#&gt;       35.802       27.486      134.665       42.616      -46.233      256.219      333.935      116.675
+#&gt;      157.271      132.262      311.099       99.253        4.386      108.941      111.291      578.860
 #&gt; 
 #&gt; Covariance matrix of X (correlations below diagonal):
 #&gt; 
-#&gt;      430.012      373.066      994.309      316.886       43.209       30.585       52.125      238.885
-#&gt;        0.919      383.249      990.555      323.503       37.674       38.611       48.612      224.967
-#&gt;        0.776        0.819     3818.162     1234.370      108.715      122.533      146.554      582.517
-#&gt;        0.758        0.820        0.991      406.130       34.492       41.391       47.090      188.821
-#&gt;        0.313        0.289        0.264        0.257       44.338      -72.785      -67.939        3.045
-#&gt;        0.067        0.090        0.091        0.094       -0.500      478.026      383.878      128.769
-#&gt;        0.119        0.117        0.112        0.110       -0.481        0.828      449.216      131.681
-#&gt;        0.417        0.416        0.341        0.339        0.017        0.213        0.225      764.715</code></pre>
+#&gt;      480.124      408.282     1178.634      376.914       45.481       83.832       88.161      264.640
+#&gt;        0.929      402.550     1122.819      364.043       42.341       81.059       75.923      247.272
+#&gt;        0.804        0.837     4473.778     1441.012      119.640      300.969      300.117      681.839
+#&gt;        0.794        0.837        0.994      469.716       37.744       98.809       95.647      220.542
+#&gt;        0.307        0.312        0.265        0.258       45.632      -65.343      -66.179        1.608
+#&gt;        0.172        0.182        0.202        0.205       -0.435      493.848      406.971      201.555
+#&gt;        0.183        0.172        0.204        0.200       -0.445        0.832      484.928      205.583
+#&gt;        0.426        0.435        0.360        0.359        0.008        0.320        0.329      803.824</code></pre>
 <p>The results can also be viewed externally in the output file
 <strong>s50_3.txt</strong>. It is advisable that you have a look at all
 three reports and understand how information is organized in each of
@@ -683,26 +691,26 @@ ans$se
 ans$covtheta
 
 # contains the covariance matrix of the estimates.</code></pre>
-<pre class="test2"><code>#&gt; [1] -2.73331050  2.44373875  0.66140102 -0.11102284  0.26670485 -0.02769309  0.04250091  0.12758722
-#&gt; [1] 0.13052299 0.23100999 0.14952777 0.30525026 0.19597244 0.06611808 0.07897151 0.05327322
-#&gt;               [,1]          [,2]          [,3]          [,4]          [,5]          [,6]
-#&gt; [1,]  1.703625e-02 -0.0204940690 -9.574301e-03  0.0136709178 -3.042977e-03 -1.796669e-05
-#&gt; [2,] -2.049407e-02  0.0533656163  1.444350e-02 -0.0350621662  4.607441e-04 -3.800081e-04
-#&gt; [3,] -9.574301e-03  0.0144434970  2.235855e-02 -0.0406209377 -5.872923e-04  2.825742e-05
-#&gt; [4,]  1.367092e-02 -0.0350621662 -4.062094e-02  0.0931777227  8.507029e-04 -9.507407e-04
-#&gt; [5,] -3.042977e-03  0.0004607441 -5.872923e-04  0.0008507029  3.840520e-02  2.713486e-03
-#&gt; [6,] -1.796669e-05 -0.0003800081  2.825742e-05 -0.0009507407  2.713486e-03  4.371601e-03
-#&gt; [7,]  2.699005e-04 -0.0000165309 -2.465539e-03  0.0043661173  3.856261e-03 -2.131715e-03
-#&gt; [8,] -3.910310e-04 -0.0017461387 -1.016507e-03  0.0017727855 -1.556483e-05  5.442013e-05
+<pre class="test2"><code>#&gt; [1] -2.72410215  2.43219705  0.64779485 -0.08878476  0.26009179 -0.01832294  0.03288495  0.12719366
+#&gt; [1] 0.12992198 0.22175531 0.15333325 0.30532725 0.20618434 0.06938592 0.08234021 0.05239594
+#&gt;               [,1]          [,2]          [,3]         [,4]          [,5]          [,6]
+#&gt; [1,]  0.0168797203 -1.880941e-02 -0.0076596477  0.008853468 -0.0038572243  0.0003619272
+#&gt; [2,] -0.0188094090  4.917542e-02  0.0086744671 -0.024920997  0.0003774629  0.0001411977
+#&gt; [3,] -0.0076596477  8.674467e-03  0.0235110857 -0.040512495 -0.0012209212  0.0003093602
+#&gt; [4,]  0.0088534677 -2.492100e-02 -0.0405124955  0.093224730  0.0012589708 -0.0017580644
+#&gt; [5,] -0.0038572243  3.774629e-04 -0.0012209212  0.001258971  0.0425119840  0.0028595961
+#&gt; [6,]  0.0003619272  1.411977e-04  0.0003093602 -0.001758064  0.0028595961  0.0048144062
+#&gt; [7,] -0.0009259353  9.576575e-04 -0.0012994933  0.002498996  0.0043121837 -0.0026351155
+#&gt; [8,] -0.0007722657 -7.059677e-05 -0.0009389351  0.001141459 -0.0007161205 -0.0003194416
 #&gt;               [,7]          [,8]
-#&gt; [1,]  0.0002699005 -3.910310e-04
-#&gt; [2,] -0.0000165309 -1.746139e-03
-#&gt; [3,] -0.0024655394 -1.016507e-03
-#&gt; [4,]  0.0043661173  1.772786e-03
-#&gt; [5,]  0.0038562612 -1.556483e-05
-#&gt; [6,] -0.0021317154  5.442013e-05
-#&gt; [7,]  0.0062364995 -2.899014e-04
-#&gt; [8,] -0.0002899014  2.838036e-03</code></pre>
+#&gt; [1,] -0.0009259353 -7.722657e-04
+#&gt; [2,]  0.0009576575 -7.059677e-05
+#&gt; [3,] -0.0012994933 -9.389351e-04
+#&gt; [4,]  0.0024989959  1.141459e-03
+#&gt; [5,]  0.0043121837 -7.161205e-04
+#&gt; [6,] -0.0026351155 -3.194416e-04
+#&gt; [7,]  0.0067799110 -4.749728e-04
+#&gt; [8,] -0.0004749728  2.745335e-03</code></pre>
 <p>There are several “methods” available for viewing the object
 containing the results of the estimation. Above we already mentioned the
 commands <code>ans</code> and <code>summary(ans)</code> The command
@@ -727,7 +735,7 @@ estimation, using the estimates produced here, and contained in
 <code>ans</code>, as the new initial values.</p>
 <p>This is done by the option <code>prevAns</code> (‘previous ans’) as
 in:</p>
-<pre class="r test"><code>ans &lt;- siena07(myalgorithm, data = mydata, effects = myeff, prevAns = ans)</code></pre>
+<pre class="r test"><code>ans &lt;- siena07(myalgorithm, data=mydata, effects=myeff, prevAns=ans)</code></pre>
 <p>the parameter estimates in <code>ans</code> then are extracted and
 used in the new estimation; moreover, Phase 1 will be omitted from the
 algorithm, as derivatives and covariance matrix are used from the
@@ -759,10 +767,10 @@ help pages for these functions and also see the manual.</li>
 <p>Parameters can be restricted by putting TRUE in the include, fix and
 test columns of the effects object. For example, to request a score test
 for the indegree popularity effect, the commands can be as follows.</p>
-<pre class="r test"><code>myeff &lt;- setEffect(myeff, inPopSqrt, fix = TRUE, test = TRUE, initialValue = 0)</code></pre>
+<pre class="r test"><code>myeff &lt;- setEffect(myeff, inPopSqrt, fix=TRUE, test=TRUE, initialValue=0.0)</code></pre>
 <pre class="test2"><code>#&gt;   effectName                   include fix  test initialValue parm
 #&gt; 1 indegree - popularity (sqrt) TRUE    TRUE TRUE          0   0</code></pre>
-<pre class="r test"><code>ans &lt;- siena07(myalgorithm, data = mydata, effects = myeff)
+<pre class="r test"><code>ans &lt;- siena07(myalgorithm, data=mydata, effects=myeff)
 summary(ans)</code></pre>
 <pre class="test2"><code>#&gt; Estimates, standard errors and convergence t-ratios
 #&gt; 
@@ -770,27 +778,27 @@ summary(ans)</code></pre>
 #&gt;                                                      Error      t-ratio   
 #&gt; 
 #&gt; Rate parameters: 
-#&gt;   0.1      Rate parameter period 1       6.5682  ( 1.1425   )             
-#&gt;   0.2      Rate parameter period 2       5.2280  ( 0.8588   )             
+#&gt;   0.1      Rate parameter period 1       6.6554  ( 1.1046   )             
+#&gt;   0.2      Rate parameter period 2       5.1890  ( 0.8625   )             
 #&gt; 
 #&gt; Other parameters: 
-#&gt;   1.  eval outdegree (density)          -2.7254  ( 0.1239   )   -0.0128   
-#&gt;   2.  eval reciprocity                   2.4363  ( 0.2241   )    0.0064   
-#&gt;   3.  eval transitive triplets           0.6558  ( 0.1423   )   -0.0083   
-#&gt;   4.  eval 3-cycles                     -0.1089  ( 0.2859   )   -0.0132   
-#&gt;   5.  eval indegree - popularity (sqrt)  0.0000  (     NA   )    0.3320   
-#&gt;   6.  eval smoke1 similarity             0.2650  ( 0.1980   )    0.0216   
-#&gt;   7.  eval alcohol alter                -0.0188  ( 0.0718   )   -0.0141   
-#&gt;   8.  eval alcohol ego                   0.0341  ( 0.0766   )   -0.0476   
-#&gt;   9.  eval alcohol ego x alcohol alter   0.1276  ( 0.0509   )    0.0360   
+#&gt;   1.  eval outdegree (density)          -2.7158  ( 0.1132   )    0.0274   
+#&gt;   2.  eval reciprocity                   2.4210  ( 0.2215   )    0.0029   
+#&gt;   3.  eval transitive triplets           0.6534  ( 0.1396   )    0.0284   
+#&gt;   4.  eval 3-cycles                     -0.0978  ( 0.2913   )    0.0308   
+#&gt;   5.  eval indegree - popularity (sqrt)  0.0000  (     NA   )    0.3776   
+#&gt;   6.  eval smoke1 similarity             0.2567  ( 0.2183   )    0.0130   
+#&gt;   7.  eval alcohol alter                -0.0263  ( 0.0735   )    0.0023   
+#&gt;   8.  eval alcohol ego                   0.0413  ( 0.0813   )    0.0372   
+#&gt;   9.  eval alcohol ego x alcohol alter   0.1268  ( 0.0512   )   -0.0458   
 #&gt; 
-#&gt; Overall maximum convergence ratio:    0.1121 
+#&gt; Overall maximum convergence ratio:    0.1256 
 #&gt; 
 #&gt; 
 #&gt; Score test for 1 parameter:
-#&gt; chi-squared = 5.66, p = 0.0174.
+#&gt; chi-squared = 5.91, p = 0.0150.
 #&gt; 
-#&gt; Total of 2341 iteration steps.
+#&gt; Total of 2277 iteration steps.
 #&gt; 
 #&gt; Generalised score test &lt;c&gt;
 #&gt; 
@@ -798,64 +806,64 @@ summary(ans)</code></pre>
 #&gt;  (1)   eval:  indegree - popularity (sqrt)                =   0.0000
 #&gt; _________________________________________________
 #&gt;                    
-#&gt;    c =   5.6596   d.f. = 1   p-value =   0.0174
+#&gt;    c =   5.9135   d.f. = 1   p-value =   0.0150
 #&gt; 
-#&gt;    one-sided (normal variate):  -2.3790    
+#&gt;    one-sided (normal variate):  -2.4318    
 #&gt; _________________________________________________
 #&gt; 
 #&gt; One-step estimates: 
 #&gt; 
-#&gt; eval:  outdegree (density)                         -1.9253
-#&gt; eval:  reciprocity                                  2.3598
-#&gt; eval:  transitive triplets                          0.7850
-#&gt; eval:  3-cycles                                    -0.2235
-#&gt; eval:  indegree - popularity (sqrt)                -0.4590
-#&gt; eval:  smoke1 similarity                            0.2676
-#&gt; eval:  alcohol alter                               -0.0066
-#&gt; eval:  alcohol ego                                  0.0218
-#&gt; eval:  alcohol ego x alcohol alter                  0.1225
+#&gt; eval:  outdegree (density)                         -1.9202
+#&gt; eval:  reciprocity                                  2.3865
+#&gt; eval:  transitive triplets                          0.7616
+#&gt; eval:  3-cycles                                    -0.2274
+#&gt; eval:  indegree - popularity (sqrt)                -0.4572
+#&gt; eval:  smoke1 similarity                            0.2467
+#&gt; eval:  alcohol alter                               -0.0170
+#&gt; eval:  alcohol ego                                  0.0329
+#&gt; eval:  alcohol ego x alcohol alter                  0.1184
 #&gt; 
 #&gt; Covariance matrix of estimates (correlations below diagonal)
 #&gt; 
-#&gt;        0.015       -0.018       -0.008        0.009           NA       -0.003        0.001        0.000       -0.001
-#&gt;       -0.650        0.050        0.010       -0.028           NA       -0.001       -0.001        0.000       -0.001
-#&gt;       -0.442        0.328        0.020       -0.035           NA       -0.002        0.000       -0.002       -0.001
-#&gt;        0.254       -0.436       -0.849        0.082           NA        0.002       -0.001        0.003        0.001
+#&gt;        0.013       -0.015       -0.006        0.007           NA       -0.002        0.001        0.000       -0.001
+#&gt;       -0.579        0.049        0.010       -0.029           NA       -0.003       -0.002        0.002       -0.001
+#&gt;       -0.386        0.320        0.020       -0.035           NA        0.000        0.000       -0.001        0.000
+#&gt;        0.218       -0.449       -0.865        0.085           NA       -0.001        0.001        0.000        0.000
 #&gt;           NA           NA           NA           NA           NA           NA           NA           NA           NA
-#&gt;       -0.140       -0.016       -0.057        0.041           NA        0.039        0.003        0.004       -0.001
-#&gt;        0.073       -0.079       -0.038       -0.045           NA        0.210        0.005       -0.002        0.000
-#&gt;       -0.016        0.018       -0.155        0.137           NA        0.256       -0.353        0.006       -0.001
-#&gt;       -0.097       -0.082       -0.077        0.054           NA       -0.091       -0.004       -0.157        0.003
+#&gt;       -0.087       -0.063        0.006       -0.012           NA        0.048        0.005        0.005       -0.001
+#&gt;        0.061       -0.146       -0.038        0.048           NA        0.289        0.005       -0.002        0.000
+#&gt;       -0.032        0.094       -0.053       -0.007           NA        0.257       -0.388        0.007        0.000
+#&gt;       -0.124       -0.050       -0.052        0.028           NA       -0.052       -0.057       -0.029        0.003
 #&gt; 
 #&gt; Derivative matrix of expected statistics X by parameters:
 #&gt; 
-#&gt;      308.287      245.678      535.529      168.619      758.406       31.880       37.571       40.067      180.994
-#&gt;      129.076      140.464      255.122       85.458      317.616       11.938       21.377       18.486       83.135
-#&gt;      350.674      314.345     1121.101      357.889      947.033       30.636       86.337       87.203      245.639
-#&gt;      162.046      156.448      521.617      176.549      433.303       14.995       34.620       30.291      103.693
-#&gt;      571.923      453.525     1073.185      335.210     1464.019       58.808       78.619       77.552      339.152
-#&gt;       29.999       24.686       49.483       15.301       74.697       37.291      -48.460      -44.162        9.917
-#&gt;       42.619       51.639      183.669       62.044      127.648      -40.720      350.526      228.950       70.379
-#&gt;       37.310       29.644      113.443       36.555       92.340      -41.736      237.670      327.621      114.653
-#&gt;      171.421      154.463      375.706      119.281      425.719       18.385       86.059       90.319      619.460
+#&gt;      284.299      222.141      504.501      158.372      703.437       27.378        9.374       15.668      146.222
+#&gt;      120.181      132.702      249.022       83.168      300.401       13.046        6.421        5.545       71.187
+#&gt;      341.674      315.344     1189.137      378.287      933.908       27.693       52.690       56.121      211.391
+#&gt;      162.848      159.319      555.189      186.252      439.895       14.401       19.962       20.182      100.416
+#&gt;      518.264      403.487      980.257      305.349     1335.702       48.282       25.601       35.029      257.078
+#&gt;       22.921       19.588       35.643       11.262       53.997       34.733      -52.481      -47.841        1.838
+#&gt;        5.237       17.220       67.632       24.718       22.978      -47.482      341.030      226.453       53.207
+#&gt;       14.356       10.101       88.628       28.566       45.451      -46.373      222.923      308.922       67.657
+#&gt;      145.833      128.963      315.198       98.555      361.308        9.067       61.028       57.124      573.397
 #&gt; 
 #&gt; Covariance matrix of X (correlations below diagonal):
 #&gt; 
-#&gt;      445.873      373.055     1028.959      331.413     1146.850       41.412       78.900       83.962      286.136
-#&gt;        0.918      370.563      962.361      316.789      969.445       33.707       77.868       74.830      259.958
-#&gt;        0.806        0.827     3658.525     1190.377     2865.116       90.922      255.883      244.901      759.228
-#&gt;        0.791        0.829        0.992      393.899      921.486       29.367       84.462       80.276      242.537
-#&gt;        0.983        0.911        0.857        0.840     3053.639      107.859      212.413      210.935      735.093
-#&gt;        0.299        0.267        0.229        0.226        0.298       42.904      -69.485      -64.332       13.142
-#&gt;        0.165        0.179        0.187        0.188        0.170       -0.468      513.410      414.441      165.087
-#&gt;        0.182        0.178        0.185        0.185        0.175       -0.449        0.836      478.279      178.849
-#&gt;        0.464        0.462        0.429        0.418        0.455        0.069        0.249        0.280      854.148</code></pre>
+#&gt;      452.077      392.831     1109.901      356.119     1170.192       42.272       34.332       49.680      272.650
+#&gt;        0.925      398.880     1075.095      350.433     1028.247       37.765       39.007       46.221      256.629
+#&gt;        0.813        0.838     4125.737     1332.542     3099.210       92.506      191.900      195.694      742.207
+#&gt;        0.801        0.840        0.993      436.786      993.529       29.428       64.665       63.233      238.281
+#&gt;        0.984        0.920        0.862        0.850     3131.486      105.581      107.672      138.616      703.409
+#&gt;        0.305        0.290        0.221        0.216        0.290       42.396      -67.407      -65.517        3.849
+#&gt;        0.075        0.091        0.140        0.145        0.090       -0.484      457.852      372.133      130.783
+#&gt;        0.110        0.109        0.144        0.143        0.117       -0.474        0.820      450.191      147.541
+#&gt;        0.450        0.451        0.405        0.400        0.441        0.021        0.214        0.244      812.051</code></pre>
 <p>To see the results, including those for the score test. You can also
 simply request:</p>
 <pre class="r test"><code>score.Test(ans)</code></pre>
 <pre class="test2"><code>#&gt; Tested effects:
 #&gt;  indegree - popularity (sqrt) 
-#&gt; chi-squared = 5.66, d.f. = 1; one-sided Z = -2.38; two-sided p = 0.017.</code></pre>
+#&gt; chi-squared = 5.91, d.f. = 1; one-sided Z = -2.43; two-sided p = 0.015.</code></pre>
 <p>see <code>?score.Test</code> for further explanation.</p>
 </div>
 <div id="time-test" class="section level2">
@@ -867,7 +875,7 @@ e.g.,</p>
 <pre class="r test"><code>tt2 &lt;- sienaTimeTest(ans)
 tt2</code></pre>
 <pre class="test2"><code>#&gt; Joint significance test of time heterogeneity:
-#&gt; chi-squared =   6.55, d.f. = 8, p= 0.5857, 
+#&gt; chi-squared =   4.87, d.f. = 8, p= 0.7712, 
 #&gt; where H0: The following parameters are zero:
 #&gt;  (1) (*)Dummy2:outdegree (density)
 #&gt;  (2) (*)Dummy2:reciprocity
@@ -882,36 +890,35 @@ tt2</code></pre>
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
-<pre class="r test"><code>### Step 1: define data
+<pre class="r test"><code>### Step 1: define data  
 friend.data.w1 &lt;- s501
 friend.data.w2 &lt;- s502
 friend.data.w3 &lt;- s503
 drink &lt;- s50a
 smoke &lt;- s50s
 # define RSiena data structures
-friendship &lt;- sienaDependent(array(c(friend.data.w1, friend.data.w2, friend.data.w3), dim = c(50, 50,
-    3)))
-smoke1 &lt;- coCovar(smoke[, 1])
-alcohol &lt;- varCovar(drink)
-mydata &lt;- sienaDataCreate(friendship, smoke1, alcohol)
+friendship &lt;- sienaDependent( array( c( friend.data.w1, friend.data.w2, friend.data.w3 ), dim = c( 50, 50, 3 ) ) )
+smoke1 &lt;- coCovar( smoke[ , 1 ] )
+alcohol &lt;- varCovar( drink )
+mydata &lt;- sienaDataCreate( friendship, smoke1, alcohol ) 
 
-### Step 2: create effects structure
-myeff &lt;- getEffects(mydata)
+### Step 2: create effects structure 
+myeff &lt;- getEffects( mydata )
 
 ### Step 3: get initial description
-print01Report(mydata, modelname = &quot;s50_3_init&quot;)
+print01Report( mydata, modelname = &#39;s50_3_init&#39; )
 
 ### Step4: specify model
-myeff &lt;- includeEffects(myeff, transTrip, cycle3)
-myeff &lt;- includeEffects(myeff, egoX, altX, egoXaltX, interaction1 = &quot;alcohol&quot;)
-myeff &lt;- includeEffects(myeff, simX, interaction1 = &quot;smoke1&quot;)
+myeff &lt;- includeEffects( myeff, transTrip, cycle3 )
+myeff &lt;- includeEffects( myeff, egoX, altX, egoXaltX, interaction1 = &quot;alcohol&quot; )
+myeff &lt;- includeEffects( myeff, simX, interaction1 = &quot;smoke1&quot; )
 
 ### Step5 estimate
-myAlgorithm &lt;- sienaAlgorithmCreate(projname = &quot;s50_3&quot;)
-(ans &lt;- siena07(myAlgorithm, data = mydata, effects = myeff))
-# (the outer parentheses lead to printing the obtained result on the screen) if necessary, estimate
-# further
-(ans &lt;- siena07(myAlgorithm, data = mydata, effects = myeff, prevAns = ans))</code></pre>
+myAlgorithm &lt;- sienaAlgorithmCreate( projname = &#39;s50_3&#39; )
+(ans &lt;- siena07( myAlgorithm, data = mydata, effects = myeff))
+# (the outer parentheses lead to printing the obtained result on the screen)
+# if necessary, estimate further
+(ans &lt;- siena07( myAlgorithm, data = mydata, effects = myeff, prevAns=ans))</code></pre>
 <hr />
 <p><a href="/rscript04.html"><strong>Next: SienaBehaviour FOR MODELING
 NETWORKS AND BEHAVIOUR BY RSIENA</strong></a></p>

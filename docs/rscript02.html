@@ -14,7 +14,7 @@
 
 <title>VariableFormat</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -42,8 +42,8 @@
 <link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
 <link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
 <script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -158,11 +158,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -191,8 +195,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -200,16 +204,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -356,6 +353,15 @@ div.tocify {
 <li>
   <a href="rscript04.html">Behaviour</a>
 </li>
+<li>
+  <a href="rscript05.html">GOF</a>
+</li>
+<li>
+  <a href="rscript06.html">SienaRI</a>
+</li>
+<li>
+  <a href="rscript07.html">Agent-based simulation</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -386,7 +392,7 @@ div.tocify {
 <h1 class="title toc-ignore">VariableFormat</h1>
 <h4 class="author"><a href="https://www.jochemtolsma.nl">Jochem
 Tolsma</a> - Radboud University, the Netherlands</h4>
-<h4 class="date">Last compiled on September, 2022</h4>
+<h4 class="date">Last compiled on juni, 2023</h4>
 
 </div>
 
@@ -479,8 +485,9 @@ This object will have the role of a dependent variable in the
 analysis.</p>
 <p>The name of this network object (here: <strong>friendship</strong>)
 will be used in the output file.</p>
-<pre class="r test"><code>friendship &lt;- sienaDependent(array(c(friend.data.w1, friend.data.w2, friend.data.w3), dim = c(50, 50,
-    3)))</code></pre>
+<pre class="r test"><code>friendship &lt;- sienaDependent(
+  array( c( friend.data.w1, friend.data.w2, friend.data.w3 ),
+         dim = c( 50, 50, 3 ) ) )</code></pre>
 <p>The integers in the <code>dim()</code> here refer to the number of
 nodes (senders, receivers) and the number of waves. This object is an
 array of dimension 50 x 50 x 3, representing three adjacency matrices,
@@ -502,9 +509,9 @@ friendship</code></pre>
 <pre class="test2"><code>#&gt; [1] &quot;sienaDependent&quot;</code></pre>
 <p>With specific attributes and methods associated with it. YYou can get
 the detailed information by requesting:</p>
-<pre class="r test"><code>dim(friendship)</code></pre>
+<pre class="r test"><code>dim( friendship )</code></pre>
 <pre class="test2"><code>#&gt; [1] 50 50  3</code></pre>
-<pre class="r test"><code>attributes(friendship)</code></pre>
+<pre class="r test"><code>attributes( friendship )</code></pre>
 <pre class="test2"><code>#&gt; $dim
 #&gt; [1] 50 50  3
 #&gt; 
@@ -527,7 +534,7 @@ the detailed information by requesting:</p>
 #&gt; [1] TRUE</code></pre>
 <p>If you only are interested in the value of one particular attribute,
 you can request this by, e.g.,</p>
-<pre class="r test"><code>attr(friendship, &quot;type&quot;)</code></pre>
+<pre class="r test"><code>attr( friendship, &quot;type&quot;)</code></pre>
 <pre class="test2"><code>#&gt; [1] &quot;oneMode&quot;</code></pre>
 <p>An extensive description of the friendship data is obtained by
 typing:</p>
@@ -545,7 +552,7 @@ a behavior variable object with the extra argument
 oneMode is the default; see below.</p>
 <p>The <code>drink</code> data (created in RscriptDataFormat.R ) is made
 available as a dependent behavior variable by the function:</p>
-<pre class="r test"><code>drinkingbeh &lt;- sienaDependent(drink, type = &quot;behavior&quot;)
+<pre class="r test"><code>drinkingbeh &lt;- sienaDependent( drink, type = &quot;behavior&quot; )
 
 # the class, class(drinkingbeh), is still sienaDependent.</code></pre>
 <p>Note: only use the variable in ONE role in a given model: behavior
@@ -596,7 +603,7 @@ From the help request: <code>?sienaDataCreate</code></p>
 covariates.<br />
 For illustrative purposes, we use smoking as observed at the first wave
 as a constant covariate:</p>
-<pre class="r test"><code>smoke1 &lt;- coCovar(smoke[, 1])</code></pre>
+<pre class="r test"><code>smoke1 &lt;- coCovar( smoke[ , 1 ] )</code></pre>
 <p>This selects the first column of smoke, which contains the first wave
 observations, and makes it available as a constant covariate. This is
 the pattern for for evey covariate file,
@@ -614,12 +621,12 @@ equal to n x p you can create constant covariates through:</p>
 <p>We use the drinking data as a changing covariate. The function
 `varCovar() creates a changing covariate object from a matrix; the name
 comes from ‘varying covariate’.</p>
-<pre class="r test"><code>alcohol &lt;- varCovar(drink)</code></pre>
+<pre class="r test"><code>alcohol &lt;- varCovar( drink )</code></pre>
 <p>You need at least three waves in the data set to define a varying
 covariate by the function <code>varCovar()</code>; the reason is that
 the previous wave is used as a predictor of the next wave.</p>
 <p>The command…</p>
-<pre class="r test"><code>attributes(alcohol)</code></pre>
+<pre class="r test"><code>attributes( alcohol )</code></pre>
 <pre class="test2"><code>#&gt; $dim
 #&gt; [1] 50  3
 #&gt; 
@@ -657,7 +664,7 @@ predetermined by creation by the functions <code>coCovar()</code>,
 <code>varCovar()</code>, <code>coDyadCovar()</code>,
 <code>varDyadCovar()</code>, and
 <code>sienaCompositionChange()</code>.</p>
-<pre class="r test"><code>mydata &lt;- sienaDataCreate(friendship, smoke1, alcohol)</code></pre>
+<pre class="r test"><code>mydata &lt;- sienaDataCreate( friendship, smoke1, alcohol )</code></pre>
 <p>You may check the result by requesting</p>
 <pre class="r test"><code>mydata</code></pre>
 <pre class="test2"><code>#&gt; Dependent variables:  friendship 
@@ -694,7 +701,7 @@ model.</p>
 of effects that can be included in the specification of the model.<br />
 The function <code>getEffects()</code> creates a dataframe of effects
 with a number of extra properties for use in RSiena:</p>
-<pre class="r test"><code>myeff &lt;- getEffects(mydata)</code></pre>
+<pre class="r test"><code>myeff &lt;- getEffects( mydata )</code></pre>
 <p><code>mydata</code> is needed as an argument as the effects depend on
 the number and types of covariates and dependent variables.<br />
 Before we explain the object <code>myeff</code> and how we shall be
@@ -703,7 +710,7 @@ now:</p>
 </div>
 <div id="data-description" class="section level3">
 <h3>Data description</h3>
-<pre class="r test"><code>print01Report(mydata, modelname = &quot;s50_3_init&quot;)</code></pre>
+<pre class="r test"><code>print01Report( mydata, modelname = &#39;s50_3_init&#39; )</code></pre>
 <p>This writes a basic report of the data to the fil
 <em>s50_3_init.txt</em> in the current working directory. Locate and
 open it!<br />
@@ -757,8 +764,8 @@ RSiena manual, but only those that are meaningful for dataset
 <code>mydata</code> are used in <code>myeff</code>. The <em>include</em>
 column defines whether effects are included in the model.</p>
 <pre class="r test"><code>myeff$include</code></pre>
-<pre class="test2"><code>#&gt;   [1]  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE
-#&gt;  [16] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+<pre class="test2"><code>#&gt;   [1]  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE
+#&gt;  [16] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 #&gt;  [31] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 #&gt;  [46] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 #&gt;  [61] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
@@ -792,7 +799,10 @@ column defines whether effects are included in the model.</p>
 #&gt; [481] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 #&gt; [496] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 #&gt; [511] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-#&gt; [526] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</code></pre>
+#&gt; [526] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [541] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [556] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt; [571] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</code></pre>
 <p>Here the TRUE values correspond to the default model specification
 which, however, is not meant as a serious model, being too limited.
 There are 3 main ways to operate on <code>myeff</code>:</p>
@@ -830,8 +840,8 @@ instead of full names. The short names are given by the
 are listed in the descriptions given in Section 12 of the manual.</p>
 <p>For illustration, let us start from scratch with a new sienaEffects
 object, and add the transitive triples and 3-cycles effects.</p>
-<pre class="r test"><code>myeff &lt;- getEffects(mydata)
-myeff &lt;- includeEffects(myeff, transTrip, cycle3)
+<pre class="r test"><code>myeff &lt;- getEffects( mydata )
+myeff &lt;- includeEffects( myeff, transTrip, cycle3 )
 # To see the current model specification,
 myeff</code></pre>
 <pre class="test2"><code>#&gt;   effectName          include fix   test  initialValue parm
@@ -846,7 +856,7 @@ myeff</code></pre>
 #&gt; 6 3-cycles                            TRUE    FALSE FALSE    0.00000   0</code></pre>
 <p>Note that we can set several effects in one go! To remove an effect,
 e.g., the 3-cycle effects…</p>
-<pre class="r test"><code>myeff &lt;- includeEffects(myeff, cycle3, include = FALSE)
+<pre class="r test"><code>myeff &lt;- includeEffects( myeff, cycle3, include=FALSE )
 
 # Check again which effects now are included in the model
 myeff</code></pre>
@@ -872,8 +882,8 @@ effect.</p>
 the sienaEffects object, listed as <em>inter1</em> in the result of
 <code>effectsDocumentation()</code>, and this has to be mentioned to
 include these effects:</p>
-<pre class="r test"><code>myeff &lt;- includeEffects(myeff, egoX, altX, egoXaltX, interaction1 = &quot;alcohol&quot;)
-myeff &lt;- includeEffects(myeff, simX, interaction1 = &quot;smoke1&quot;)
+<pre class="r test"><code>myeff &lt;- includeEffects( myeff, egoX, altX, egoXaltX, interaction1 = &quot;alcohol&quot; )
+myeff &lt;- includeEffects( myeff, simX, interaction1 = &quot;smoke1&quot; )
 
 # We check the results again:
 myeff</code></pre>
@@ -915,13 +925,13 @@ their interactionType; see the manual for this).</p>
 <p>The interaction between <strong>smoke1 ego</strong> and
 <strong>reciprocity</strong>, for instance, can be defined by the
 command:</p>
-<pre class="r test"><code>myeff &lt;- includeInteraction(myeff, egoX, recip, interaction1 = c(&quot;smoke1&quot;, &quot;&quot;))
+<pre class="r test"><code>myeff &lt;- includeInteraction( myeff, egoX, recip, interaction1 = c(&quot;smoke1&quot;,&quot;&quot;) )
 myeff</code></pre>
 <p>This shows the interaction as an “unspecified interaction effect”;
 but when printing results of the estimation the names of the interacting
 effects will be mentioned.</p>
 <p>An interaction between smoke1 ego and alcohol ego is defined by:</p>
-<pre class="r test"><code>myeff &lt;- includeInteraction(myeff, egoX, egoX, interaction1 = c(&quot;smoke1&quot;, &quot;alcohol&quot;))</code></pre>
+<pre class="r test"><code>myeff &lt;- includeInteraction( myeff, egoX, egoX, interaction1 = c( &quot;smoke1&quot;, &quot;alcohol&quot; ) )</code></pre>
 <p>Note that the keyword ‘interaction1’ used by RSiena is used for
 identifying the covariate for which the ego effect is selected, and does
 not refer to the interaction effect itself.<br />
@@ -953,15 +963,18 @@ Section 12 of the manual.</p>
 <h3>2. Adding/removing effects using <code>fix()</code></h3>
 <pre class="r test"><code># fix calls a data editor internal to R, so we can manually edit the effects.
 
-# fix( myeff )
+#        fix( myeff )
 
-# How to use fix() is presented merely for getting to know what myeff is.  In practical analysis it
-# is more convenient to use routine &#39;includeEffects&#39; instead, as explained above.  fix() may not be
-# usable if you do not have tcl/tk available!  Note that the top of the dataframe shows the names
-# of the columns: name, effectName, etc.  You can edit the &#39;include&#39; column by changing the TRUE
-# and FALSE values as required; when the editor is closed, the new values are stored.  When you
-# make an error, however, the effects object may be corrupted.  Therefore, this way of adding and
-# removing effects is more risky.</code></pre>
+# How to use fix() is presented merely for getting to know what myeff is.
+# In practical analysis it is more convenient
+# to use routine &quot;includeEffects&quot; instead, as explained above.
+# fix() may not be usable if you do not have tcl/tk available!
+# Note that the top of the dataframe shows the names of the columns:
+# name, effectName, etc.
+# You can edit the &quot;include&quot; column by changing the TRUE and FALSE values
+# as required; when the editor is closed, the new values are stored.
+# When you make an error, however, the effects object may be corrupted.
+# Therefore, this way of adding and removing effects is more risky.</code></pre>
 </div>
 <div id="addingremoving-effects-by-direct-manipulation-of-myeff"
 class="section level3">
@@ -978,18 +991,18 @@ the 16th row as this depends on the number of periods and variables;
 further, the list of available effects changes over different versions
 of RSiena.</p>
 <p>Some examples are the following:</p>
-<pre class="r test"><code>myeff[16, 9] &lt;- TRUE  #transitive triples
-myeff[34, 9] &lt;- TRUE  #3 cycles
-myeff[37, 9] &lt;- TRUE  #transitive ties
-myeff[77, 9] &lt;- TRUE  #indegree popularity (sqrt)
-myeff[86, 9] &lt;- TRUE  #outdegree popularity (sqrt)
-myeff[93, 9] &lt;- TRUE  #indegree based activity (sqrt)
-myeff[102, 9] &lt;- TRUE  #outdegree based activity (sqrt)
-myeff[155, 9] &lt;- TRUE  #indegree-indegree assortativity
-myeff[319, 9] &lt;- TRUE  #alcohol alter
-myeff[331, 9] &lt;- TRUE  #alcohol ego
-myeff[370, 9] &lt;- TRUE  #alcohol similarity
-myeff[439, 9] &lt;- TRUE  #alcohol ego x alcohol alter</code></pre>
+<pre class="r test"><code>myeff[16,9] &lt;- TRUE   #transitive triples
+myeff[34,9] &lt;- TRUE   #3 cycles
+myeff[37,9] &lt;- TRUE   #transitive ties
+myeff[77,9] &lt;- TRUE   #indegree popularity (sqrt)
+myeff[86,9] &lt;- TRUE   #outdegree popularity (sqrt)
+myeff[93,9] &lt;- TRUE   #indegree based activity (sqrt)
+myeff[102,9] &lt;- TRUE  #outdegree based activity (sqrt)
+myeff[155,9] &lt;- TRUE   #indegree-indegree assortativity
+myeff[319,9] &lt;- TRUE   #alcohol alter
+myeff[331,9] &lt;- TRUE   #alcohol ego
+myeff[370,9] &lt;- TRUE   #alcohol similarity
+myeff[439,9] &lt;- TRUE   #alcohol ego x alcohol alter</code></pre>
 <p>But in other choices of data, the effect numbers will change. This is
 a reason why this is not a convenient method.</p>
 </div>

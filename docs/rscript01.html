@@ -14,7 +14,7 @@
 
 <title>Data Format</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -42,8 +42,8 @@
 <link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
 <link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
 <script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -158,11 +158,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -191,8 +195,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -200,16 +204,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -356,6 +353,15 @@ div.tocify {
 <li>
   <a href="rscript04.html">Behaviour</a>
 </li>
+<li>
+  <a href="rscript05.html">GOF</a>
+</li>
+<li>
+  <a href="rscript06.html">SienaRI</a>
+</li>
+<li>
+  <a href="rscript07.html">Agent-based simulation</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -386,7 +392,7 @@ div.tocify {
 <h1 class="title toc-ignore">Data Format</h1>
 <h4 class="author"><a href="https://www.jochemtolsma.nl">Jochem
 Tolsma</a> - Radboud University, the Netherlands</h4>
-<h4 class="date">Last compiled on September, 2022</h4>
+<h4 class="date">Last compiled on juni, 2023</h4>
 
 </div>
 
@@ -451,261 +457,181 @@ to: <a href="mailto:j.tolsma@ru.nl">Jochem Tolsma</a>.</p>
 href="https://github.com/snlab-nl/rsiena">GitHub</a> page.</p>
 <hr />
 <p>to do: convert to rmd</p>
-<pre class="r test"><code>################################################################################ ### ----
-################################################################################ Rscript01DataFormat.R:
-################################################################################ a script for the
-################################################################################ introduction to
-################################################################################ RSiena ---- ###
-################################################################################ ### version:
-################################################################################ September 8, 2020
-################################################################################ ###
-################################################################################ Rscript01DataFormat.R
-################################################################################ is followed by
-################################################################################ RScriptSNADescriptives.R,
-################################################################################ code for
-################################################################################ descriptive
-################################################################################ analysis of the
-################################################################################ data, and
-################################################################################ Rscript02SienaVariableFormat.R,
-################################################################################ which formats data
-################################################################################ and specifies the
-################################################################################ model, and
-################################################################################ Rscript03SienaRunModel.R,
-################################################################################ which runs the
-################################################################################ model and
-################################################################################ estimates
-################################################################################ parameters
-################################################################################ Rscript04SienaBehaviour.R,
-################################################################################ which illustrates
-################################################################################ an example of
-################################################################################ analysing the
-################################################################################ coevolution of
-################################################################################ networks and
-################################################################################ behaviour The
-################################################################################ entire model
-################################################################################ fitting is
-################################################################################ summarised at the
-################################################################################ end of
-################################################################################ RscriptSienaRunModel.R
-################################################################################ (without comments)
-################################################################################ This is an R
-################################################################################ script for getting
-################################################################################ started with
-################################################################################ RSiena, written by
-################################################################################ Tom Snijders, with
-################################################################################ earlier
-################################################################################ contributions from
-################################################################################ Robin Gauthier,
-################################################################################ Ruth Ripley, Johan
-################################################################################ Koskinen, Paulina
-################################################################################ Preciado, and
-################################################################################ Zsofia Boda, with
-################################################################################ some examples
-################################################################################ borrowed from
-################################################################################ Christian
-################################################################################ Steglich.  Lines
-################################################################################ starting with #
-################################################################################ are not processed
-################################################################################ by R but treated
-################################################################################ as comments.  The
-################################################################################ script has a lot
-################################################################################ of explanation of
-################################################################################ R possibilities
-################################################################################ that will be
-################################################################################ familiar for
-################################################################################ readers well
-################################################################################ acquainted with R,
-################################################################################ and can be skipped
-################################################################################ by them.  There
-################################################################################ are various really
-################################################################################ easy online
-################################################################################ introductions to
-################################################################################ R. See, for
-################################################################################ example
-################################################################################ http://www.statmethods.net/
-################################################################################ http://www.burns-stat.com/pages/Tutor/hints_R_begin.html
-################################################################################ http://data.princeton.edu/R/gettingStarted.html
-################################################################################ https://stats.idre.ucla.edu/r/
-################################################################################ You can go to any
-################################################################################ of these sites to
-################################################################################ learn the basics
-################################################################################ of R or refresh
-################################################################################ your knowledge.
-################################################################################ There is a lot of
-################################################################################ documentation
-################################################################################ available at
-################################################################################ https://www.r-project.org/other-docs.html
-################################################################################ including some
-################################################################################ short
-################################################################################ introductions,
-################################################################################ handy reference
-################################################################################ cards, and
-################################################################################ introductions in
-################################################################################ many languages
-################################################################################ besides English.
-################################################################################ Some general
-################################################################################ points to note: R
-################################################################################ is case-sensitive.
-################################################################################ Be aware of
-################################################################################ capitalization!
-################################################################################ The left-arrow
-################################################################################ &#39;&lt;-&#39; is very
-################################################################################ frequently used:
-################################################################################ it denotes an
-################################################################################ assignment, &#39;a &lt;-
-################################################################################ b&#39; meaning that
-################################################################################ object a gets the
-################################################################################ value b.  Often b
-################################################################################ is a complicated
-################################################################################ expression that
-################################################################################ has to be
-################################################################################ evaluated by R,
-################################################################################ and computes a
-################################################################################ result that then
-################################################################################ is stored as the
-################################################################################ object a.  Help
-################################################################################ within R can be
-################################################################################ called by typing a
-################################################################################ question mark and
-################################################################################ the name of the
-################################################################################ function you need
-################################################################################ help for. For
-################################################################################ example ?library
-################################################################################ will bring up a
-################################################################################ file titled
-################################################################################ &#39;loading/attaching
-################################################################################ and listing of
-################################################################################ packages&#39;.
-################################################################################ Comments are made
-################################################################################ at the end of
-################################################################################ commands after #,
-################################################################################ or in lines
-################################################################################ starting with #
-################################################################################ telling R to
-################################################################################ ignore everything
-################################################################################ beyond it.  That
-################################################################################ is why everything
-################################################################################ up to now in this
-################################################################################ file is on lines
-################################################################################ starting with #.
-################################################################################ This session will
-################################################################################ be using the s50
-################################################################################ data which are
-################################################################################ available in
-################################################################################ RSiena.  You can
-################################################################################ also get them from
-################################################################################ http://www.stats.ox.ac.uk/~snijders/siena/siena_datasets.htm
-################################################################################ Any command in R
-################################################################################ is a function, and
-################################################################################ ends by
-################################################################################ parentheses that
-################################################################################ enclose the
-################################################################################ arguments of the
-################################################################################ function, or
-################################################################################ enclose nothing if
-################################################################################ no argument is
-################################################################################ needed, such as
-################################################################################ for the function
-################################################################################ q() In general the
-################################################################################ command syntax for
-################################################################################ calling R&#39;s
-################################################################################ functions is
-################################################################################ function(x) where
-################################################################################ function is an
-################################################################################ available function
-################################################################################ and x the name of
-################################################################################ the object
-################################################################################ operated on.  -
-################################################################################ CALLING THE DATA
-################################################################################ AND PRELIMINARY
-################################################################################ MANIPULATIONS -
-################################################################################ ########
+<pre class="r test"><code>################################################################################
+###                                                                          ###
+### ---- Rscript01DataFormat.R: a script for the introduction to RSiena ---- ###
+###                                                                          ###
+###                version: September 8, 2020                                ###
+################################################################################
+#
+# Rscript01DataFormat.R is followed by
+# RScriptSNADescriptives.R, code for descriptive analysis of the data, and
+# Rscript02SienaVariableFormat.R, which formats data and specifies the model,
+# and Rscript03SienaRunModel.R, which runs the model and estimates parameters
+# Rscript04SienaBehaviour.R, which illustrates an example of analysing the
+# coevolution of networks and behaviour
+#
+# The entire model fitting is summarised at the end of RscriptSienaRunModel.R
+# (without comments)
+#
+# This is an R script for getting started with RSiena, written by
+# Tom Snijders, with earlier contributions from Robin Gauthier,
+# Ruth Ripley, Johan Koskinen, Paulina Preciado, and Zsofia Boda,
+# with some examples borrowed from Christian Steglich.
+# Lines starting with # are not processed by R but treated as comments.
+# The script has a lot of explanation of R possibilities that will be
+# familiar for readers well acquainted with R, and can be skipped by them.
+#
+# There are various really easy online introductions to R. See, for example
+#
+#    http://www.statmethods.net/
+#    http://www.burns-stat.com/pages/Tutor/hints_R_begin.html
+#    http://data.princeton.edu/R/gettingStarted.html
+#    https://stats.idre.ucla.edu/r/
+#
+# You can go to any of these sites to learn the basics of R
+# or refresh your knowledge.
+# There is a lot of documentation available at
+#    https://www.r-project.org/other-docs.html
+# including some short introductions, handy reference cards,
+# and introductions in many languages besides English.
+#
+#
+# Some general points to note:
+#
+# R is case-sensitive. Be aware of capitalization!
+#
+# The left-arrow &quot;&lt;-&quot; is very frequently used: it denotes an assignment,
+# &quot;a &lt;- b&quot; meaning that object a gets the value b.
+# Often b is a complicated expression that has to be evaluated by R,
+# and computes a result that then is stored as the object a.
+#
+# Help within R can be called by typing a question mark and the name of the
+# function you need help for. For example
+# ?library
+# will bring up a file titled &quot;loading/attaching and listing of packages&quot;.
+# Comments are made at the end of commands after #,
+# or in lines starting with # telling R to ignore everything beyond it.
+# That is why everything up to now in this file is on lines starting with #.
+#
+# This session will be using the s50 data which are available in RSiena.
+# You can also get them from
+#    http://www.stats.ox.ac.uk/~snijders/siena/siena_datasets.htm
+#
+# Any command in R is a function, and ends by parentheses
+# that enclose the arguments of the function,
+# or enclose nothing if no argument is needed, such as for the function q()
+# In general the command syntax for calling R&#39;s functions is function(x) where
+# function is an available function and x the name of the object operated on.
+#
+#################### - CALLING THE DATA AND PRELIMINARY MANIPULATIONS - ########
 
 # The library command loads the packages needed during the session.
 
 library(RSiena)
 
-# Some additional packages are used by RSiena, the so-called required packages; these will be
-# loaded automatically.
+# Some additional packages are used by RSiena,
+# the so-called required packages; these will be loaded automatically.
 
 # You need to have INSTALLED all of them.
 
-`?`(install.packages)
+?install.packages
 
-# Or click on the tab &#39;Packages&#39;, &#39;Install package(s)&#39;, then select a CRAN mirror close to you
-# (e.g. Bristol if you are in the UK) and finally select from the list the package you wish to
-# install.
+# Or click on the tab &quot;Packages&quot;, &quot;Install package(s)&quot;, then select a
+# CRAN mirror close to you (e.g. Bristol if you are in the UK) and finally
+# select from the list the package you wish to install.
 
 # Where are you?
 
 getwd()</code></pre>
-<pre class="test2"><code>#&gt; [1] &quot;C:/Users/Jochem/Documents/GitHub/RSiena-scripts&quot;</code></pre>
-<pre class="r test"><code># By something like setwd(&#39;C:/SienaTest&#39;) you can set the directory but note the quotes and forward
-# slash.  It is also possible to set the directory using the menus if you have them.  On a windows
-# machine, you can predetermine the working directory in the &lt;Properties&gt; of the shortcut to R;
+<pre class="test2"><code>#&gt; [1] &quot;C:/Users/u244147/Documents/GitHub/RSiena-scripts&quot;</code></pre>
+<pre class="r test"><code># By something like
+# setwd(&#39;C:/SienaTest&#39;)
+# you can set the directory but note the quotes and forward slash.
+# It is also possible to set the directory using the menus if you have them.
+# On a windows machine, you can predetermine the working directory
+# in the &lt;Properties&gt; of the shortcut to R;
 # these are accessible by right-clicking the shortcut.
 
-# If you want to set the working directory to for example &#39;C:\Documents and Settings\johan\My
-# Documents\RSiena_course&#39; simply copy and paste from windows explorer or type setwd(&#39;C:/Documents
-# and Settings/johan/My Documents/RSiena_course&#39;) or setwd(&#39;C:\\Documents and Settings\\johan\\My
-# Documents\\RSiena_course&#39;) but note that &#39;\&#39; has to be changed; both &#39;/&#39; and &#39;\\&#39; work!!!
+# If you want to set the working directory to for example
+# &quot;C:\Documents and Settings\johan\My Documents\RSiena_course&quot;
+# simply copy and paste from windows explorer or type
+#    setwd(&#39;C:/Documents and Settings/johan/My Documents/RSiena_course&#39;)
+# or
+#    setwd(&#39;C:\\Documents and Settings\\johan\\My Documents\\RSiena_course&#39;)
+#
+# but note that &quot;\&quot; has to be changed; both &#39;/&#39; and &#39;\\&#39; work!!!
 
 # What is in this directory?
 
 list.files()</code></pre>
-<pre class="test2"><code>#&gt;  [1] &quot;_site.yml&quot;                      &quot;docs&quot;                          
-#&gt;  [3] &quot;footer.html&quot;                    &quot;index.html&quot;                    
-#&gt;  [5] &quot;index.rmd&quot;                      &quot;index_cache&quot;                   
-#&gt;  [7] &quot;README.md&quot;                      &quot;references.bib&quot;                
-#&gt;  [9] &quot;rscript00.html&quot;                 &quot;rscript00.rmd&quot;                 
-#&gt; [11] &quot;rscript00_cache&quot;                &quot;rscript00_files&quot;               
-#&gt; [13] &quot;rscript01.rmd&quot;                  &quot;rscript01_cache&quot;               
-#&gt; [15] &quot;Rscript01DataFormat.R&quot;          &quot;rscript02.rmd&quot;                 
-#&gt; [17] &quot;rscript02_cache&quot;                &quot;Rscript02SienaVariableFormat.R&quot;
-#&gt; [19] &quot;rscript03.rmd&quot;                  &quot;rscript03_cache&quot;               
-#&gt; [21] &quot;Rscript03SienaRunModel.R&quot;       &quot;rscript04.rmd&quot;                 
-#&gt; [23] &quot;rscript04_cache&quot;                &quot;Rscript04SienaBehaviour.R&quot;     
-#&gt; [25] &quot;RSiena-scripts.Rproj&quot;           &quot;RSienaSNADescriptives.R&quot;       
-#&gt; [27] &quot;s50_3.txt&quot;                      &quot;s50_3_init.txt&quot;                
-#&gt; [29] &quot;site_libs&quot;</code></pre>
+<pre class="test2"><code>#&gt;  [1] &quot;_site.yml&quot;                      &quot;ans3.html&quot;                     
+#&gt;  [3] &quot;ans3.tex&quot;                       &quot;cluster.out&quot;                   
+#&gt;  [5] &quot;data&quot;                           &quot;docs&quot;                          
+#&gt;  [7] &quot;footer.html&quot;                    &quot;index.html&quot;                    
+#&gt;  [9] &quot;index.rmd&quot;                      &quot;index_cache&quot;                   
+#&gt; [11] &quot;myCoEvolutionEff.html&quot;          &quot;README.md&quot;                     
+#&gt; [13] &quot;references.bib&quot;                 &quot;rscript00.html&quot;                
+#&gt; [15] &quot;rscript00.rmd&quot;                  &quot;rscript00_cache&quot;               
+#&gt; [17] &quot;rscript00_files&quot;                &quot;rscript01.rmd&quot;                 
+#&gt; [19] &quot;rscript01_cache&quot;                &quot;Rscript01DataFormat.R&quot;         
+#&gt; [21] &quot;rscript02.rmd&quot;                  &quot;Rscript02SienaVariableFormat.R&quot;
+#&gt; [23] &quot;rscript03.rmd&quot;                  &quot;Rscript03SienaRunModel.R&quot;      
+#&gt; [25] &quot;rscript04.rmd&quot;                  &quot;Rscript04SienaBehaviour.R&quot;     
+#&gt; [27] &quot;rscript05.rmd&quot;                  &quot;rscript05_cache&quot;               
+#&gt; [29] &quot;rscript05_files&quot;                &quot;Rscript05SienaGOF.R.txt&quot;       
+#&gt; [31] &quot;RSiena-scripts.Rproj&quot;           &quot;RSienaSNADescriptives.R&quot;       
+#&gt; [33] &quot;s50_3.txt&quot;                      &quot;s50_3_CoEvinit.txt&quot;            
+#&gt; [35] &quot;s50_3_init.txt&quot;                 &quot;s50CoEv_3.txt&quot;                 
+#&gt; [37] &quot;site_libs&quot;                      &quot;vdb_gof234.txt&quot;                
+#&gt; [39] &quot;WorkspaceRscript01.RData&quot;</code></pre>
 <pre class="r test"><code># What is available in RSiena?
 
-`?`(RSiena)
+?RSiena
 
 # (these are .htlm HELP PAGES)
 
-# At the bottom of this page, when you click on &#39;Index&#39;, a list of all the available functions is
-# shown in your browser.  The same list is shown in the graphical user interface for R by
-# requesting
+# At the bottom of this page, when you click on &quot;Index&quot;,
+# a list of all the available functions is shown in your browser.
+# The same list is shown in the graphical user interface for R by requesting
 
-library(help = RSiena)
+library(help=RSiena)
 
-# An extensive manual is at the Siena website at
-# http://www.stats.ox.ac.uk/~snijders/siena/RSiena_Manual.pdf ; it is updated frequently.
+# An extensive manual is at the Siena website
+# at http://www.stats.ox.ac.uk/~snijders/siena/RSiena_Manual.pdf ;
+# it is updated frequently.
 
-# Each data is named (for example below we name it friend.data.w1) so that we can call it as an
-# object within R.  If you read an object straight into R, it will treat it as a dataset, or in R
-# terminology a &#39;data frame&#39;.  Here this is not what we want, therefore on reading we will
-# immediately convert it to a matrix.  R will read in many data formats, the command to read them
-# is read.table.
-`?`(read.table)
-# In the help page for read.table, look at the section &#39;Value&#39;, which is there in every help page:
-# it indicates the class of the object that is produced by the function.  For read.table, the value
-# is a data frame; below we see what this is.  If we wished to read a .csv file we would have used
-# the read.csv command.  The pathnames must have forward slashes, or double backslashes.  If single
-# backslashes are used, one of the error messages will be: 1: &#39;\R&#39; is an unrecognized escape in a
-# character string
+# Each data is named (for example below we name it friend.data.w1)
+# so that we can call it as an object within R.
+# If you read an object straight into R, it will treat it as a
+# dataset, or in R terminology a &quot;data frame&quot;.
+# Here this is not what we want, therefore on reading
+# we will immediately convert it to a matrix.
+# R will read in many data formats, the command to read them is read.table.
+?read.table
+# In the help page for read.table, look at the section &quot;Value&quot;,
+# which is there in every help page:
+# it indicates the class of the object that is produced by the function.
+# For read.table, the value is a data frame; below we see what this is.
+#
+# If we wished to read a .csv file we would have
+# used the read.csv command.
+# The pathnames must have forward slashes, or double backslashes.
+# If single backslashes are used, one of the error messages will be:
+#   1: &#39;\R&#39; is an unrecognized escape in a character string
 
 #-----------------------------------------------------------------------------
 
-# Quick start (Data assignment).  Please make sure the s50 data set is in your working directory.
-# The data set is on the Siena website (&#39;Data sets&#39; tab) and must be unzipped in your working
-# directory.
+# Quick start (Data assignment).
+# Please make sure the s50 data set is in your working directory.
+# The data set is on the Siena website (&quot;Data sets&quot; tab) and must be
+# unzipped in your working directory.
 
-# friend.data.w1 &lt;- as.matrix(read.table(&#39;s50-network1.dat&#39;)) friend.data.w2 &lt;-
-# as.matrix(read.table(&#39;s50-network2.dat&#39;)) friend.data.w3 &lt;-
-# as.matrix(read.table(&#39;s50-network3.dat&#39;)) drink &lt;- as.matrix(read.table(&#39;s50-alcohol.dat&#39;)) smoke
-# &lt;- as.matrix(read.table(&#39;s50-smoke.dat&#39;))
+#    friend.data.w1 &lt;- as.matrix(read.table(&quot;s50-network1.dat&quot;))
+#    friend.data.w2 &lt;- as.matrix(read.table(&quot;s50-network2.dat&quot;))
+#    friend.data.w3 &lt;- as.matrix(read.table(&quot;s50-network3.dat&quot;))
+#    drink &lt;- as.matrix(read.table(&quot;s50-alcohol.dat&quot;))
+#    smoke &lt;- as.matrix(read.table(&quot;s50-smoke.dat&quot;))
 
 # To make this script self-contained, you may instead run the commands:
 library(RSiena)
@@ -718,32 +644,49 @@ smoke &lt;- s50s
 
 # Explanation of data structures and formats below
 
-################# - DIFFERENT DATA FORMATS - ################################### The assignments
-################# here involve reading in data to a &#39;data frame&#39; data &lt;- read.table(&#39;data.dat&#39;)
-################# reads your text file into a &#39;data frame&#39;; check the class of the object &#39;data&#39; &gt;
-################# class(data) [1] &#39;data.frame&#39; If your data is not a &#39;.dat&#39; file, alternative
-################# import methods are ----- &#39;.csv&#39;
-################# --------------------------------------------------------------- data &lt;-
-################# read.table(&#39;c:/data.csv&#39;, header=TRUE, sep=&#39;,&#39;, row.names=&#39;iden&#39;) ---- &#39;.csv&#39;
-################# ---------------------------------------------------------------- data &lt;-
-################# read.csv(&#39;data.csv&#39;,header=T) look at ?read.csv and ?read.table to understand
-################# these function calls ---- &#39;.spss&#39;
-################# --------------------------------------------------------------- library(foreign)
-################# data &lt;- read.spss(&#39;c:/data.spss&#39;) ---- &#39;.dta&#39;
-################# ---------------------------------------------------------------- library(foreign)
-################# data &lt;- read.dta(&#39;c:/data.dta&#39;)
+################# - DIFFERENT DATA FORMATS - ###################################
+###
+### The assignments here involve reading in data to a &quot;data frame&quot;
+###    data &lt;- read.table(&quot;data.dat&quot;)
+### reads your text file into a &quot;data frame&quot;;
+### check the class of the object &quot;data&quot;
+###    &gt;  class(data)
+###    [1] &quot;data.frame&quot;
+### If your data is not a &quot;.dat&quot; file, alternative import methods are
+### ----- &quot;.csv&quot; ---------------------------------------------------------------
+###    data &lt;- read.table(&quot;c:/data.csv&quot;, header=TRUE,
+###                sep=&quot;,&quot;, row.names=&quot;iden&quot;)
+### ---- &quot;.csv&quot; ----------------------------------------------------------------
+###    data &lt;- read.csv(&quot;data.csv&quot;,header=T)
+### look at ?read.csv and ?read.table to understand these function calls
+### ---- &quot;.spss&quot; ---------------------------------------------------------------
+###    library(foreign)
+###    data &lt;- read.spss(&quot;c:/data.spss&quot;)
+### ---- &quot;.dta&quot; ----------------------------------------------------------------
+###    library(foreign)
+###    data &lt;- read.dta(&quot;c:/data.dta&quot;)
+###
+################################################################################
 
-################# - FROM DATA FRAME TO MATRIX - ################################ ---- Data frame
-################# ------------------------------------------------------------ The data frame is
-################# like a spreadsheet of cases by variables, where the variables are the columns,
-################# and these have the names names( data ) a spreadsheet view of a data frame is
-################# given by the fix() command fix( data ) All changes you make in this spreadsheet
-################# will be saved automatically, so beware.  As an example create two vectors:
-height &lt;- c(120, 150, 180, 200, 190, 177, 170, 125, 141, 157)
-weight &lt;- c(11, 14, 17, 18, 17, 18, 11, 12, 10, 15)
-### The function c() combines its argument into a vector (or into a list, but we are not concerned
-### with that possibility now.).  These two vectors can be collected as variables in a data frame
-mydata &lt;- data.frame(height, weight)
+################# - FROM DATA FRAME TO MATRIX - ################################
+###
+### ---- Data frame ------------------------------------------------------------
+### The data frame is like a spreadsheet of cases by variables,
+### where the variables are the columns, and these have the names
+###    names( data )
+### a spreadsheet view of a data frame is given by the fix() command
+###    fix( data )
+###
+### All changes you make in this spreadsheet will be saved automatically,
+### so beware.
+###
+### As an example create two vectors:
+height &lt;- c( 120, 150, 180, 200, 190, 177, 170, 125, 141, 157 )
+weight &lt;- c( 11, 14, 17, 18, 17, 18, 11, 12, 10, 15 )
+### The function c() combines its argument into a vector
+### (or into a list, but we are not concerned with that possibility now.).
+### These two vectors can be collected as variables in a data frame
+mydata &lt;- data.frame( height, weight )
 ### and look at the results
 mydata</code></pre>
 <pre class="test2"><code>#&gt;    height weight
@@ -757,12 +700,14 @@ mydata</code></pre>
 #&gt; 8     125     12
 #&gt; 9     141     10
 #&gt; 10    157     15</code></pre>
-<pre class="r test"><code>### The columns of a data frame may be extracted using a &#39;$&#39; sign and their names.  For example:
-names(mydata)</code></pre>
+<pre class="r test"><code>### The columns of a data frame may be extracted
+### using a &quot;$&quot; sign and their names.
+### For example:
+names( mydata )</code></pre>
 <pre class="test2"><code>#&gt; [1] &quot;height&quot; &quot;weight&quot;</code></pre>
 <pre class="r test"><code>mydata$height</code></pre>
 <pre class="test2"><code>#&gt;  [1] 120 150 180 200 190 177 170 125 141 157</code></pre>
-<pre class="r test"><code>### Or by &#39;[]&#39; and column number, e.g.
+<pre class="r test"><code>### Or by &quot;[]&quot; and column number, e.g.
 mydata[1]</code></pre>
 <pre class="test2"><code>#&gt;    height
 #&gt; 1     120
@@ -775,9 +720,9 @@ mydata[1]</code></pre>
 #&gt; 8     125
 #&gt; 9     141
 #&gt; 10    157</code></pre>
-<pre class="r test"><code>mydata[, 1]</code></pre>
+<pre class="r test"><code>mydata[  , 1]</code></pre>
 <pre class="test2"><code>#&gt;  [1] 120 150 180 200 190 177 170 125 141 157</code></pre>
-<pre class="r test"><code>mydata[1, ]</code></pre>
+<pre class="r test"><code>mydata[ 1,  ]</code></pre>
 <pre class="test2"><code>#&gt;   height weight
 #&gt; 1    120     11</code></pre>
 <pre class="r test"><code>### If you wish to see the structure of an object, such as mydata, then request
@@ -795,21 +740,21 @@ attributes(mydata)</code></pre>
 #&gt; 
 #&gt; $row.names
 #&gt;  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
-<pre class="r test"><code>### ---- Matrix ---------------------------------------------------------------- A &#39;matrix&#39; is a
-### numeric object ordered like a matrix with dimensions ( dim() ) given by the number of rows and
-### columns, e.g.
-dim(friend.data.w1)</code></pre>
+<pre class="r test"><code>### ---- Matrix ----------------------------------------------------------------
+### A &quot;matrix&quot; is a numeric object ordered like a matrix with dimensions
+### ( dim() ) given by the number of rows and columns, e.g.
+dim( friend.data.w1 )</code></pre>
 <pre class="test2"><code>#&gt; [1] 50 50</code></pre>
-<pre class="r test"><code>### If you wish to play around with a copy of the matrix, e.g. having the name &#39;mydata&#39;, you can
-### make the copy by the command
+<pre class="r test"><code>### If you wish to play around with a copy of the matrix,
+###e.g. having the name &quot;mydata&quot;, you can make the copy by the command
 mydata &lt;- friend.data.w1
-### The earlier object that we created with the name &#39;mydata&#39; now has been lost.  Elements if
-### matrices can be accessed by using square brackets.  For example, the element of &#39;mydata&#39; in row
-### 2 and column 3 is given by
-mydata[2, 3]</code></pre>
+### The earlier object that we created with the name &quot;mydata&quot; now has been lost.
+### Elements if matrices can be accessed by using square brackets.
+### For example, the element of &quot;mydata&quot; in row 2 and column 3 is given by
+mydata[ 2, 3 ]</code></pre>
 <pre class="test2"><code>#&gt; [1] 0</code></pre>
 <pre class="r test"><code>### the first three rows of a matrix called mydata are given by
-mydata[1:3, ]</code></pre>
+mydata[ 1:3, ]</code></pre>
 <pre class="test2"><code>#&gt;   V1 V2 V3 V4 V5 V6 V7 V8 V9 V10 V11 V12 V13 V14 V15 V16 V17 V18 V19 V20 V21 V22 V23 V24 V25 V26
 #&gt; 1  0  0  0  0  0  0  0  0  0   0   1   0   0   1   0   0   0   0   0   0   0   0   0   0   0   0
 #&gt; 2  0  0  0  0  0  0  1  0  0   0   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
@@ -819,7 +764,7 @@ mydata[1:3, ]</code></pre>
 #&gt; 2   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
 #&gt; 3   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0</code></pre>
 <pre class="r test"><code>### columns 2, 5, and 6 are given by
-mydata[, c(2, 5, 6)]</code></pre>
+mydata[ , c( 2, 5, 6) ]</code></pre>
 <pre class="test2"><code>#&gt;    V2 V5 V6
 #&gt; 1   0  0  0
 #&gt; 2   0  0  0
@@ -873,20 +818,27 @@ mydata[, c(2, 5, 6)]</code></pre>
 #&gt; 50  0  0  0</code></pre>
 <pre class="r test"><code>### Indeed there are a lot of zeros - networks tend to be sparse.
 
-### ---- Converting data frame to matrix --------------------------------------- Most classes can
-### be converted to other classes through &#39;as.typeofclass ()&#39;, e.g., if &#39;mydata&#39; would be an object
-### with a matrix-like structure, then it could be converted to the class &#39;matrix&#39; by the command
-mydata &lt;- as.matrix(mydata)
+### ---- Converting data frame to matrix ---------------------------------------
+###
+### Most classes can be converted to other classes through &quot;as.typeofclass ()&quot;,
+### e.g., if &quot;mydata&quot; would be an object with a matrix-like structure,
+### then it could be converted to the class &quot;matrix&quot; by the command
+mydata &lt;- as.matrix( mydata )
 
 ################################################################################
 
 
-################## - EXAMPLE FOR ARC LIST - #################################### From the Siena
-################## website you can download the data set arclistdata.dat.  The function read.table
-################## can be used with the internet location:
-ArcList &lt;- read.table(&quot;https://www.stats.ox.ac.uk/~snijders/siena/arclistdata.dat&quot;, header = FALSE)
-### Note the capitalization.  Now ArcList is a data.frame (we saw this above in the help page for
-### read.table).  What are its dimensions?
+################## - EXAMPLE FOR ARC LIST - ####################################
+###
+### From the Siena website you can download the data set arclistdata.dat.
+### The function read.table can be used with the internet location:
+ArcList &lt;-
+  read.table( &quot;https://www.stats.ox.ac.uk/~snijders/siena/arclistdata.dat&quot;,
+              header=FALSE )
+### Note the capitalization.
+### Now ArcList is a data.frame
+### (we saw this above in the help page for read.table).
+### What are its dimensions?
 dim(ArcList)</code></pre>
 <pre class="test2"><code>#&gt; [1] 351   4</code></pre>
 <pre class="r test"><code>### You can get an impression of it by looking at the start of the object:
@@ -898,9 +850,10 @@ head(ArcList)</code></pre>
 #&gt; 4  4  3  1  1
 #&gt; 5  9  3  1  1
 #&gt; 6  3  4  1  1</code></pre>
-<pre class="r test"><code>### This is a data file in arclist format, with columns: sender id, receiver id, value of tie,
-### wave.  Add names to the columns:
-names(ArcList) &lt;- c(&quot;sid&quot;, &quot;recid&quot;, &quot;bff&quot;, &quot;wid&quot;)
+<pre class="r test"><code>### This is a data file in arclist format, with columns:
+### sender id, receiver id, value of tie, wave.
+### Add names to the columns:
+names(ArcList) &lt;- c( &quot;sid&quot;, &quot;recid&quot;, &quot;bff&quot;, &quot;wid&quot; )
 ### and again request
 head(ArcList)</code></pre>
 <pre class="test2"><code>#&gt;   sid recid bff wid
@@ -910,46 +863,50 @@ head(ArcList)</code></pre>
 #&gt; 4   4     3   1   1
 #&gt; 5   9     3   1   1
 #&gt; 6   3     4   1   1</code></pre>
-<pre class="r test"><code>### The bff (&#39;best friend&#39;) variable does not have much variability:
+<pre class="r test"><code>### The bff (&quot;best friend&quot;) variable does not have much variability:
 table(ArcList$bff)</code></pre>
 <pre class="test2"><code>#&gt; 
 #&gt;   1 
 #&gt; 351</code></pre>
-<pre class="r test"><code>### This tells us that non-ties are not included (they would have the value 0), and that there are
-### no tie values other than 1.  It may be nice to order the rows by sender, then by receiver, then
-### by wave.  The tedious way to do this is
-ArcList &lt;- ArcList[order(ArcList$sid, ArcList$recid, ArcList$wid), ]
-### To understand this, you may look at the help page for function order() The rows of Arclist are
-### ordered first by ArcList$sid, then by ArcList$recid, and then by ArcList$wid; these reordered
-### rows then are put into the object ArcList, thus overwriting the earlier contents of this
-### object.  This way is tedious because it is repeated all the time that the names sid, recid, wid
-### refer to the ArcList object.  The less tedious way uses the function &#39;with&#39;.  The with(a, b)
-### function tells R that b must be calculated, while the otherwise unknown names refer to data set
-### a:
-ArcList &lt;- with(ArcList, ArcList[order(sid, recid, wid), ])
-### An arc list does not give information about the number of nodes, because isolates are not
-### recorded.  The set of non-isolates is
+<pre class="r test"><code>### This tells us that non-ties are not included (they would have the value 0),
+### and that there are no tie values other than 1.
+### It may be nice to order the rows by sender, then by receiver, then by wave.
+### The tedious way to do this is
+ArcList &lt;- ArcList[ order( ArcList$sid, ArcList$recid, ArcList$wid), ]
+### To understand this, you may look at the help page for function order()
+### The rows of Arclist are ordered first by ArcList$sid, then by ArcList$recid,
+### and then by ArcList$wid;
+### these reordered rows then are put into the object ArcList,
+### thus overwriting the earlier contents of this object.
+### This way is tedious because it is repeated all the time that the names
+### sid, recid, wid refer to the ArcList object.
+### The less tedious way uses the function &quot;with&quot;.
+### The with(a, b) function tells R that b must be calculated,
+### while the otherwise unknown names refer to data set a:
+ArcList &lt;- with( ArcList, ArcList[ order( sid, recid, wid), ] )
+### An arc list does not give information about the number of nodes,
+### because isolates are not recorded.
+### The set of non-isolates is
 union(unique(ArcList$sid), unique(ArcList$recid))</code></pre>
 <pre class="test2"><code>#&gt;  [1]  1  2  3  4  5  6  7  8  9 10 11 12 14 15 16 17 18 19 21 22 23 24 25 26 27 28 29 30 31 32 33 34
 #&gt; [33] 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50</code></pre>
-<pre class="r test"><code>### and, given that we have the information that there are 50 nodes labeled 1 to 50, the isolates
-### are the following two nodes:
+<pre class="r test"><code>### and, given that we have the information that there are 50 nodes
+### labeled 1 to 50, the isolates are the following two nodes:
 setdiff(1:50, union(unique(ArcList$sid), unique(ArcList$recid)))</code></pre>
 <pre class="test2"><code>#&gt; [1] 13 20</code></pre>
-<pre class="r test"><code>### Now suppose we want to create a separate set of records for each wave.  Select by wave:
+<pre class="r test"><code>### Now suppose we want to create a separate set of records for each wave.
+### Select by wave:
 
-SAff.1 &lt;- with(ArcList, ArcList[wid == 1, ])  #extracts edges in wave 1
-SAff.2 &lt;- with(ArcList, ArcList[wid == 2, ])  #extracts edges in wave 2
-SAff.3 &lt;- with(ArcList, ArcList[wid == 3, ])  #extracts edges in wave 3
+SAff.1 &lt;- with(ArcList, ArcList[ wid == 1, ] ) #extracts edges in wave 1
+SAff.2 &lt;- with(ArcList, ArcList[ wid == 2, ] ) #extracts edges in wave 2
+SAff.3 &lt;- with(ArcList, ArcList[ wid == 3, ] ) #extracts edges in wave 3
 
 ### This can be arranged more efficiently as
-SAff &lt;- lapply(1:3, function(m) {
-    with(ArcList, ArcList[wid == m, ])
-})
+SAff &lt;- lapply(1:3, function(m){ with(ArcList, ArcList[ wid == m, ] ) } )
 ### with the correspondence that SAff.1 is SAff[[1]], etc.
 
-### For transforming an adjacency matrix, e.g., friend.data.w1, into an arclist, create indicator
-### matrix of the non-zero entries:
+### For transforming an adjacency matrix, e.g., friend.data.w1, into an arclist,
+### create indicator matrix of the non-zero entries:
 ones &lt;- !friend.data.w1 %in% 0
 ### create empty edge list of desired length
 edges &lt;- matrix(0, sum(ones), 3)
@@ -1075,111 +1032,107 @@ edges</code></pre>
 #&gt; [111,]   48   49    1
 #&gt; [112,]   49   46    1
 #&gt; [113,]   49   48    1</code></pre>
-<pre class="r test"><code>### For transforming an arclist into a matrix, first remove the fourth column indicating the wave,
-### so that we are left with sender, receiver and value of the tie, and transform it into matrix
-### format (at first it is a data.frame)
+<pre class="r test"><code>### For transforming an arclist into a matrix,
+### first remove the fourth column indicating the wave, so that we are left
+### with sender, receiver and value of the tie,
+### and transform it into matrix format (at first it is a data.frame)
 SAff.1.copy &lt;- SAff.1[, 1:3]
 SAff.1.copy &lt;- as.matrix(SAff.1.copy)
 ### create empty adjacency matrix
 adj &lt;- matrix(0, 50, 50)
 ### put edge values in desired places
-adj[SAff.1.copy[, 1:2]] &lt;- SAff.1.copy[, 3]
-### Now adj is the adjacency matrix.  Also see Section 4.1 of the Siena manual and the help page
-### for sienaDependent.
+adj[SAff.1.copy[,1:2]] &lt;- SAff.1.copy[, 3]
+### Now adj is the adjacency matrix.
+### Also see Section 4.1 of the Siena manual
+### and the help page for sienaDependent.
 
-################################################################################ - READING IN PAJEK
-################################################################################ DATA -
-################################################################################ #####################################
-################################################################################ Skip this section
-################################################################################ if handling Pajek
-################################################################################ data is of no
-################################################################################ concern to you.
-################################################################################ If you have data
-################################################################################ in Pajek format
-################################################################################ you can use the
-################################################################################ package &#39;network&#39;
-################################################################################ in order to
-################################################################################ convert it to a
-################################################################################ network object.
-################################################################################ This example is
-################################################################################ from ?read.paj
-################################################################################ require( network )
-################################################################################ par( mfrow = c( 2,
-################################################################################ 2 ) ) test.net.1
-################################################################################ &lt;-
-################################################################################ read.paj(&#39;http://vlado.fmf.uni-lj.si/pub/networks/data/GD/gd98/A98.net&#39;
-################################################################################ ) plot(
-################################################################################ test.net.1,main =
-################################################################################ test.net.1$gal$title
-################################################################################ ) test.net.2 &lt;-
-################################################################################ read.paj(&#39;http://vlado.fmf.uni-lj.si/pub/networks/data/mix/USAir97.net&#39;
-################################################################################ ) plot(
-################################################################################ test.net.2,main =
-################################################################################ test.net.2$gal$title
-################################################################################ )
+################################################################################
+################ - READING IN PAJEK DATA - #####################################
+###
+### Skip this section if handling Pajek data is of no concern to you.
+### If you have data in Pajek format you can use the package &quot;network&quot; in order
+### to convert it to a network object. This example is from ?read.paj
+###   require( network )
+###
+###   par( mfrow = c( 2, 2 ) )
+###
+###   test.net.1 &lt;-
+###    read.paj(&quot;http://vlado.fmf.uni-lj.si/pub/networks/data/GD/gd98/A98.net&quot; )
+###   plot( test.net.1,main = test.net.1$gal$title )
+###   test.net.2 &lt;-
+###    read.paj(&quot;http://vlado.fmf.uni-lj.si/pub/networks/data/mix/USAir97.net&quot; )
+###   plot( test.net.2,main = test.net.2$gal$title )
+###
+################################################################################
 
-# Before we work with the data, we want to be sure it is correct. A simple way to check that our
-# data is a matrix is the command class()
+# Before we work with the data, we want to be sure it is correct. A simple way
+# to check that our data is a matrix is the command class()
 
-class(friend.data.w1)</code></pre>
+class( friend.data.w1 )</code></pre>
 <pre class="test2"><code>#&gt; [1] &quot;matrix&quot; &quot;array&quot;</code></pre>
-<pre class="r test"><code># to list the properties of an object attributes( friend.data.w1 ) (different classes have
-# different attributes)
+<pre class="r test"><code># to list the properties of an object attributes( friend.data.w1 )
+# (different classes have different attributes)
 
-# To check that all the data has been read in, we can use the dim() command.  The adjacency matrix
-# should have the same dimensions as the original data (here, 50 by 50).
+# To check that all the data has been read in, we can use the dim() command.
+# The adjacency matrix should have the same dimensions as the original data
+# (here, 50 by 50).
 
 dim(friend.data.w1)</code></pre>
 <pre class="test2"><code>#&gt; [1] 50 50</code></pre>
 <pre class="r test"><code>dim(drink)</code></pre>
 <pre class="test2"><code>#&gt; [1] 50  3</code></pre>
-<pre class="r test"><code># To check the values are correct, including missing values, we can use the following commands to
-# tabulate the variables.
+<pre class="r test"><code># To check the values are correct, including missing values, we can use
+# the following commands to tabulate the variables.
 
-table(friend.data.w1, useNA = &quot;always&quot;)</code></pre>
+table( friend.data.w1, useNA = &#39;always&#39; )</code></pre>
 <pre class="test2"><code>#&gt; friend.data.w1
 #&gt;    0    1 &lt;NA&gt; 
 #&gt; 2387  113    0</code></pre>
-<pre class="r test"><code>table(friend.data.w2, useNA = &quot;always&quot;)</code></pre>
+<pre class="r test"><code>table( friend.data.w2, useNA = &#39;always&#39; )</code></pre>
 <pre class="test2"><code>#&gt; friend.data.w2
 #&gt;    0    1 &lt;NA&gt; 
 #&gt; 2384  116    0</code></pre>
-<pre class="r test"><code>table(friend.data.w3, useNA = &quot;always&quot;)</code></pre>
+<pre class="r test"><code>table( friend.data.w3, useNA = &#39;always&#39; )</code></pre>
 <pre class="test2"><code>#&gt; friend.data.w3
 #&gt;    0    1 &lt;NA&gt; 
 #&gt; 2378  122    0</code></pre>
-<pre class="r test"><code>table(drink, useNA = &quot;always&quot;)</code></pre>
+<pre class="r test"><code>table( drink, useNA = &#39;always&#39; )</code></pre>
 <pre class="test2"><code>#&gt; drink
 #&gt;    1    2    3    4    5 &lt;NA&gt; 
 #&gt;    9   41   41   42   17    0</code></pre>
-<pre class="r test"><code>table(smoke, useNA = &quot;always&quot;)</code></pre>
+<pre class="r test"><code>table( smoke, useNA = &#39;always&#39; )</code></pre>
 <pre class="test2"><code>#&gt; smoke
 #&gt;    1    2    3 &lt;NA&gt; 
 #&gt;  102   15   33    0</code></pre>
-<pre class="r test"><code># NA is the R code for missing data (Not Available).  This data set happens to have no missings
-# (see the data description on the Siena website).  If there are any missings, it is necessary to
-# tell R about the missing data codes.  Let us do as if the missing codes for the friendship
-# network were 6 and 9.  This leads to the following commands.  (For new R users: the c() function
-# used here as &#39;c(6,9)&#39; constructs a vector [c for column] consisting of the numbers 6 and 9.  This
-# function is used a lot in basic R.)
+<pre class="r test"><code># NA is the R code for missing data (Not Available).
+# This data set happens to have no missings
+# (see the data description on the Siena website).
+# If there are any missings,
+# it is necessary to tell R about the missing data codes.
+# Let us do as if the missing codes for the friendship network were 6 and 9.
+# This leads to the following commands.
+# (For new R users: the c() function used here as &quot;c(6,9)&quot; constructs
+#  a vector [c for column] consisting of the numbers 6 and 9.
+#  This function is used a lot in basic R.)
 
-friend.data.w1[friend.data.w1 %in% c(6, 9)] &lt;- NA
-friend.data.w2[friend.data.w2 %in% c(6, 9)] &lt;- NA
-friend.data.w3[friend.data.w3 %in% c(6, 9)] &lt;- NA
+friend.data.w1[ friend.data.w1 %in% c(6,9) ] &lt;- NA
+friend.data.w2[ friend.data.w2 %in% c(6,9) ] &lt;- NA
+friend.data.w3[ friend.data.w3 %in% c(6,9) ] &lt;- NA
 
 # Commands for descriptive analysis are in the script: RscriptSNADescriptives.R
 
 ############## - SELECTING SUBSETS OF DATA - ###################################
 
-# To select a subset of the data based on an actor variable, say, those who have the value 2 or 3
-# on drinking at time 1 (the possibilities are endless, but hopefully this will serve as a pattern)
+# To select a subset of the data based on an actor variable, say,
+# those who have the value 2 or 3 on drinking at time 1
+# (the possibilities are endless, but hopefully this will serve as a pattern)
 
 use &lt;- drink[, 1] %in% c(2, 3)
 
-# This creates a logical vector which is TRUE for the cases where the condition is satisfied. To
-# view or check, display the vectors next to each other:
+# This creates a logical vector which is TRUE for the cases where the condition
+# is satisfied. To view or check, display the vectors next to each other:
 
-cbind(drink[, 1], use)</code></pre>
+cbind(drink[ , 1 ], use)</code></pre>
 <pre class="test2"><code>#&gt;      use
 #&gt; 1  3   1
 #&gt; 2  2   1
@@ -1231,7 +1184,7 @@ cbind(drink[, 1], use)</code></pre>
 #&gt; 48 2   1
 #&gt; 49 1   0
 #&gt; 50 1   0</code></pre>
-<pre class="r test"><code>data.frame(drink[, 1], use)</code></pre>
+<pre class="r test"><code>data.frame(drink[ , 1 ], use)</code></pre>
 <pre class="test2"><code>#&gt;    drink...1.   use
 #&gt; 1           3  TRUE
 #&gt; 2           2  TRUE
@@ -1285,34 +1238,35 @@ cbind(drink[, 1], use)</code></pre>
 #&gt; 50          1 FALSE</code></pre>
 <pre class="r test"><code># and the number of selected cases is displayed by
 
-sum(use)</code></pre>
+sum( use )</code></pre>
 <pre class="test2"><code>#&gt; [1] 28</code></pre>
 <pre class="r test"><code># or
 
-table(use)</code></pre>
+table( use )</code></pre>
 <pre class="test2"><code>#&gt; use
 #&gt; FALSE  TRUE 
 #&gt;    22    28</code></pre>
-<pre class="r test"><code># Given this selection, submatrices can be formed in case the analyses are to be done for this
-# subset only:
+<pre class="r test"><code># Given this selection, submatrices can be formed in case the analyses
+# are to be done for this subset only:
 
-friend1.data.w1 &lt;- friend.data.w1[use, use]
-friend1.data.w2 &lt;- friend.data.w2[use, use]
-drink1 &lt;- drink[use, ]
+friend1.data.w1 &lt;- friend.data.w1[ use, use ]
+friend1.data.w2 &lt;- friend.data.w2[ use, use ]
+drink1 &lt;- drink[ use, ]
 
 # A useful option in R that allows you to save your workspace:
 save.image(&quot;WorkspaceRscript01.RData&quot;)
-# Later you can load this in a new session by load(&#39;WorkspaceRscript01.RData&#39;)
+# Later you can load this in a new session by
+# load(&quot;WorkspaceRscript01.RData&quot;)
 
-# If next time you would like to continue from here, you will not need to open and run this script
-# again, since you will be able to load this current state of your workspace. But packages will
-# have to be attached again.
+# If next time you would like to continue from here, you will not need to open
+# and run this script again, since you will be able to load this current state
+# of your workspace. But packages will have to be attached again.
 
-################################################################################ ---- PROCEED TO
-################################################################################ RscriptSNADescriptives.R
-################################################################################ FOR DESCRIPTIVE
-################################################################################ ANALYSIS
-################################################################################ ----------</code></pre>
+################################################################################
+###
+### ---- PROCEED TO RscriptSNADescriptives.R FOR DESCRIPTIVE ANALYSIS ----------
+###
+################################################################################</code></pre>
 </div>
 
 <div id="rmd-source-code">LS0tDQp0aXRsZTogIkRhdGEgRm9ybWF0Ig0KYXV0aG9yOiAnW0pvY2hlbSBUb2xzbWFdKGh0dHBzOi8vd3d3LmpvY2hlbXRvbHNtYS5ubCkgLSBSYWRib3VkIFVuaXZlcnNpdHksIHRoZSBOZXRoZXJsYW5kcycNCmJpYmxpb2dyYXBoeTogcmVmZXJlbmNlcy5iaWINCmRhdGU6ICJMYXN0IGNvbXBpbGVkIG9uIGByIGZvcm1hdChTeXMudGltZSgpLCAnJUIsICVZJylgIg0Kb3V0cHV0OiANCiAgaHRtbF9kb2N1bWVudDoNCiAgICB0b2M6ICB0cnVlDQogICAgdG9jX2Zsb2F0OiB0cnVlDQogICAgbnVtYmVyX3NlY3Rpb25zOiBmYWxzZQ0KICAgIGNvZGVfZm9sZGluZzogc2hvdw0KICAgIGNvZGVfZG93bmxvYWQ6IHllcw0KLS0tDQoNCmBgYHtyLCBnbG9iYWxzZXR0aW5ncywgZWNobz1GQUxTRSwgd2FybmluZz1GQUxTRX0NCmxpYnJhcnkoa25pdHIpDQpvcHRzX2NodW5rJHNldCh0aWR5Lm9wdHM9bGlzdCh3aWR0aC5jdXRvZmY9MTAwKSx0aWR5PVRSVUUsIHdhcm5pbmcgPSBGQUxTRSwgbWVzc2FnZSA9IEZBTFNFLGNvbW1lbnQgPSAiIz4iLCBjYWNoZT1UUlVFLCBjbGFzcy5zb3VyY2U9YygidGVzdCIpLCBjbGFzcy5vdXRwdXQ9YygidGVzdDIiKSkNCm9wdGlvbnMod2lkdGggPSAxMDApDQpyZ2w6OnNldHVwS25pdHIoKQ0KDQoNCmNvbG9yaXplIDwtIGZ1bmN0aW9uKHgsIGNvbG9yKSB7DQogIGlmIChrbml0cjo6aXNfbGF0ZXhfb3V0cHV0KCkpIHsNCiAgICBzcHJpbnRmKCJcXHRleHRjb2xvcnslc317JXN9IiwgY29sb3IsIHgpDQogIH0gZWxzZSBpZiAoa25pdHI6OmlzX2h0bWxfb3V0cHV0KCkpIHsNCiAgICBzcHJpbnRmKCI8c3BhbiBzdHlsZT0nY29sb3I6ICVzOyc+JXM8L3NwYW4+IiwgY29sb3IsIA0KICAgICAgeCkNCiAgfSBlbHNlIHgNCn0NCg0KYGBgDQoNCmBgYHtyIGtsaXBweSwgZWNobz1GQUxTRSwgaW5jbHVkZT1UUlVFfQ0Ka2xpcHB5OjprbGlwcHkocG9zaXRpb24gPSBjKCd0b3AnLCAncmlnaHQnKSkNCiNrbGlwcHk6OmtsaXBweShjb2xvciA9ICdkYXJrcmVkJykNCiNrbGlwcHk6OmtsaXBweSh0b29sdGlwX21lc3NhZ2UgPSAnQ2xpY2sgdG8gY29weScsIHRvb2x0aXBfc3VjY2VzcyA9ICdEb25lJykNCmBgYA0KDQpgYGB7Y3NzLCBlY2hvPUZBTFNFfQ0KcHJlLnRlc3Qgew0KICBtYXgtaGVpZ2h0OiAzMDBweDsNCiAgb3ZlcmZsb3cteTogYXV0bzsNCiAgb3ZlcmZsb3cteDogYXV0bzsNCiAgbWFyZ2luOiAxMHB4Ow0KfQ0KDQpwcmUudGVzdDIgew0KICBtYXgtaGVpZ2h0OiAzMDBweDsNCiAgb3ZlcmZsb3cteTogYXV0bzsNCiAgb3ZlcmZsb3cteDogYXV0bzsNCiAgbWFyZ2luOiAxMHB4Ow0KICBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZQ0KfQ0KDQoNCmgxLCAuaDEsIGgyLCAuaDIsIGgzLCAuaDMgew0KICAgIG1hcmdpbi10b3A6IDI0cHg7DQp9DQoNCg0KYGBgDQoNCi0tLS0NCg0KVGhpcyB3ZWJzaXRlIGNvbnZlcnRlZCB0aGUgZm9sbG93aW5nIG9yaWdpbmFsIC5SIHNjcmlwdHMgaW50byAucm1kIGZpbGVzLiANCg0KLSBSc2NyaXB0MDFEYXRhRm9ybWF0LlIgIA0KLSBSU2NyaXB0U05BRGVzY3JpcHRpdmVzLlIgIA0KLSBSc2NyaXB0MDJTaWVuYVZhcmlhYmxlRm9ybWF0LlIgIA0KLSBSc2NyaXB0MDNTaWVuYVJ1bk1vZGVsLlIgIA0KLSBSc2NyaXB0MDRTaWVuYUJlaGF2aW91ci5SDQoNClBsZWFzZSB2aXNpdCBbR2l0SHViXShodHRwczovL2dpdGh1Yi5jb20vc25sYWItbmwvcnNpZW5hL3RyZWUvbWFpbi9pbnN0L3NjcmlwdHMpIGZvciB0aGUgbGF0ZXN0IC5SIGZpbGVzLiANCg0KLS0tLQ0KDQojIyBEYXRhDQpBbGwgZmlsZXMgKGRhdGEsIHNjcmlwdHMsIGV0Yy4pIGNhbiBhbHNvIGJlIGZvdW5kIG9uIFtHaXRodWJdKGh0dHBzOi8vZ2l0aHViLmNvbS9Kb2NoZW1Ub2xzbWEvUnNpZW5hLXNjcmlwdHMpDQoNCi0tLS0NCg0KIyMgQ29udGFjdA0KU3BlY2lmaWMgcXVlc3Rpb25zIHdpdGggcmVzcGVjdCB0byB0aGUgLnJtZCBmaWxlcyBjYW4gYmUgYWRkcmVzc2VkIHRvOiBbSm9jaGVtIFRvbHNtYV0obWFpbHRvOmoudG9sc21hQHJ1Lm5sKS4gIA0KDQpGb3IgcXVlc3Rpb25zIG9uIFJTaWVuYSBwbGVhc2UgdmlzaXQgdGhlIGRlc2lnbmF0ZWQgW0dpdEh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL3NubGFiLW5sL3JzaWVuYSkgcGFnZS4gDQoNCi0tLS0gIA0KDQoNCnRvIGRvOiBjb252ZXJ0IHRvIHJtZA0KDQpgYGB7cn0NCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQojIyMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMjIw0KIyMjIC0tLS0gUnNjcmlwdDAxRGF0YUZvcm1hdC5SOiBhIHNjcmlwdCBmb3IgdGhlIGludHJvZHVjdGlvbiB0byBSU2llbmEgLS0tLSAjIyMNCiMjIyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyMjDQojIyMgICAgICAgICAgICAgICAgdmVyc2lvbjogU2VwdGVtYmVyIDgsIDIwMjAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMjIw0KIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiMNCiMgUnNjcmlwdDAxRGF0YUZvcm1hdC5SIGlzIGZvbGxvd2VkIGJ5DQojIFJTY3JpcHRTTkFEZXNjcmlwdGl2ZXMuUiwgY29kZSBmb3IgZGVzY3JpcHRpdmUgYW5hbHlzaXMgb2YgdGhlIGRhdGEsIGFuZA0KIyBSc2NyaXB0MDJTaWVuYVZhcmlhYmxlRm9ybWF0LlIsIHdoaWNoIGZvcm1hdHMgZGF0YSBhbmQgc3BlY2lmaWVzIHRoZSBtb2RlbCwNCiMgYW5kIFJzY3JpcHQwM1NpZW5hUnVuTW9kZWwuUiwgd2hpY2ggcnVucyB0aGUgbW9kZWwgYW5kIGVzdGltYXRlcyBwYXJhbWV0ZXJzDQojIFJzY3JpcHQwNFNpZW5hQmVoYXZpb3VyLlIsIHdoaWNoIGlsbHVzdHJhdGVzIGFuIGV4YW1wbGUgb2YgYW5hbHlzaW5nIHRoZQ0KIyBjb2V2b2x1dGlvbiBvZiBuZXR3b3JrcyBhbmQgYmVoYXZpb3VyDQojDQojIFRoZSBlbnRpcmUgbW9kZWwgZml0dGluZyBpcyBzdW1tYXJpc2VkIGF0IHRoZSBlbmQgb2YgUnNjcmlwdFNpZW5hUnVuTW9kZWwuUg0KIyAod2l0aG91dCBjb21tZW50cykNCiMNCiMgVGhpcyBpcyBhbiBSIHNjcmlwdCBmb3IgZ2V0dGluZyBzdGFydGVkIHdpdGggUlNpZW5hLCB3cml0dGVuIGJ5DQojIFRvbSBTbmlqZGVycywgd2l0aCBlYXJsaWVyIGNvbnRyaWJ1dGlvbnMgZnJvbSBSb2JpbiBHYXV0aGllciwNCiMgUnV0aCBSaXBsZXksIEpvaGFuIEtvc2tpbmVuLCBQYXVsaW5hIFByZWNpYWRvLCBhbmQgWnNvZmlhIEJvZGEsDQojIHdpdGggc29tZSBleGFtcGxlcyBib3Jyb3dlZCBmcm9tIENocmlzdGlhbiBTdGVnbGljaC4NCiMgTGluZXMgc3RhcnRpbmcgd2l0aCAjIGFyZSBub3QgcHJvY2Vzc2VkIGJ5IFIgYnV0IHRyZWF0ZWQgYXMgY29tbWVudHMuDQojIFRoZSBzY3JpcHQgaGFzIGEgbG90IG9mIGV4cGxhbmF0aW9uIG9mIFIgcG9zc2liaWxpdGllcyB0aGF0IHdpbGwgYmUNCiMgZmFtaWxpYXIgZm9yIHJlYWRlcnMgd2VsbCBhY3F1YWludGVkIHdpdGggUiwgYW5kIGNhbiBiZSBza2lwcGVkIGJ5IHRoZW0uDQojDQojIFRoZXJlIGFyZSB2YXJpb3VzIHJlYWxseSBlYXN5IG9ubGluZSBpbnRyb2R1Y3Rpb25zIHRvIFIuIFNlZSwgZm9yIGV4YW1wbGUNCiMNCiMgICAgaHR0cDovL3d3dy5zdGF0bWV0aG9kcy5uZXQvDQojICAgIGh0dHA6Ly93d3cuYnVybnMtc3RhdC5jb20vcGFnZXMvVHV0b3IvaGludHNfUl9iZWdpbi5odG1sDQojICAgIGh0dHA6Ly9kYXRhLnByaW5jZXRvbi5lZHUvUi9nZXR0aW5nU3RhcnRlZC5odG1sDQojICAgIGh0dHBzOi8vc3RhdHMuaWRyZS51Y2xhLmVkdS9yLw0KIw0KIyBZb3UgY2FuIGdvIHRvIGFueSBvZiB0aGVzZSBzaXRlcyB0byBsZWFybiB0aGUgYmFzaWNzIG9mIFINCiMgb3IgcmVmcmVzaCB5b3VyIGtub3dsZWRnZS4NCiMgVGhlcmUgaXMgYSBsb3Qgb2YgZG9jdW1lbnRhdGlvbiBhdmFpbGFibGUgYXQNCiMgICAgaHR0cHM6Ly93d3cuci1wcm9qZWN0Lm9yZy9vdGhlci1kb2NzLmh0bWwNCiMgaW5jbHVkaW5nIHNvbWUgc2hvcnQgaW50cm9kdWN0aW9ucywgaGFuZHkgcmVmZXJlbmNlIGNhcmRzLA0KIyBhbmQgaW50cm9kdWN0aW9ucyBpbiBtYW55IGxhbmd1YWdlcyBiZXNpZGVzIEVuZ2xpc2guDQojDQojDQojIFNvbWUgZ2VuZXJhbCBwb2ludHMgdG8gbm90ZToNCiMNCiMgUiBpcyBjYXNlLXNlbnNpdGl2ZS4gQmUgYXdhcmUgb2YgY2FwaXRhbGl6YXRpb24hDQojDQojIFRoZSBsZWZ0LWFycm93ICI8LSIgaXMgdmVyeSBmcmVxdWVudGx5IHVzZWQ6IGl0IGRlbm90ZXMgYW4gYXNzaWdubWVudCwNCiMgImEgPC0gYiIgbWVhbmluZyB0aGF0IG9iamVjdCBhIGdldHMgdGhlIHZhbHVlIGIuDQojIE9mdGVuIGIgaXMgYSBjb21wbGljYXRlZCBleHByZXNzaW9uIHRoYXQgaGFzIHRvIGJlIGV2YWx1YXRlZCBieSBSLA0KIyBhbmQgY29tcHV0ZXMgYSByZXN1bHQgdGhhdCB0aGVuIGlzIHN0b3JlZCBhcyB0aGUgb2JqZWN0IGEuDQojDQojIEhlbHAgd2l0aGluIFIgY2FuIGJlIGNhbGxlZCBieSB0eXBpbmcgYSBxdWVzdGlvbiBtYXJrIGFuZCB0aGUgbmFtZSBvZiB0aGUNCiMgZnVuY3Rpb24geW91IG5lZWQgaGVscCBmb3IuIEZvciBleGFtcGxlDQojID9saWJyYXJ5DQojIHdpbGwgYnJpbmcgdXAgYSBmaWxlIHRpdGxlZCAibG9hZGluZy9hdHRhY2hpbmcgYW5kIGxpc3Rpbmcgb2YgcGFja2FnZXMiLg0KIyBDb21tZW50cyBhcmUgbWFkZSBhdCB0aGUgZW5kIG9mIGNvbW1hbmRzIGFmdGVyICMsDQojIG9yIGluIGxpbmVzIHN0YXJ0aW5nIHdpdGggIyB0ZWxsaW5nIFIgdG8gaWdub3JlIGV2ZXJ5dGhpbmcgYmV5b25kIGl0Lg0KIyBUaGF0IGlzIHdoeSBldmVyeXRoaW5nIHVwIHRvIG5vdyBpbiB0aGlzIGZpbGUgaXMgb24gbGluZXMgc3RhcnRpbmcgd2l0aCAjLg0KIw0KIyBUaGlzIHNlc3Npb24gd2lsbCBiZSB1c2luZyB0aGUgczUwIGRhdGEgd2hpY2ggYXJlIGF2YWlsYWJsZSBpbiBSU2llbmEuDQojIFlvdSBjYW4gYWxzbyBnZXQgdGhlbSBmcm9tDQojICAgIGh0dHA6Ly93d3cuc3RhdHMub3guYWMudWsvfnNuaWpkZXJzL3NpZW5hL3NpZW5hX2RhdGFzZXRzLmh0bQ0KIw0KIyBBbnkgY29tbWFuZCBpbiBSIGlzIGEgZnVuY3Rpb24sIGFuZCBlbmRzIGJ5IHBhcmVudGhlc2VzDQojIHRoYXQgZW5jbG9zZSB0aGUgYXJndW1lbnRzIG9mIHRoZSBmdW5jdGlvbiwNCiMgb3IgZW5jbG9zZSBub3RoaW5nIGlmIG5vIGFyZ3VtZW50IGlzIG5lZWRlZCwgc3VjaCBhcyBmb3IgdGhlIGZ1bmN0aW9uIHEoKQ0KIyBJbiBnZW5lcmFsIHRoZSBjb21tYW5kIHN5bnRheCBmb3IgY2FsbGluZyBSJ3MgZnVuY3Rpb25zIGlzIGZ1bmN0aW9uKHgpIHdoZXJlDQojIGZ1bmN0aW9uIGlzIGFuIGF2YWlsYWJsZSBmdW5jdGlvbiBhbmQgeCB0aGUgbmFtZSBvZiB0aGUgb2JqZWN0IG9wZXJhdGVkIG9uLg0KIw0KIyMjIyMjIyMjIyMjIyMjIyMjIyMgLSBDQUxMSU5HIFRIRSBEQVRBIEFORCBQUkVMSU1JTkFSWSBNQU5JUFVMQVRJT05TIC0gIyMjIyMjIyMNCg0KIyBUaGUgbGlicmFyeSBjb21tYW5kIGxvYWRzIHRoZSBwYWNrYWdlcyBuZWVkZWQgZHVyaW5nIHRoZSBzZXNzaW9uLg0KDQpsaWJyYXJ5KFJTaWVuYSkNCg0KIyBTb21lIGFkZGl0aW9uYWwgcGFja2FnZXMgYXJlIHVzZWQgYnkgUlNpZW5hLA0KIyB0aGUgc28tY2FsbGVkIHJlcXVpcmVkIHBhY2thZ2VzOyB0aGVzZSB3aWxsIGJlIGxvYWRlZCBhdXRvbWF0aWNhbGx5Lg0KDQojIFlvdSBuZWVkIHRvIGhhdmUgSU5TVEFMTEVEIGFsbCBvZiB0aGVtLg0KDQo/aW5zdGFsbC5wYWNrYWdlcw0KDQojIE9yIGNsaWNrIG9uIHRoZSB0YWIgIlBhY2thZ2VzIiwgIkluc3RhbGwgcGFja2FnZShzKSIsIHRoZW4gc2VsZWN0IGENCiMgQ1JBTiBtaXJyb3IgY2xvc2UgdG8geW91IChlLmcuIEJyaXN0b2wgaWYgeW91IGFyZSBpbiB0aGUgVUspIGFuZCBmaW5hbGx5DQojIHNlbGVjdCBmcm9tIHRoZSBsaXN0IHRoZSBwYWNrYWdlIHlvdSB3aXNoIHRvIGluc3RhbGwuDQoNCiMgV2hlcmUgYXJlIHlvdT8NCg0KZ2V0d2QoKQ0KDQojIEJ5IHNvbWV0aGluZyBsaWtlDQojIHNldHdkKCdDOi9TaWVuYVRlc3QnKQ0KIyB5b3UgY2FuIHNldCB0aGUgZGlyZWN0b3J5IGJ1dCBub3RlIHRoZSBxdW90ZXMgYW5kIGZvcndhcmQgc2xhc2guDQojIEl0IGlzIGFsc28gcG9zc2libGUgdG8gc2V0IHRoZSBkaXJlY3RvcnkgdXNpbmcgdGhlIG1lbnVzIGlmIHlvdSBoYXZlIHRoZW0uDQojIE9uIGEgd2luZG93cyBtYWNoaW5lLCB5b3UgY2FuIHByZWRldGVybWluZSB0aGUgd29ya2luZyBkaXJlY3RvcnkNCiMgaW4gdGhlIDxQcm9wZXJ0aWVzPiBvZiB0aGUgc2hvcnRjdXQgdG8gUjsNCiMgdGhlc2UgYXJlIGFjY2Vzc2libGUgYnkgcmlnaHQtY2xpY2tpbmcgdGhlIHNob3J0Y3V0Lg0KDQojIElmIHlvdSB3YW50IHRvIHNldCB0aGUgd29ya2luZyBkaXJlY3RvcnkgdG8gZm9yIGV4YW1wbGUNCiMgIkM6XERvY3VtZW50cyBhbmQgU2V0dGluZ3Ncam9oYW5cTXkgRG9jdW1lbnRzXFJTaWVuYV9jb3Vyc2UiDQojIHNpbXBseSBjb3B5IGFuZCBwYXN0ZSBmcm9tIHdpbmRvd3MgZXhwbG9yZXIgb3IgdHlwZQ0KIyAgICBzZXR3ZCgnQzovRG9jdW1lbnRzIGFuZCBTZXR0aW5ncy9qb2hhbi9NeSBEb2N1bWVudHMvUlNpZW5hX2NvdXJzZScpDQojIG9yDQojICAgIHNldHdkKCdDOlxcRG9jdW1lbnRzIGFuZCBTZXR0aW5nc1xcam9oYW5cXE15IERvY3VtZW50c1xcUlNpZW5hX2NvdXJzZScpDQojDQojIGJ1dCBub3RlIHRoYXQgIlwiIGhhcyB0byBiZSBjaGFuZ2VkOyBib3RoICcvJyBhbmQgJ1xcJyB3b3JrISEhDQoNCiMgV2hhdCBpcyBpbiB0aGlzIGRpcmVjdG9yeT8NCg0KbGlzdC5maWxlcygpDQoNCiMgV2hhdCBpcyBhdmFpbGFibGUgaW4gUlNpZW5hPw0KDQo/UlNpZW5hDQoNCiMgKHRoZXNlIGFyZSAuaHRsbSBIRUxQIFBBR0VTKQ0KDQojIEF0IHRoZSBib3R0b20gb2YgdGhpcyBwYWdlLCB3aGVuIHlvdSBjbGljayBvbiAiSW5kZXgiLA0KIyBhIGxpc3Qgb2YgYWxsIHRoZSBhdmFpbGFibGUgZnVuY3Rpb25zIGlzIHNob3duIGluIHlvdXIgYnJvd3Nlci4NCiMgVGhlIHNhbWUgbGlzdCBpcyBzaG93biBpbiB0aGUgZ3JhcGhpY2FsIHVzZXIgaW50ZXJmYWNlIGZvciBSIGJ5IHJlcXVlc3RpbmcNCg0KbGlicmFyeShoZWxwPVJTaWVuYSkNCg0KIyBBbiBleHRlbnNpdmUgbWFudWFsIGlzIGF0IHRoZSBTaWVuYSB3ZWJzaXRlDQojIGF0IGh0dHA6Ly93d3cuc3RhdHMub3guYWMudWsvfnNuaWpkZXJzL3NpZW5hL1JTaWVuYV9NYW51YWwucGRmIDsNCiMgaXQgaXMgdXBkYXRlZCBmcmVxdWVudGx5Lg0KDQojIEVhY2ggZGF0YSBpcyBuYW1lZCAoZm9yIGV4YW1wbGUgYmVsb3cgd2UgbmFtZSBpdCBmcmllbmQuZGF0YS53MSkNCiMgc28gdGhhdCB3ZSBjYW4gY2FsbCBpdCBhcyBhbiBvYmplY3Qgd2l0aGluIFIuDQojIElmIHlvdSByZWFkIGFuIG9iamVjdCBzdHJhaWdodCBpbnRvIFIsIGl0IHdpbGwgdHJlYXQgaXQgYXMgYQ0KIyBkYXRhc2V0LCBvciBpbiBSIHRlcm1pbm9sb2d5IGEgImRhdGEgZnJhbWUiLg0KIyBIZXJlIHRoaXMgaXMgbm90IHdoYXQgd2Ugd2FudCwgdGhlcmVmb3JlIG9uIHJlYWRpbmcNCiMgd2Ugd2lsbCBpbW1lZGlhdGVseSBjb252ZXJ0IGl0IHRvIGEgbWF0cml4Lg0KIyBSIHdpbGwgcmVhZCBpbiBtYW55IGRhdGEgZm9ybWF0cywgdGhlIGNvbW1hbmQgdG8gcmVhZCB0aGVtIGlzIHJlYWQudGFibGUuDQo/cmVhZC50YWJsZQ0KIyBJbiB0aGUgaGVscCBwYWdlIGZvciByZWFkLnRhYmxlLCBsb29rIGF0IHRoZSBzZWN0aW9uICJWYWx1ZSIsDQojIHdoaWNoIGlzIHRoZXJlIGluIGV2ZXJ5IGhlbHAgcGFnZToNCiMgaXQgaW5kaWNhdGVzIHRoZSBjbGFzcyBvZiB0aGUgb2JqZWN0IHRoYXQgaXMgcHJvZHVjZWQgYnkgdGhlIGZ1bmN0aW9uLg0KIyBGb3IgcmVhZC50YWJsZSwgdGhlIHZhbHVlIGlzIGEgZGF0YSBmcmFtZTsgYmVsb3cgd2Ugc2VlIHdoYXQgdGhpcyBpcy4NCiMNCiMgSWYgd2Ugd2lzaGVkIHRvIHJlYWQgYSAuY3N2IGZpbGUgd2Ugd291bGQgaGF2ZQ0KIyB1c2VkIHRoZSByZWFkLmNzdiBjb21tYW5kLg0KIyBUaGUgcGF0aG5hbWVzIG11c3QgaGF2ZSBmb3J3YXJkIHNsYXNoZXMsIG9yIGRvdWJsZSBiYWNrc2xhc2hlcy4NCiMgSWYgc2luZ2xlIGJhY2tzbGFzaGVzIGFyZSB1c2VkLCBvbmUgb2YgdGhlIGVycm9yIG1lc3NhZ2VzIHdpbGwgYmU6DQojICAgMTogJ1xSJyBpcyBhbiB1bnJlY29nbml6ZWQgZXNjYXBlIGluIGEgY2hhcmFjdGVyIHN0cmluZw0KDQojLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCg0KIyBRdWljayBzdGFydCAoRGF0YSBhc3NpZ25tZW50KS4NCiMgUGxlYXNlIG1ha2Ugc3VyZSB0aGUgczUwIGRhdGEgc2V0IGlzIGluIHlvdXIgd29ya2luZyBkaXJlY3RvcnkuDQojIFRoZSBkYXRhIHNldCBpcyBvbiB0aGUgU2llbmEgd2Vic2l0ZSAoIkRhdGEgc2V0cyIgdGFiKSBhbmQgbXVzdCBiZQ0KIyB1bnppcHBlZCBpbiB5b3VyIHdvcmtpbmcgZGlyZWN0b3J5Lg0KDQojICAgIGZyaWVuZC5kYXRhLncxIDwtIGFzLm1hdHJpeChyZWFkLnRhYmxlKCJzNTAtbmV0d29yazEuZGF0IikpDQojICAgIGZyaWVuZC5kYXRhLncyIDwtIGFzLm1hdHJpeChyZWFkLnRhYmxlKCJzNTAtbmV0d29yazIuZGF0IikpDQojICAgIGZyaWVuZC5kYXRhLnczIDwtIGFzLm1hdHJpeChyZWFkLnRhYmxlKCJzNTAtbmV0d29yazMuZGF0IikpDQojICAgIGRyaW5rIDwtIGFzLm1hdHJpeChyZWFkLnRhYmxlKCJzNTAtYWxjb2hvbC5kYXQiKSkNCiMgICAgc21va2UgPC0gYXMubWF0cml4KHJlYWQudGFibGUoInM1MC1zbW9rZS5kYXQiKSkNCg0KIyBUbyBtYWtlIHRoaXMgc2NyaXB0IHNlbGYtY29udGFpbmVkLCB5b3UgbWF5IGluc3RlYWQgcnVuIHRoZSBjb21tYW5kczoNCmxpYnJhcnkoUlNpZW5hKQ0KZnJpZW5kLmRhdGEudzEgPC0gczUwMQ0KZnJpZW5kLmRhdGEudzIgPC0gczUwMg0KZnJpZW5kLmRhdGEudzMgPC0gczUwMw0KZHJpbmsgPC0gczUwYQ0Kc21va2UgPC0gczUwcw0KIyBiZWNhdXNlIHM1MDEgZXRjLiBhcmUgaW50ZXJuYWwgZGF0YSBvYmplY3RzIG9mIFJTaWVuYS4NCg0KIyBFeHBsYW5hdGlvbiBvZiBkYXRhIHN0cnVjdHVyZXMgYW5kIGZvcm1hdHMgYmVsb3cNCg0KIyMjIyMjIyMjIyMjIyMjIyMgLSBESUZGRVJFTlQgREFUQSBGT1JNQVRTIC0gIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiMjIw0KIyMjIFRoZSBhc3NpZ25tZW50cyBoZXJlIGludm9sdmUgcmVhZGluZyBpbiBkYXRhIHRvIGEgImRhdGEgZnJhbWUiDQojIyMgICAgZGF0YSA8LSByZWFkLnRhYmxlKCJkYXRhLmRhdCIpDQojIyMgcmVhZHMgeW91ciB0ZXh0IGZpbGUgaW50byBhICJkYXRhIGZyYW1lIjsNCiMjIyBjaGVjayB0aGUgY2xhc3Mgb2YgdGhlIG9iamVjdCAiZGF0YSINCiMjIyAgICA+ICBjbGFzcyhkYXRhKQ0KIyMjICAgIFsxXSAiZGF0YS5mcmFtZSINCiMjIyBJZiB5b3VyIGRhdGEgaXMgbm90IGEgIi5kYXQiIGZpbGUsIGFsdGVybmF0aXZlIGltcG9ydCBtZXRob2RzIGFyZQ0KIyMjIC0tLS0tICIuY3N2IiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCiMjIyAgICBkYXRhIDwtIHJlYWQudGFibGUoImM6L2RhdGEuY3N2IiwgaGVhZGVyPVRSVUUsDQojIyMgICAgICAgICAgICAgICAgc2VwPSIsIiwgcm93Lm5hbWVzPSJpZGVuIikNCiMjIyAtLS0tICIuY3N2IiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQojIyMgICAgZGF0YSA8LSByZWFkLmNzdigiZGF0YS5jc3YiLGhlYWRlcj1UKQ0KIyMjIGxvb2sgYXQgP3JlYWQuY3N2IGFuZCA/cmVhZC50YWJsZSB0byB1bmRlcnN0YW5kIHRoZXNlIGZ1bmN0aW9uIGNhbGxzDQojIyMgLS0tLSAiLnNwc3MiIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KIyMjICAgIGxpYnJhcnkoZm9yZWlnbikNCiMjIyAgICBkYXRhIDwtIHJlYWQuc3BzcygiYzovZGF0YS5zcHNzIikNCiMjIyAtLS0tICIuZHRhIiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQojIyMgICAgbGlicmFyeShmb3JlaWduKQ0KIyMjICAgIGRhdGEgPC0gcmVhZC5kdGEoImM6L2RhdGEuZHRhIikNCiMjIw0KIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCg0KIyMjIyMjIyMjIyMjIyMjIyMgLSBGUk9NIERBVEEgRlJBTUUgVE8gTUFUUklYIC0gIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiMjIw0KIyMjIC0tLS0gRGF0YSBmcmFtZSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCiMjIyBUaGUgZGF0YSBmcmFtZSBpcyBsaWtlIGEgc3ByZWFkc2hlZXQgb2YgY2FzZXMgYnkgdmFyaWFibGVzLA0KIyMjIHdoZXJlIHRoZSB2YXJpYWJsZXMgYXJlIHRoZSBjb2x1bW5zLCBhbmQgdGhlc2UgaGF2ZSB0aGUgbmFtZXMNCiMjIyAgICBuYW1lcyggZGF0YSApDQojIyMgYSBzcHJlYWRzaGVldCB2aWV3IG9mIGEgZGF0YSBmcmFtZSBpcyBnaXZlbiBieSB0aGUgZml4KCkgY29tbWFuZA0KIyMjICAgIGZpeCggZGF0YSApDQojIyMNCiMjIyBBbGwgY2hhbmdlcyB5b3UgbWFrZSBpbiB0aGlzIHNwcmVhZHNoZWV0IHdpbGwgYmUgc2F2ZWQgYXV0b21hdGljYWxseSwNCiMjIyBzbyBiZXdhcmUuDQojIyMNCiMjIyBBcyBhbiBleGFtcGxlIGNyZWF0ZSB0d28gdmVjdG9yczoNCmhlaWdodCA8LSBjKCAxMjAsIDE1MCwgMTgwLCAyMDAsIDE5MCwgMTc3LCAxNzAsIDEyNSwgMTQxLCAxNTcgKQ0Kd2VpZ2h0IDwtIGMoIDExLCAxNCwgMTcsIDE4LCAxNywgMTgsIDExLCAxMiwgMTAsIDE1ICkNCiMjIyBUaGUgZnVuY3Rpb24gYygpIGNvbWJpbmVzIGl0cyBhcmd1bWVudCBpbnRvIGEgdmVjdG9yDQojIyMgKG9yIGludG8gYSBsaXN0LCBidXQgd2UgYXJlIG5vdCBjb25jZXJuZWQgd2l0aCB0aGF0IHBvc3NpYmlsaXR5IG5vdy4pLg0KIyMjIFRoZXNlIHR3byB2ZWN0b3JzIGNhbiBiZSBjb2xsZWN0ZWQgYXMgdmFyaWFibGVzIGluIGEgZGF0YSBmcmFtZQ0KbXlkYXRhIDwtIGRhdGEuZnJhbWUoIGhlaWdodCwgd2VpZ2h0ICkNCiMjIyBhbmQgbG9vayBhdCB0aGUgcmVzdWx0cw0KbXlkYXRhDQojIyMgVGhlIGNvbHVtbnMgb2YgYSBkYXRhIGZyYW1lIG1heSBiZSBleHRyYWN0ZWQNCiMjIyB1c2luZyBhICIkIiBzaWduIGFuZCB0aGVpciBuYW1lcy4NCiMjIyBGb3IgZXhhbXBsZToNCm5hbWVzKCBteWRhdGEgKQ0KbXlkYXRhJGhlaWdodA0KIyMjIE9yIGJ5ICJbXSIgYW5kIGNvbHVtbiBudW1iZXIsIGUuZy4NCm15ZGF0YVsxXQ0KbXlkYXRhWyAgLCAxXQ0KbXlkYXRhWyAxLCAgXQ0KIyMjIElmIHlvdSB3aXNoIHRvIHNlZSB0aGUgc3RydWN0dXJlIG9mIGFuIG9iamVjdCwgc3VjaCBhcyBteWRhdGEsIHRoZW4gcmVxdWVzdA0Kc3RyKG15ZGF0YSkNCiMjIyBPYmplY3RzIG9mdGVuIGhhdmUgYXR0cmlidXRlczoNCmF0dHJpYnV0ZXMobXlkYXRhKQ0KDQojIyMgLS0tLSBNYXRyaXggLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KIyMjIEEgIm1hdHJpeCIgaXMgYSBudW1lcmljIG9iamVjdCBvcmRlcmVkIGxpa2UgYSBtYXRyaXggd2l0aCBkaW1lbnNpb25zDQojIyMgKCBkaW0oKSApIGdpdmVuIGJ5IHRoZSBudW1iZXIgb2Ygcm93cyBhbmQgY29sdW1ucywgZS5nLg0KZGltKCBmcmllbmQuZGF0YS53MSApDQoNCiMjIyBJZiB5b3Ugd2lzaCB0byBwbGF5IGFyb3VuZCB3aXRoIGEgY29weSBvZiB0aGUgbWF0cml4LA0KIyMjZS5nLiBoYXZpbmcgdGhlIG5hbWUgIm15ZGF0YSIsIHlvdSBjYW4gbWFrZSB0aGUgY29weSBieSB0aGUgY29tbWFuZA0KbXlkYXRhIDwtIGZyaWVuZC5kYXRhLncxDQojIyMgVGhlIGVhcmxpZXIgb2JqZWN0IHRoYXQgd2UgY3JlYXRlZCB3aXRoIHRoZSBuYW1lICJteWRhdGEiIG5vdyBoYXMgYmVlbiBsb3N0Lg0KIyMjIEVsZW1lbnRzIGlmIG1hdHJpY2VzIGNhbiBiZSBhY2Nlc3NlZCBieSB1c2luZyBzcXVhcmUgYnJhY2tldHMuDQojIyMgRm9yIGV4YW1wbGUsIHRoZSBlbGVtZW50IG9mICJteWRhdGEiIGluIHJvdyAyIGFuZCBjb2x1bW4gMyBpcyBnaXZlbiBieQ0KbXlkYXRhWyAyLCAzIF0NCiMjIyB0aGUgZmlyc3QgdGhyZWUgcm93cyBvZiBhIG1hdHJpeCBjYWxsZWQgbXlkYXRhIGFyZSBnaXZlbiBieQ0KbXlkYXRhWyAxOjMsIF0NCiMjIyBjb2x1bW5zIDIsIDUsIGFuZCA2IGFyZSBnaXZlbiBieQ0KbXlkYXRhWyAsIGMoIDIsIDUsIDYpIF0NCiMjIyBJbmRlZWQgdGhlcmUgYXJlIGEgbG90IG9mIHplcm9zIC0gbmV0d29ya3MgdGVuZCB0byBiZSBzcGFyc2UuDQoNCiMjIyAtLS0tIENvbnZlcnRpbmcgZGF0YSBmcmFtZSB0byBtYXRyaXggLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQojIyMNCiMjIyBNb3N0IGNsYXNzZXMgY2FuIGJlIGNvbnZlcnRlZCB0byBvdGhlciBjbGFzc2VzIHRocm91Z2ggImFzLnR5cGVvZmNsYXNzICgpIiwNCiMjIyBlLmcuLCBpZiAibXlkYXRhIiB3b3VsZCBiZSBhbiBvYmplY3Qgd2l0aCBhIG1hdHJpeC1saWtlIHN0cnVjdHVyZSwNCiMjIyB0aGVuIGl0IGNvdWxkIGJlIGNvbnZlcnRlZCB0byB0aGUgY2xhc3MgIm1hdHJpeCIgYnkgdGhlIGNvbW1hbmQNCm15ZGF0YSA8LSBhcy5tYXRyaXgoIG15ZGF0YSApDQoNCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQoNCg0KIyMjIyMjIyMjIyMjIyMjIyMjIC0gRVhBTVBMRSBGT1IgQVJDIExJU1QgLSAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiMjIw0KIyMjIEZyb20gdGhlIFNpZW5hIHdlYnNpdGUgeW91IGNhbiBkb3dubG9hZCB0aGUgZGF0YSBzZXQgYXJjbGlzdGRhdGEuZGF0Lg0KIyMjIFRoZSBmdW5jdGlvbiByZWFkLnRhYmxlIGNhbiBiZSB1c2VkIHdpdGggdGhlIGludGVybmV0IGxvY2F0aW9uOg0KQXJjTGlzdCA8LQ0KICByZWFkLnRhYmxlKCAiaHR0cHM6Ly93d3cuc3RhdHMub3guYWMudWsvfnNuaWpkZXJzL3NpZW5hL2FyY2xpc3RkYXRhLmRhdCIsDQogICAgICAgICAgICAgIGhlYWRlcj1GQUxTRSApDQojIyMgTm90ZSB0aGUgY2FwaXRhbGl6YXRpb24uDQojIyMgTm93IEFyY0xpc3QgaXMgYSBkYXRhLmZyYW1lDQojIyMgKHdlIHNhdyB0aGlzIGFib3ZlIGluIHRoZSBoZWxwIHBhZ2UgZm9yIHJlYWQudGFibGUpLg0KIyMjIFdoYXQgYXJlIGl0cyBkaW1lbnNpb25zPw0KZGltKEFyY0xpc3QpDQojIyMgWW91IGNhbiBnZXQgYW4gaW1wcmVzc2lvbiBvZiBpdCBieSBsb29raW5nIGF0IHRoZSBzdGFydCBvZiB0aGUgb2JqZWN0Og0KaGVhZChBcmNMaXN0KQ0KIyMjIFRoaXMgaXMgYSBkYXRhIGZpbGUgaW4gYXJjbGlzdCBmb3JtYXQsIHdpdGggY29sdW1uczoNCiMjIyBzZW5kZXIgaWQsIHJlY2VpdmVyIGlkLCB2YWx1ZSBvZiB0aWUsIHdhdmUuDQojIyMgQWRkIG5hbWVzIHRvIHRoZSBjb2x1bW5zOg0KbmFtZXMoQXJjTGlzdCkgPC0gYyggInNpZCIsICJyZWNpZCIsICJiZmYiLCAid2lkIiApDQojIyMgYW5kIGFnYWluIHJlcXVlc3QNCmhlYWQoQXJjTGlzdCkNCiMjIyBUaGUgYmZmICgiYmVzdCBmcmllbmQiKSB2YXJpYWJsZSBkb2VzIG5vdCBoYXZlIG11Y2ggdmFyaWFiaWxpdHk6DQp0YWJsZShBcmNMaXN0JGJmZikNCiMjIyBUaGlzIHRlbGxzIHVzIHRoYXQgbm9uLXRpZXMgYXJlIG5vdCBpbmNsdWRlZCAodGhleSB3b3VsZCBoYXZlIHRoZSB2YWx1ZSAwKSwNCiMjIyBhbmQgdGhhdCB0aGVyZSBhcmUgbm8gdGllIHZhbHVlcyBvdGhlciB0aGFuIDEuDQojIyMgSXQgbWF5IGJlIG5pY2UgdG8gb3JkZXIgdGhlIHJvd3MgYnkgc2VuZGVyLCB0aGVuIGJ5IHJlY2VpdmVyLCB0aGVuIGJ5IHdhdmUuDQojIyMgVGhlIHRlZGlvdXMgd2F5IHRvIGRvIHRoaXMgaXMNCkFyY0xpc3QgPC0gQXJjTGlzdFsgb3JkZXIoIEFyY0xpc3Qkc2lkLCBBcmNMaXN0JHJlY2lkLCBBcmNMaXN0JHdpZCksIF0NCiMjIyBUbyB1bmRlcnN0YW5kIHRoaXMsIHlvdSBtYXkgbG9vayBhdCB0aGUgaGVscCBwYWdlIGZvciBmdW5jdGlvbiBvcmRlcigpDQojIyMgVGhlIHJvd3Mgb2YgQXJjbGlzdCBhcmUgb3JkZXJlZCBmaXJzdCBieSBBcmNMaXN0JHNpZCwgdGhlbiBieSBBcmNMaXN0JHJlY2lkLA0KIyMjIGFuZCB0aGVuIGJ5IEFyY0xpc3Qkd2lkOw0KIyMjIHRoZXNlIHJlb3JkZXJlZCByb3dzIHRoZW4gYXJlIHB1dCBpbnRvIHRoZSBvYmplY3QgQXJjTGlzdCwNCiMjIyB0aHVzIG92ZXJ3cml0aW5nIHRoZSBlYXJsaWVyIGNvbnRlbnRzIG9mIHRoaXMgb2JqZWN0Lg0KIyMjIFRoaXMgd2F5IGlzIHRlZGlvdXMgYmVjYXVzZSBpdCBpcyByZXBlYXRlZCBhbGwgdGhlIHRpbWUgdGhhdCB0aGUgbmFtZXMNCiMjIyBzaWQsIHJlY2lkLCB3aWQgcmVmZXIgdG8gdGhlIEFyY0xpc3Qgb2JqZWN0Lg0KIyMjIFRoZSBsZXNzIHRlZGlvdXMgd2F5IHVzZXMgdGhlIGZ1bmN0aW9uICJ3aXRoIi4NCiMjIyBUaGUgd2l0aChhLCBiKSBmdW5jdGlvbiB0ZWxscyBSIHRoYXQgYiBtdXN0IGJlIGNhbGN1bGF0ZWQsDQojIyMgd2hpbGUgdGhlIG90aGVyd2lzZSB1bmtub3duIG5hbWVzIHJlZmVyIHRvIGRhdGEgc2V0IGE6DQpBcmNMaXN0IDwtIHdpdGgoIEFyY0xpc3QsIEFyY0xpc3RbIG9yZGVyKCBzaWQsIHJlY2lkLCB3aWQpLCBdICkNCiMjIyBBbiBhcmMgbGlzdCBkb2VzIG5vdCBnaXZlIGluZm9ybWF0aW9uIGFib3V0IHRoZSBudW1iZXIgb2Ygbm9kZXMsDQojIyMgYmVjYXVzZSBpc29sYXRlcyBhcmUgbm90IHJlY29yZGVkLg0KIyMjIFRoZSBzZXQgb2Ygbm9uLWlzb2xhdGVzIGlzDQp1bmlvbih1bmlxdWUoQXJjTGlzdCRzaWQpLCB1bmlxdWUoQXJjTGlzdCRyZWNpZCkpDQojIyMgYW5kLCBnaXZlbiB0aGF0IHdlIGhhdmUgdGhlIGluZm9ybWF0aW9uIHRoYXQgdGhlcmUgYXJlIDUwIG5vZGVzDQojIyMgbGFiZWxlZCAxIHRvIDUwLCB0aGUgaXNvbGF0ZXMgYXJlIHRoZSBmb2xsb3dpbmcgdHdvIG5vZGVzOg0Kc2V0ZGlmZigxOjUwLCB1bmlvbih1bmlxdWUoQXJjTGlzdCRzaWQpLCB1bmlxdWUoQXJjTGlzdCRyZWNpZCkpKQ0KIyMjIE5vdyBzdXBwb3NlIHdlIHdhbnQgdG8gY3JlYXRlIGEgc2VwYXJhdGUgc2V0IG9mIHJlY29yZHMgZm9yIGVhY2ggd2F2ZS4NCiMjIyBTZWxlY3QgYnkgd2F2ZToNCg0KU0FmZi4xIDwtIHdpdGgoQXJjTGlzdCwgQXJjTGlzdFsgd2lkID09IDEsIF0gKSAjZXh0cmFjdHMgZWRnZXMgaW4gd2F2ZSAxDQpTQWZmLjIgPC0gd2l0aChBcmNMaXN0LCBBcmNMaXN0WyB3aWQgPT0gMiwgXSApICNleHRyYWN0cyBlZGdlcyBpbiB3YXZlIDINClNBZmYuMyA8LSB3aXRoKEFyY0xpc3QsIEFyY0xpc3RbIHdpZCA9PSAzLCBdICkgI2V4dHJhY3RzIGVkZ2VzIGluIHdhdmUgMw0KDQojIyMgVGhpcyBjYW4gYmUgYXJyYW5nZWQgbW9yZSBlZmZpY2llbnRseSBhcw0KU0FmZiA8LSBsYXBwbHkoMTozLCBmdW5jdGlvbihtKXsgd2l0aChBcmNMaXN0LCBBcmNMaXN0WyB3aWQgPT0gbSwgXSApIH0gKQ0KIyMjIHdpdGggdGhlIGNvcnJlc3BvbmRlbmNlIHRoYXQgU0FmZi4xIGlzIFNBZmZbWzFdXSwgZXRjLg0KDQojIyMgRm9yIHRyYW5zZm9ybWluZyBhbiBhZGphY2VuY3kgbWF0cml4LCBlLmcuLCBmcmllbmQuZGF0YS53MSwgaW50byBhbiBhcmNsaXN0LA0KIyMjIGNyZWF0ZSBpbmRpY2F0b3IgbWF0cml4IG9mIHRoZSBub24temVybyBlbnRyaWVzOg0Kb25lcyA8LSAhZnJpZW5kLmRhdGEudzEgJWluJSAwDQojIyMgY3JlYXRlIGVtcHR5IGVkZ2UgbGlzdCBvZiBkZXNpcmVkIGxlbmd0aA0KZWRnZXMgPC0gbWF0cml4KDAsIHN1bShvbmVzKSwgMykNCiMjIyBmaWxsIHRoZSBjb2x1bW5zIG9mIHRoZSBlZGdlIGxpc3QNCmVkZ2VzWywgMV0gPC0gcm93KGZyaWVuZC5kYXRhLncxKVtvbmVzXQ0KZWRnZXNbLCAyXSA8LSBjb2woZnJpZW5kLmRhdGEudzEpW29uZXNdDQplZGdlc1ssIDNdIDwtIGZyaWVuZC5kYXRhLncxW29uZXNdDQojIyMgaWYgZGVzaXJlZCwgb3JkZXIgZWRnZSBsaXN0IGJ5IHNlbmRlcnMgYW5kIHRoZW4gcmVjZWl2ZXJzDQplZGdlcyA8LSBlZGdlc1tvcmRlcihlZGdlc1ssIDFdLCBlZGdlc1ssIDJdKSwgXQ0KIyMjIFdoYXQgZGlkIHdlIG1ha2U6DQplZGdlcw0KDQojIyMgRm9yIHRyYW5zZm9ybWluZyBhbiBhcmNsaXN0IGludG8gYSBtYXRyaXgsDQojIyMgZmlyc3QgcmVtb3ZlIHRoZSBmb3VydGggY29sdW1uIGluZGljYXRpbmcgdGhlIHdhdmUsIHNvIHRoYXQgd2UgYXJlIGxlZnQNCiMjIyB3aXRoIHNlbmRlciwgcmVjZWl2ZXIgYW5kIHZhbHVlIG9mIHRoZSB0aWUsDQojIyMgYW5kIHRyYW5zZm9ybSBpdCBpbnRvIG1hdHJpeCBmb3JtYXQgKGF0IGZpcnN0IGl0IGlzIGEgZGF0YS5mcmFtZSkNClNBZmYuMS5jb3B5IDwtIFNBZmYuMVssIDE6M10NClNBZmYuMS5jb3B5IDwtIGFzLm1hdHJpeChTQWZmLjEuY29weSkNCiMjIyBjcmVhdGUgZW1wdHkgYWRqYWNlbmN5IG1hdHJpeA0KYWRqIDwtIG1hdHJpeCgwLCA1MCwgNTApDQojIyMgcHV0IGVkZ2UgdmFsdWVzIGluIGRlc2lyZWQgcGxhY2VzDQphZGpbU0FmZi4xLmNvcHlbLDE6Ml1dIDwtIFNBZmYuMS5jb3B5WywgM10NCiMjIyBOb3cgYWRqIGlzIHRoZSBhZGphY2VuY3kgbWF0cml4Lg0KIyMjIEFsc28gc2VlIFNlY3Rpb24gNC4xIG9mIHRoZSBTaWVuYSBtYW51YWwNCiMjIyBhbmQgdGhlIGhlbHAgcGFnZSBmb3Igc2llbmFEZXBlbmRlbnQuDQoNCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQojIyMjIyMjIyMjIyMjIyMjIC0gUkVBRElORyBJTiBQQUpFSyBEQVRBIC0gIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KIyMjDQojIyMgU2tpcCB0aGlzIHNlY3Rpb24gaWYgaGFuZGxpbmcgUGFqZWsgZGF0YSBpcyBvZiBubyBjb25jZXJuIHRvIHlvdS4NCiMjIyBJZiB5b3UgaGF2ZSBkYXRhIGluIFBhamVrIGZvcm1hdCB5b3UgY2FuIHVzZSB0aGUgcGFja2FnZSAibmV0d29yayIgaW4gb3JkZXINCiMjIyB0byBjb252ZXJ0IGl0IHRvIGEgbmV0d29yayBvYmplY3QuIFRoaXMgZXhhbXBsZSBpcyBmcm9tID9yZWFkLnBhag0KIyMjICAgcmVxdWlyZSggbmV0d29yayApDQojIyMNCiMjIyAgIHBhciggbWZyb3cgPSBjKCAyLCAyICkgKQ0KIyMjDQojIyMgICB0ZXN0Lm5ldC4xIDwtDQojIyMgICAgcmVhZC5wYWooImh0dHA6Ly92bGFkby5mbWYudW5pLWxqLnNpL3B1Yi9uZXR3b3Jrcy9kYXRhL0dEL2dkOTgvQTk4Lm5ldCIgKQ0KIyMjICAgcGxvdCggdGVzdC5uZXQuMSxtYWluID0gdGVzdC5uZXQuMSRnYWwkdGl0bGUgKQ0KIyMjICAgdGVzdC5uZXQuMiA8LQ0KIyMjICAgIHJlYWQucGFqKCJodHRwOi8vdmxhZG8uZm1mLnVuaS1sai5zaS9wdWIvbmV0d29ya3MvZGF0YS9taXgvVVNBaXI5Ny5uZXQiICkNCiMjIyAgIHBsb3QoIHRlc3QubmV0LjIsbWFpbiA9IHRlc3QubmV0LjIkZ2FsJHRpdGxlICkNCiMjIw0KIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCg0KIyBCZWZvcmUgd2Ugd29yayB3aXRoIHRoZSBkYXRhLCB3ZSB3YW50IHRvIGJlIHN1cmUgaXQgaXMgY29ycmVjdC4gQSBzaW1wbGUgd2F5DQojIHRvIGNoZWNrIHRoYXQgb3VyIGRhdGEgaXMgYSBtYXRyaXggaXMgdGhlIGNvbW1hbmQgY2xhc3MoKQ0KDQpjbGFzcyggZnJpZW5kLmRhdGEudzEgKQ0KDQojIHRvIGxpc3QgdGhlIHByb3BlcnRpZXMgb2YgYW4gb2JqZWN0IGF0dHJpYnV0ZXMoIGZyaWVuZC5kYXRhLncxICkNCiMgKGRpZmZlcmVudCBjbGFzc2VzIGhhdmUgZGlmZmVyZW50IGF0dHJpYnV0ZXMpDQoNCiMgVG8gY2hlY2sgdGhhdCBhbGwgdGhlIGRhdGEgaGFzIGJlZW4gcmVhZCBpbiwgd2UgY2FuIHVzZSB0aGUgZGltKCkgY29tbWFuZC4NCiMgVGhlIGFkamFjZW5jeSBtYXRyaXggc2hvdWxkIGhhdmUgdGhlIHNhbWUgZGltZW5zaW9ucyBhcyB0aGUgb3JpZ2luYWwgZGF0YQ0KIyAoaGVyZSwgNTAgYnkgNTApLg0KDQpkaW0oZnJpZW5kLmRhdGEudzEpDQpkaW0oZHJpbmspDQoNCiMgVG8gY2hlY2sgdGhlIHZhbHVlcyBhcmUgY29ycmVjdCwgaW5jbHVkaW5nIG1pc3NpbmcgdmFsdWVzLCB3ZSBjYW4gdXNlDQojIHRoZSBmb2xsb3dpbmcgY29tbWFuZHMgdG8gdGFidWxhdGUgdGhlIHZhcmlhYmxlcy4NCg0KdGFibGUoIGZyaWVuZC5kYXRhLncxLCB1c2VOQSA9ICdhbHdheXMnICkNCnRhYmxlKCBmcmllbmQuZGF0YS53MiwgdXNlTkEgPSAnYWx3YXlzJyApDQp0YWJsZSggZnJpZW5kLmRhdGEudzMsIHVzZU5BID0gJ2Fsd2F5cycgKQ0KdGFibGUoIGRyaW5rLCB1c2VOQSA9ICdhbHdheXMnICkNCnRhYmxlKCBzbW9rZSwgdXNlTkEgPSAnYWx3YXlzJyApDQoNCiMgTkEgaXMgdGhlIFIgY29kZSBmb3IgbWlzc2luZyBkYXRhIChOb3QgQXZhaWxhYmxlKS4NCiMgVGhpcyBkYXRhIHNldCBoYXBwZW5zIHRvIGhhdmUgbm8gbWlzc2luZ3MNCiMgKHNlZSB0aGUgZGF0YSBkZXNjcmlwdGlvbiBvbiB0aGUgU2llbmEgd2Vic2l0ZSkuDQojIElmIHRoZXJlIGFyZSBhbnkgbWlzc2luZ3MsDQojIGl0IGlzIG5lY2Vzc2FyeSB0byB0ZWxsIFIgYWJvdXQgdGhlIG1pc3NpbmcgZGF0YSBjb2Rlcy4NCiMgTGV0IHVzIGRvIGFzIGlmIHRoZSBtaXNzaW5nIGNvZGVzIGZvciB0aGUgZnJpZW5kc2hpcCBuZXR3b3JrIHdlcmUgNiBhbmQgOS4NCiMgVGhpcyBsZWFkcyB0byB0aGUgZm9sbG93aW5nIGNvbW1hbmRzLg0KIyAoRm9yIG5ldyBSIHVzZXJzOiB0aGUgYygpIGZ1bmN0aW9uIHVzZWQgaGVyZSBhcyAiYyg2LDkpIiBjb25zdHJ1Y3RzDQojICBhIHZlY3RvciBbYyBmb3IgY29sdW1uXSBjb25zaXN0aW5nIG9mIHRoZSBudW1iZXJzIDYgYW5kIDkuDQojICBUaGlzIGZ1bmN0aW9uIGlzIHVzZWQgYSBsb3QgaW4gYmFzaWMgUi4pDQoNCmZyaWVuZC5kYXRhLncxWyBmcmllbmQuZGF0YS53MSAlaW4lIGMoNiw5KSBdIDwtIE5BDQpmcmllbmQuZGF0YS53MlsgZnJpZW5kLmRhdGEudzIgJWluJSBjKDYsOSkgXSA8LSBOQQ0KZnJpZW5kLmRhdGEudzNbIGZyaWVuZC5kYXRhLnczICVpbiUgYyg2LDkpIF0gPC0gTkENCg0KIyBDb21tYW5kcyBmb3IgZGVzY3JpcHRpdmUgYW5hbHlzaXMgYXJlIGluIHRoZSBzY3JpcHQ6IFJzY3JpcHRTTkFEZXNjcmlwdGl2ZXMuUg0KDQojIyMjIyMjIyMjIyMjIyAtIFNFTEVDVElORyBTVUJTRVRTIE9GIERBVEEgLSAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KDQojIFRvIHNlbGVjdCBhIHN1YnNldCBvZiB0aGUgZGF0YSBiYXNlZCBvbiBhbiBhY3RvciB2YXJpYWJsZSwgc2F5LA0KIyB0aG9zZSB3aG8gaGF2ZSB0aGUgdmFsdWUgMiBvciAzIG9uIGRyaW5raW5nIGF0IHRpbWUgMQ0KIyAodGhlIHBvc3NpYmlsaXRpZXMgYXJlIGVuZGxlc3MsIGJ1dCBob3BlZnVsbHkgdGhpcyB3aWxsIHNlcnZlIGFzIGEgcGF0dGVybikNCg0KdXNlIDwtIGRyaW5rWywgMV0gJWluJSBjKDIsIDMpDQoNCiMgVGhpcyBjcmVhdGVzIGEgbG9naWNhbCB2ZWN0b3Igd2hpY2ggaXMgVFJVRSBmb3IgdGhlIGNhc2VzIHdoZXJlIHRoZSBjb25kaXRpb24NCiMgaXMgc2F0aXNmaWVkLiBUbyB2aWV3IG9yIGNoZWNrLCBkaXNwbGF5IHRoZSB2ZWN0b3JzIG5leHQgdG8gZWFjaCBvdGhlcjoNCg0KY2JpbmQoZHJpbmtbICwgMSBdLCB1c2UpDQpkYXRhLmZyYW1lKGRyaW5rWyAsIDEgXSwgdXNlKQ0KDQojIGFuZCB0aGUgbnVtYmVyIG9mIHNlbGVjdGVkIGNhc2VzIGlzIGRpc3BsYXllZCBieQ0KDQpzdW0oIHVzZSApDQoNCiMgb3INCg0KdGFibGUoIHVzZSApDQoNCiMgR2l2ZW4gdGhpcyBzZWxlY3Rpb24sIHN1Ym1hdHJpY2VzIGNhbiBiZSBmb3JtZWQgaW4gY2FzZSB0aGUgYW5hbHlzZXMNCiMgYXJlIHRvIGJlIGRvbmUgZm9yIHRoaXMgc3Vic2V0IG9ubHk6DQoNCmZyaWVuZDEuZGF0YS53MSA8LSBmcmllbmQuZGF0YS53MVsgdXNlLCB1c2UgXQ0KZnJpZW5kMS5kYXRhLncyIDwtIGZyaWVuZC5kYXRhLncyWyB1c2UsIHVzZSBdDQpkcmluazEgPC0gZHJpbmtbIHVzZSwgXQ0KDQojIEEgdXNlZnVsIG9wdGlvbiBpbiBSIHRoYXQgYWxsb3dzIHlvdSB0byBzYXZlIHlvdXIgd29ya3NwYWNlOg0Kc2F2ZS5pbWFnZSgiV29ya3NwYWNlUnNjcmlwdDAxLlJEYXRhIikNCiMgTGF0ZXIgeW91IGNhbiBsb2FkIHRoaXMgaW4gYSBuZXcgc2Vzc2lvbiBieQ0KIyBsb2FkKCJXb3Jrc3BhY2VSc2NyaXB0MDEuUkRhdGEiKQ0KDQojIElmIG5leHQgdGltZSB5b3Ugd291bGQgbGlrZSB0byBjb250aW51ZSBmcm9tIGhlcmUsIHlvdSB3aWxsIG5vdCBuZWVkIHRvIG9wZW4NCiMgYW5kIHJ1biB0aGlzIHNjcmlwdCBhZ2Fpbiwgc2luY2UgeW91IHdpbGwgYmUgYWJsZSB0byBsb2FkIHRoaXMgY3VycmVudCBzdGF0ZQ0KIyBvZiB5b3VyIHdvcmtzcGFjZS4gQnV0IHBhY2thZ2VzIHdpbGwgaGF2ZSB0byBiZSBhdHRhY2hlZCBhZ2Fpbi4NCg0KIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiMjIw0KIyMjIC0tLS0gUFJPQ0VFRCBUTyBSc2NyaXB0U05BRGVzY3JpcHRpdmVzLlIgRk9SIERFU0NSSVBUSVZFIEFOQUxZU0lTIC0tLS0tLS0tLS0NCiMjIw0KIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCg0KYGBgDQoNCg0K</div>

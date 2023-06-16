@@ -6,9 +6,9 @@ Filename is s50_3_CoEvinit.txt.
 
 This file contains primary output for SIENA project <<s50_3_CoEvinit>>.
 
-Date and time: 27/09/2022 18:23:32 
+Date and time: 15/06/2023 10:03:10 
 
-RSiena version 1.3.0.1 (02 05 2021)
+RSiena version 1.3.14.1 (05 02 2023)
 
 
 @1
